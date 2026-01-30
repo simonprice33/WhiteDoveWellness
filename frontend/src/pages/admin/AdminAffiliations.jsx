@@ -113,7 +113,7 @@ export default function AdminAffiliations() {
           <div className="divide-y divide-slate-50">
             {affiliations.map((item) => (
               <div key={item.id} className="flex items-center gap-4 p-4 hover:bg-slate-50" data-testid={`affiliation-row-${item.id}`}>
-                <img src={item.logo_url} alt={item.name} className="w-16 h-10 object-contain bg-slate-50 rounded" />
+                <img src={getImageUrl(item.logo_url)} alt={item.name} className="w-16 h-10 object-contain bg-slate-50 rounded" />
                 <div className="flex-1">
                   <p className="font-medium text-slate-800">{item.name}</p>
                   {item.website_url && <a href={item.website_url} target="_blank" rel="noopener noreferrer" className="text-sm text-[#9F87C4] hover:underline">{item.website_url}</a>}
@@ -144,7 +144,7 @@ export default function AdminAffiliations() {
                 {formData.logo_url && (
                   <div className="relative inline-block">
                     <img 
-                      src={formData.logo_url} 
+                      src={getImageUrl(formData.logo_url)} 
                       alt="Logo preview" 
                       className="h-20 object-contain bg-slate-50 rounded border border-slate-200 p-2"
                     />
