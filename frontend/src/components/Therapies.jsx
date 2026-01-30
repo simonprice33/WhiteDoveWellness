@@ -124,7 +124,7 @@ export default function Therapies() {
                 {/* Full Description */}
                 <div>
                   <p className="text-slate-600 leading-relaxed">
-                    {selectedTherapy.description || selectedTherapy.short_description}
+                    {selectedTherapy.full_description || selectedTherapy.short_description}
                   </p>
                 </div>
 
