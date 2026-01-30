@@ -70,7 +70,7 @@ export default function Contact() {
             {/* Decorative Image - White Dove */}
             <div className="hidden lg:block relative rounded-3xl overflow-hidden h-[400px]">
               <img
-                src={contactImageUrl}
+                src={getImageUrl(contactImageUrl)}
                 alt="White Dove Wellness"
                 className="w-full h-full object-contain bg-[#F5F3FA]"
               />
