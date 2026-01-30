@@ -137,6 +137,40 @@ export default function AdminSettings() {
               />
             </div>
             <div>
+              <label className="text-sm font-medium text-slate-700">Details (additional text below subtitle)</label>
+              <Textarea 
+                value={settings?.hero_content?.details || ''} 
+                onChange={(e) => updateHeroContent('details', e.target.value)} 
+                className="mt-1" 
+                placeholder="Add more details about your services..."
+                rows={4}
+                data-testid="hero-details-input"
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-slate-700">Benefits (bullet points)</label>
+                <Button type="button" variant="outline" size="sm" onClick={addBenefit}>
+                  <Plus size={14} className="mr-1" /> Add Benefit
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {(settings?.hero_content?.benefits || []).map((benefit, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input 
+                      value={benefit} 
+                      onChange={(e) => updateBenefit(index, e.target.value)} 
+                      placeholder="e.g., Reduce stress and anxiety"
+                      data-testid={`hero-benefit-${index}-input`}
+                    />
+                    <Button type="button" variant="ghost" size="icon" className="text-red-500 shrink-0" onClick={() => removeBenefit(index)}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
               <label className="text-sm font-medium text-slate-700">Button Text</label>
               <Input 
                 value={settings?.hero_content?.button_text || ''} 
