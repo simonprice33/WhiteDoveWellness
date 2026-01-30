@@ -27,8 +27,8 @@ frontend/build/
 !.env.example
 
 # Uploads (user content)
-frontend/public/images/uploads/*
-!frontend/public/images/uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # Logs and debug files
 npm-debug.log*
@@ -49,19 +49,5 @@ venv/
 
 # Build caches
 .cache/
-
-# Archive files
-**/*.zip
-**/*.tar.gz
-**/*.tar
-**/*.tgz
 frontend/node_modules/.cache/default-development/7.pack
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/0.pack
