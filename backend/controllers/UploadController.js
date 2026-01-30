@@ -56,10 +56,13 @@ class UploadController {
         });
       }
 
-      // URL served via Express static at /api/uploads/
-      const imageUrl = `/api/uploads/${req.file.filename}`;
+      // Build full URL using request host
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const imageUrl = `${protocol}://${host}/api/uploads/${req.file.filename}`;
 
       console.log(`✅ Image uploaded: ${req.file.filename}`);
+      console.log(`✅ Image URL: ${imageUrl}`);
 
       res.status(200).json({
         success: true,
