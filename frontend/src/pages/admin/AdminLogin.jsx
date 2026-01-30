@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../lib/auth';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
+import { useAuth } from '../../lib/auth';
+import { Input } from '../../components/ui/input';
+import { Button } from '../../components/ui/button';
 import { AlertCircle, LogIn } from 'lucide-react';
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/0oowyfv8_White%20Dove%20Wellness%20-%20Logo%20-%20no%20BG%20%281%29.png';
