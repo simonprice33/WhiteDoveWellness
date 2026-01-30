@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { publicApi } from '../lib/api';
 
 export default function Affiliations() {
   const [affiliations, setAffiliations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const containerRef = useRef(null);
 
   useEffect(() => {
     loadAffiliations();
@@ -26,8 +25,8 @@ export default function Affiliations() {
     return null;
   }
 
-  // Double the affiliations for infinite scroll effect
-  const doubledAffiliations = [...affiliations, ...affiliations];
+  // Triple the affiliations for smoother infinite scroll
+  const repeatedAffiliations = [...affiliations, ...affiliations, ...affiliations];
 
   return (
     <section
@@ -48,25 +47,29 @@ export default function Affiliations() {
           <p className="text-slate-600">Accredited & Insured</p>
         </motion.div>
 
-        {/* Desktop: Marquee */}
+        {/* Desktop: Auto-scrolling Marquee */}
         <div
           className="hidden md:block overflow-hidden"
           data-testid="affiliations-marquee"
         >
           <div className="marquee-content flex items-center gap-16">
-            {doubledAffiliations.map((affiliation, index) => (
+            {repeatedAffiliations.map((affiliation, index) => (
               <a
                 key={`${affiliation.id}-${index}`}
                 href={affiliation.website_url || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity duration-300"
                 data-testid={`affiliation-${affiliation.id}`}
               >
                 <img
                   src={affiliation.logo_url}
                   alt={affiliation.name}
-                  className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all"
+                  className="h-16 w-auto max-w-[180px] object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                  onError={(e) => {
+                    // Hide broken images
+                    e.target.style.display = 'none';
+                  }}
                 />
               </a>
             ))}
@@ -84,12 +87,15 @@ export default function Affiliations() {
               href={affiliation.website_url || '#'}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center p-4 bg-white rounded-xl"
+              className="flex items-center justify-center p-4 bg-white rounded-xl shadow-sm"
             >
               <img
                 src={affiliation.logo_url}
                 alt={affiliation.name}
-                className="h-12 w-auto object-contain"
+                className="h-12 w-auto max-w-full object-contain"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
               />
             </a>
           ))}
