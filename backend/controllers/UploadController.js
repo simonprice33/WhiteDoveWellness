@@ -56,12 +56,10 @@ class UploadController {
         });
       }
 
-      // URL matches PersonalTrainign pattern - relative path that nginx serves
+      // URL served via Express static at /api/uploads/
       const imageUrl = `/images/uploads/${req.file.filename}`;
 
       console.log(`✅ Image uploaded: ${req.file.filename}`);
-      console.log(`✅ Image URL: ${imageUrl}`);
-      console.log(`✅ Stored at: ${path.join(this.uploadPath, req.file.filename)}`);
 
       res.status(200).json({
         success: true,
