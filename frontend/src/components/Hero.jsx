@@ -86,6 +86,30 @@ export default function Hero() {
           <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
             {heroContent.subtitle}
           </p>
+          
+          {/* Details */}
+          {heroContent.details && (
+            <p className="text-base text-slate-500 max-w-2xl mx-auto mt-4">
+              {heroContent.details}
+            </p>
+          )}
+          
+          {/* Benefits */}
+          {heroContent.benefits && heroContent.benefits.length > 0 && (
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              {heroContent.benefits.map((benefit, index) => (
+                <span 
+                  key={index}
+                  className="inline-flex items-center px-4 py-2 bg-[#9F87C4]/10 text-[#9F87C4] rounded-full text-sm font-medium"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  {benefit}
+                </span>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* CTA Button */}
