@@ -140,7 +140,7 @@ export default function Hero() {
               className="relative rounded-3xl overflow-hidden shadow-lg h-[280px]"
             >
               <img
-                src={imageUrl}
+                src={getImageUrl(imageUrl)}
                 alt={`Reflexology Treatment ${index + 1}`}
                 className="w-full h-full object-cover"
               />
@@ -159,7 +159,7 @@ export default function Hero() {
         >
           <div className="relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
             <img
-              src={heroImages[0]}
+              src={getImageUrl(heroImages[0])}
               alt="Reflexology Treatment"
               className="w-full h-full object-cover"
             />
