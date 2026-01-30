@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { adminApi } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminAffiliations() {
@@ -12,6 +12,8 @@ export default function AdminAffiliations() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [formData, setFormData] = useState({ name: '', logo_url: '', website_url: '', display_order: 0, is_active: true });
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => { loadAffiliations(); }, []);
 
@@ -32,6 +34,47 @@ export default function AdminAffiliations() {
       setFormData({ name: '', logo_url: '', website_url: '', display_order: affiliations.length, is_active: true });
     }
     setDialogOpen(true);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload an image file (JPEG, PNG, GIF, WebP, or SVG)');
+      return;
+    }
+
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('image', file);
+      
+      const response = await adminApi.uploadImage(formDataUpload);
+      if (response.data.success) {
+        setFormData({ ...formData, logo_url: response.data.url });
+        toast.success('Image uploaded');
+      }
+    } catch (error) {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const clearImage = () => {
+    setFormData({ ...formData, logo_url: '' });
   };
 
   const handleSubmit = async (e) => {
@@ -89,11 +132,79 @@ export default function AdminAffiliations() {
         <DialogContent className="sm:max-w-lg" data-testid="affiliation-dialog">
           <DialogHeader><DialogTitle className="font-serif text-xl">{editing ? 'Edit' : 'Add'} Affiliation</DialogTitle></DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div><label className="text-sm font-medium text-slate-700">Name *</label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="mt-1" /></div>
-            <div><label className="text-sm font-medium text-slate-700">Logo URL *</label><Input value={formData.logo_url} onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })} required className="mt-1" placeholder="https://..." /></div>
-            <div><label className="text-sm font-medium text-slate-700">Website URL</label><Input value={formData.website_url} onChange={(e) => setFormData({ ...formData, website_url: e.target.value })} className="mt-1" /></div>
-            <div className="flex items-center gap-2"><input type="checkbox" id="is_active" checked={formData.is_active} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} className="rounded" /><label htmlFor="is_active" className="text-sm text-slate-700">Active</label></div>
-            <DialogFooter><Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button><Button type="submit" className="bg-[#9F87C4] hover:bg-[#8A6EB5]">{editing ? 'Update' : 'Create'}</Button></DialogFooter>
+            <div>
+              <label className="text-sm font-medium text-slate-700">Name *</label>
+              <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="mt-1" />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-slate-700">Logo *</label>
+              <div className="mt-1 space-y-2">
+                {/* Image preview */}
+                {formData.logo_url && (
+                  <div className="relative inline-block">
+                    <img 
+                      src={formData.logo_url} 
+                      alt="Logo preview" 
+                      className="h-20 object-contain bg-slate-50 rounded border border-slate-200 p-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={clearImage}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                )}
+                
+                {/* Upload button */}
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="logo-upload"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex items-center gap-2"
+                  >
+                    <Upload size={16} />
+                    {uploading ? 'Uploading...' : 'Upload Image'}
+                  </Button>
+                  <span className="text-xs text-slate-500">or enter URL below</span>
+                </div>
+                
+                {/* URL input */}
+                <Input 
+                  value={formData.logo_url} 
+                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })} 
+                  placeholder="https://... or upload above"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-slate-700">Website URL</label>
+              <Input value={formData.website_url} onChange={(e) => setFormData({ ...formData, website_url: e.target.value })} className="mt-1" />
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="is_active" checked={formData.is_active} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} className="rounded" />
+              <label htmlFor="is_active" className="text-sm text-slate-700">Active</label>
+            </div>
+            
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button type="submit" className="bg-[#9F87C4] hover:bg-[#8A6EB5]" disabled={!formData.logo_url}>{editing ? 'Update' : 'Create'}</Button>
+            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
