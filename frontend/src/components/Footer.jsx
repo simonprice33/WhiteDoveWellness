@@ -119,30 +119,26 @@ export default function Footer() {
               </a>
             )}
             
-            {/* Social Links */}
+            {/* Social Links - Always show with defaults */}
             <div className="flex gap-4 mt-4">
-              {settings?.social_links?.facebook_url && (
-                <a
-                  href={settings.social_links.facebook_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#9F87C4] transition-colors"
-                  data-testid="social-facebook"
-                >
-                  <Facebook size={18} />
-                </a>
-              )}
-              {settings?.social_links?.instagram_url && (
-                <a
-                  href={settings.social_links.instagram_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#9F87C4] transition-colors"
-                  data-testid="social-instagram"
-                >
-                  <Instagram size={18} />
-                </a>
-              )}
+              <a
+                href={settings?.social_links?.facebook_url || 'https://www.facebook.com/profile.php?id=61587212937489'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#9F87C4] transition-colors"
+                data-testid="social-facebook"
+              >
+                <Facebook size={18} />
+              </a>
+              <a
+                href={settings?.social_links?.instagram_url || 'https://www.instagram.com/white_dove_wellness_therapies/'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#9F87C4] transition-colors"
+                data-testid="social-instagram"
+              >
+                <Instagram size={18} />
+              </a>
             </div>
           </div>
         </div>
