@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { adminApi } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Save, Plus, Trash2, Image } from 'lucide-react';
+import { Textarea } from '../../components/ui/textarea';
+import { Save, Plus, Trash2, Image, Type } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettings() {
@@ -23,6 +24,15 @@ export default function AdminSettings() {
           logo_url: '/images/logo.png',
           hero_images: ['/images/hero-1.jpg', '/images/hero-2.jpg', '/images/hero-3.jpg'],
           contact_image_url: '/images/contact-dove.jpg'
+        };
+      }
+
+      // Ensure hero_content exists with defaults
+      if (!data.hero_content) {
+        data.hero_content = {
+          title: 'Welcome to White Dove Wellness Holistic Therapies',
+          subtitle: 'Experience the healing power of holistic therapies in a serene and nurturing environment.',
+          button_text: 'Book Your Session'
         };
       }
       
@@ -52,6 +62,13 @@ export default function AdminSettings() {
     setSettings({
       ...settings,
       images: { ...settings.images, [key]: value }
+    });
+  };
+
+  const updateHeroContent = (key, value) => {
+    setSettings({
+      ...settings,
+      hero_content: { ...settings.hero_content, [key]: value }
     });
   };
 
@@ -91,6 +108,47 @@ export default function AdminSettings() {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+        {/* Hero Content */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Type size={20} className="text-[#9F87C4]" />
+            <h2 className="font-serif text-xl text-slate-800">Hero Section Content</h2>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700">Title</label>
+              <Input 
+                value={settings?.hero_content?.title || ''} 
+                onChange={(e) => updateHeroContent('title', e.target.value)} 
+                className="mt-1" 
+                placeholder="Welcome to White Dove Wellness"
+                data-testid="hero-title-input"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700">Subtitle</label>
+              <Textarea 
+                value={settings?.hero_content?.subtitle || ''} 
+                onChange={(e) => updateHeroContent('subtitle', e.target.value)} 
+                className="mt-1" 
+                placeholder="Experience the healing power of holistic therapies..."
+                rows={3}
+                data-testid="hero-subtitle-input"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700">Button Text</label>
+              <Input 
+                value={settings?.hero_content?.button_text || ''} 
+                onChange={(e) => updateHeroContent('button_text', e.target.value)} 
+                className="mt-1" 
+                placeholder="Book Your Session"
+                data-testid="hero-button-input"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Business Info */}
         <div className="bg-white rounded-2xl border border-slate-100 p-6">
           <h2 className="font-serif text-xl text-slate-800 mb-4">Business Information</h2>
