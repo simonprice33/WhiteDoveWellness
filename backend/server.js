@@ -124,8 +124,9 @@ async function startServer() {
     app.use(ErrorHandler.notFound);
     app.use(ErrorHandler.handle);
 
-    // 9. Start Server
-    app.listen(config.port, '0.0.0.0', () => {
+    // 9. Start Server on internal port (proxied by Python)
+    const serverPort = process.env.NODE_PORT || 3001;
+    app.listen(serverPort, '127.0.0.1', () => {
       console.log('='.repeat(60));
       console.log(`🕊️  White Dove Wellness Backend running on port ${config.port}`);
       console.log(`🌍 Environment: ${config.nodeEnv}`);
