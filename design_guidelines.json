@@ -1,0 +1,231 @@
+{
+  "project_name": "White Dove Wellness",
+  "design_philosophy": {
+    "theme": "Ethereal Sanctuary",
+    "core_values": ["Calm", "Healing", "Professional", "Organic"],
+    "visual_style": "Soft Pastels, Minimalist, Nature-Inspired, High-End Spa"
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Cormorant Garamond, serif",
+      "body": "Manrope, sans-serif"
+    },
+    "google_fonts_url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap",
+    "usage": {
+      "h1": "font-serif text-5xl md:text-7xl font-light tracking-tight text-primary-900",
+      "h2": "font-serif text-4xl md:text-5xl font-normal text-primary-800",
+      "h3": "font-serif text-2xl md:text-3xl font-medium text-primary-700",
+      "body": "font-sans text-base md:text-lg text-slate-600 leading-relaxed",
+      "nav": "font-sans text-sm font-medium tracking-widest uppercase text-slate-500 hover:text-primary-600 transition-colors",
+      "button": "font-sans font-semibold tracking-wide"
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#9F87C4",
+        "50": "#F5F3FA",
+        "100": "#EBE7F5",
+        "200": "#D7CFEB",
+        "300": "#C3B7E1",
+        "400": "#AF9FD7",
+        "500": "#9F87C4",
+        "600": "#8A6EB5",
+        "700": "#7555A6",
+        "800": "#603C97",
+        "900": "#4B2388"
+      },
+      "secondary": {
+        "DEFAULT": "#A7D7C5",
+        "50": "#F4FAF7",
+        "100": "#E9F5EF",
+        "200": "#D3EBDF",
+        "300": "#BDE1CF",
+        "400": "#A7D7C5",
+        "500": "#91CDB5",
+        "600": "#7BC3A5",
+        "700": "#65B995",
+        "800": "#4FAF85",
+        "900": "#39A575"
+      },
+      "accent": {
+        "DEFAULT": "#D4AF37",
+        "light": "#E5C868",
+        "dark": "#B39225"
+      },
+      "neutral": {
+        "cream": "#FAFAF9",
+        "sand": "#F5F5F4",
+        "stone": "#E7E5E4",
+        "charcoal": "#292524"
+      }
+    },
+    "tailwind_config_extension": {
+      "colors": {
+        "border": "hsl(var(--border))",
+        "input": "hsl(var(--input))",
+        "ring": "hsl(var(--ring))",
+        "background": "hsl(var(--background))",
+        "foreground": "hsl(var(--foreground))",
+        "primary": {
+          "DEFAULT": "hsl(var(--primary))",
+          "foreground": "hsl(var(--primary-foreground))"
+        },
+        "secondary": {
+          "DEFAULT": "hsl(var(--secondary))",
+          "foreground": "hsl(var(--secondary-foreground))"
+        },
+        "destructive": {
+          "DEFAULT": "hsl(var(--destructive))",
+          "foreground": "hsl(var(--destructive-foreground))"
+        },
+        "muted": {
+          "DEFAULT": "hsl(var(--muted))",
+          "foreground": "hsl(var(--muted-foreground))"
+        },
+        "accent": {
+          "DEFAULT": "hsl(var(--accent))",
+          "foreground": "hsl(var(--accent-foreground))"
+        },
+        "popover": {
+          "DEFAULT": "hsl(var(--popover))",
+          "foreground": "hsl(var(--popover-foreground))"
+        },
+        "card": {
+          "DEFAULT": "hsl(var(--card))",
+          "foreground": "hsl(var(--card-foreground))"
+        },
+        "brand": {
+          "lavender": "#9F87C4",
+          "mint": "#A7D7C5",
+          "cream": "#FAFAF9",
+          "gold": "#D4AF37"
+        }
+      }
+    },
+    "css_variables": {
+      "root": {
+        "--background": "60 30% 98%", 
+        "--foreground": "24 10% 10%",
+        "--card": "0 0% 100%",
+        "--card-foreground": "24 10% 10%",
+        "--popover": "0 0% 100%",
+        "--popover-foreground": "24 10% 10%",
+        "--primary": "265 35% 65%",
+        "--primary-foreground": "0 0% 100%",
+        "--secondary": "155 35% 75%",
+        "--secondary-foreground": "24 10% 10%",
+        "--muted": "60 10% 96%",
+        "--muted-foreground": "25 5% 45%",
+        "--accent": "45 60% 52%",
+        "--accent-foreground": "0 0% 100%",
+        "--destructive": "0 84.2% 60.2%",
+        "--destructive-foreground": "0 0% 98%",
+        "--border": "265 20% 90%",
+        "--input": "265 20% 90%",
+        "--ring": "265 35% 65%",
+        "--radius": "1rem"
+      }
+    }
+  },
+  "layout": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "section_spacing": "py-20 md:py-32",
+    "grid_gap": "gap-8 md:gap-12",
+    "border_radius": {
+      "card": "rounded-2xl",
+      "button": "rounded-full",
+      "image": "rounded-3xl"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 px-8 py-3 rounded-full font-medium tracking-wide",
+      "secondary": "bg-white text-primary border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all duration-300 px-8 py-3 rounded-full font-medium tracking-wide",
+      "outline": "border border-slate-200 hover:border-primary hover:text-primary transition-colors px-6 py-2 rounded-full"
+    },
+    "cards": {
+      "service_tile": "bg-white rounded-2xl p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(159,135,196,0.15)] transition-all duration-500 border border-slate-50 hover:border-primary/20 group",
+      "feature_card": "bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl p-6 hover:bg-white/80 transition-colors"
+    },
+    "inputs": {
+      "default": "bg-white border-slate-200 focus:border-primary focus:ring-primary/20 rounded-lg px-4 py-3 transition-all"
+    },
+    "navigation": {
+      "header": "fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100/50 transition-all duration-300",
+      "link": "text-sm font-medium uppercase tracking-widest text-slate-500 hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-0 after:h-[2px] after:bg-primary after:transition-all hover:after:w-full"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": {
+      "soft": "0 4px 20px -2px rgba(159, 135, 196, 0.1)",
+      "glow": "0 0 40px -10px rgba(159, 135, 196, 0.3)"
+    },
+    "gradients": {
+      "hero_overlay": "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(250,250,249,1) 100%)",
+      "subtle_bg": "radial-gradient(circle at 50% 0%, #F5F3FA 0%, #FAFAF9 100%)"
+    },
+    "textures": "Use subtle grain or noise overlay at 2-3% opacity on solid backgrounds to add organic feel."
+  },
+  "assets": {
+    "logo": {
+      "url": "https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/0oowyfv8_White%20Dove%20Wellness%20-%20Logo%20-%20no%20BG%20%281%29.png",
+      "alt": "White Dove Wellness Logo"
+    },
+    "hero_images": [
+      {
+        "url": "https://images.unsplash.com/photo-1728497872660-cc6b16238c3a?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Reflexology Treatment",
+        "position": "Main Hero Image (Desktop Left)"
+      },
+      {
+        "url": "https://images.pexels.com/photos/15174768/pexels-photo-15174768.jpeg",
+        "alt": "Calming Hands",
+        "position": "Secondary Hero Image (Desktop Top Right)"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1615927767643-6459df050039?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Lavender Texture",
+        "position": "Tertiary Hero Image (Desktop Bottom Right)"
+      }
+    ],
+    "service_images": [
+      "https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/pq8wrmeq_1764021368637.jpg",
+      "https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/buujgbu2_1764047844095~2.jpg",
+      "https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/u2thdxd9_1764047844095~3.jpg"
+    ],
+    "background_texture": "https://images.pexels.com/photos/6694152/pexels-photo-6694152.jpeg"
+  },
+  "admin_dashboard": {
+    "style": "Clean, Light, Pastel Accents",
+    "sidebar": "bg-white border-r border-slate-100 w-64 hidden md:block",
+    "header": "bg-white border-b border-slate-100 h-16 flex items-center px-6 justify-between",
+    "card": "bg-white border border-slate-100 shadow-sm rounded-xl p-6",
+    "table": "w-full text-sm text-left text-slate-600",
+    "table_header": "text-xs text-slate-400 uppercase bg-slate-50/50 font-medium tracking-wider",
+    "status_badge": {
+      "success": "bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium",
+      "pending": "bg-amber-50 text-amber-700 px-2 py-1 rounded-full text-xs font-medium",
+      "error": "bg-red-50 text-red-700 px-2 py-1 rounded-full text-xs font-medium"
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'lucide-react', 'framer-motion', 'clsx', 'tailwind-merge' immediately.",
+    "2. FONTS: Add the Google Fonts link to the <head> of public/index.html.",
+    "3. TAILWIND: Update tailwind.config.js to extend the theme with the colors and border radius defined above. Use the CSS variables method for dynamic theming.",
+    "4. CSS: Replace src/index.css content with the CSS variables defined in 'css_variables'.",
+    "5. COMPONENTS: Build 'ServiceTile', 'Marquee', 'ContactForm' as separate components.",
+    "6. LAYOUT: Use the 'Bento Grid' strategy for the Hero section (1 large, 2 small).",
+    "7. ADMIN: Create a separate layout for admin routes (/admin) with a sidebar and topbar.",
+    "8. AUTH: Implement JWT handling in axios interceptors.",
+    "9. IMAGES: Use the provided asset URLs. Do not use placeholders.",
+    "10. TESTING: Add data-testid to all interactive elements (buttons, inputs, links)."
+  ],
+  "universal_guidelines": [
+    "Do not use gradients for text.",
+    "Avoid pure black (#000000). Use Slate-900 or Primary-900.",
+    "Ensure all interactive elements have a hover state.",
+    "Use generous padding (py-20) for sections to create a 'spa-like' breathing room.",
+    "Mobile responsiveness is critical - stack grids to single column on mobile."
+  ]
+}
