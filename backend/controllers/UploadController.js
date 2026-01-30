@@ -1,7 +1,7 @@
 /**
  * Upload Controller
  * Handles image uploads for affiliations and other site content
- * Images stored in frontend/public/images/uploads/
+ * Uses UPLOAD_BASE_URL env var for URL prefix (for local dev vs production)
  */
 
 const multer = require('multer');
@@ -56,8 +56,11 @@ class UploadController {
         });
       }
 
-      // Simple relative URL - works for both local and production
-      const imageUrl = `/images/uploads/${req.file.filename}`;
+      // Use UPLOAD_BASE_URL for local dev, empty for production (relative path)
+      // Local: UPLOAD_BASE_URL=http://localhost:3003 -> http://localhost:3003/images/uploads/...
+      // Production: UPLOAD_BASE_URL not set -> /images/uploads/...
+      const baseUrl = process.env.UPLOAD_BASE_URL || '';
+      const imageUrl = `${baseUrl}/images/uploads/${req.file.filename}`;
 
       console.log(`✅ Image uploaded: ${req.file.filename}`);
       console.log(`✅ URL: ${imageUrl}`);
