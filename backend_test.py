@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 class WhiteDoveAPITester:
-    def __init__(self, base_url="https://wellness-portal-71.preview.emergentagent.com"):
+    def __init__(self, base_url="https://reflexology-hub-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.access_token = None
         self.refresh_token = None
