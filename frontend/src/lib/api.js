@@ -129,7 +129,13 @@ export const adminApi = {
   getClientNotes: (clientId) => api.get(`/admin/clients/${clientId}/notes`),
   createClientNote: (clientId, data) => api.post(`/admin/clients/${clientId}/notes`, data),
   updateClientNote: (clientId, noteId, data) => api.put(`/admin/clients/${clientId}/notes/${noteId}`, data),
-  deleteClientNote: (clientId, noteId) => api.delete(`/admin/clients/${clientId}/notes/${noteId}`)
+  deleteClientNote: (clientId, noteId) => api.delete(`/admin/clients/${clientId}/notes/${noteId}`),
+  
+  // Image Upload
+  uploadImage: (formData) => api.post('/admin/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  deleteImage: (filename) => api.delete(`/admin/upload/${filename}`)
 };
 
 export default api;
