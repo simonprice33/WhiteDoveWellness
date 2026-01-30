@@ -81,7 +81,11 @@ async function startServer() {
     app.use(express.json({ limit: '10mb' }));
     app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-    // Serve static files from backend/public folder (for uploaded images)
+    // Serve uploaded images via /api/uploads/ path
+    // This ensures images work through proxy (npm start) and nginx (production)
+    app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+    
+    // Serve static files from backend/public folder
     app.use(express.static(path.join(__dirname, 'public')));
 
     // 3. Initialize Database
