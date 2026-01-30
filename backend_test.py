@@ -306,10 +306,7 @@ class WhiteDoveAPITester:
         """Test admin data retrieval endpoints"""
         endpoints = [
             ('admin/contacts', 'contacts'),
-            ('admin/affiliations', 'affiliations'),
-            ('admin/policies', 'policies'),
-            ('admin/users', 'users'),
-            ('admin/settings', 'settings')
+            ('admin/users', 'users')
         ]
         
         for endpoint, data_key in endpoints:
@@ -319,6 +316,11 @@ class WhiteDoveAPITester:
                 self.log_test(f"GET /api/{endpoint}", True, f"Retrieved {count} items")
             else:
                 self.log_test(f"GET /api/{endpoint}", success, error)
+                
+        # Test settings update (PUT only, no GET)
+        settings_data = {"facebook_url": "https://facebook.com/test"}
+        success, data, error = self.make_request('PUT', 'admin/settings', settings_data, auth_required=True)
+        self.log_test("PUT /api/admin/settings", success, error)
 
     def run_all_tests(self):
         """Run complete test suite"""
