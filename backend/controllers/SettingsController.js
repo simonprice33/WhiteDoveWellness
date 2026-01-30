@@ -1,6 +1,6 @@
 /**
  * Settings Controller
- * Single Responsibility: Manage site settings including social links
+ * Single Responsibility: Manage site settings including social links and images
  */
 
 class SettingsController {
@@ -30,7 +30,29 @@ class SettingsController {
             instagram_url: '',
             twitter_url: '',
             linkedin_url: ''
+          },
+          images: {
+            logo_url: '/images/logo.png',
+            hero_images: [
+              '/images/hero-1.jpg',
+              '/images/hero-2.jpg',
+              '/images/hero-3.jpg'
+            ],
+            contact_image_url: '/images/contact-dove.jpg'
           }
+        };
+      }
+
+      // Ensure images object exists with defaults
+      if (!settings.images) {
+        settings.images = {
+          logo_url: '/images/logo.png',
+          hero_images: [
+            '/images/hero-1.jpg',
+            '/images/hero-2.jpg',
+            '/images/hero-3.jpg'
+          ],
+          contact_image_url: '/images/contact-dove.jpg'
         };
       }
 
@@ -50,7 +72,7 @@ class SettingsController {
   // PUT /api/admin/settings (admin)
   update = async (req, res) => {
     try {
-      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links'];
+      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images'];
 
       const updateData = {
         id: 'site_settings',
