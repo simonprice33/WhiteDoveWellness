@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
-
-const LOGO_URL = 'https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/0oowyfv8_White%20Dove%20Wellness%20-%20Logo%20-%20no%20BG%20%281%29.png';
+import { publicApi } from '../lib/api';
 
 const navLinks = [
   { label: 'Home', href: '#home' },
@@ -14,12 +13,21 @@ const navLinks = [
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('/images/logo.png');
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
+    
+    // Load logo from settings
+    publicApi.getSettings().then(res => {
+      if (res.data.settings?.images?.logo_url) {
+        setLogoUrl(res.data.settings.images.logo_url);
+      }
+    }).catch(() => {});
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -55,7 +63,7 @@ export default function Header() {
             data-testid="header-logo"
           >
             <img
-              src={LOGO_URL}
+              src={logoUrl}
               alt="White Dove Wellness"
               className="h-16 w-auto"
             />

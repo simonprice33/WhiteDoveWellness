@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
+import { publicApi } from '../../lib/api';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { AlertCircle, LogIn } from 'lucide-react';
-
-const LOGO_URL = 'https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/0oowyfv8_White%20Dove%20Wellness%20-%20Logo%20-%20no%20BG%20%281%29.png';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -14,6 +13,15 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('/images/logo.png');
+
+  useEffect(() => {
+    publicApi.getSettings().then(res => {
+      if (res.data.settings?.images?.logo_url) {
+        setLogoUrl(res.data.settings.images.logo_url);
+      }
+    }).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +50,7 @@ export default function AdminLogin() {
         {/* Logo */}
         <div className="text-center mb-8">
           <img
-            src={LOGO_URL}
+            src={logoUrl}
             alt="White Dove Wellness"
             className="h-24 mx-auto mb-4"
           />

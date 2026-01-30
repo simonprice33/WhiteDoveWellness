@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
+import { publicApi } from '../../lib/api';
 import {
   LayoutDashboard,
   Sparkles,
@@ -17,8 +18,6 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-
-const LOGO_URL = 'https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/0oowyfv8_White%20Dove%20Wellness%20-%20Logo%20-%20no%20BG%20%281%29.png';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
@@ -37,6 +36,15 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('/images/logo.png');
+
+  useEffect(() => {
+    publicApi.getSettings().then(res => {
+      if (res.data.settings?.images?.logo_url) {
+        setLogoUrl(res.data.settings.images.logo_url);
+      }
+    }).catch(() => {});
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -61,7 +69,7 @@ export default function AdminLayout() {
         >
           <Menu size={24} />
         </button>
-        <img src={LOGO_URL} alt="Logo" className="h-10 mx-auto" />
+        <img src={logoUrl} alt="Logo" className="h-10 mx-auto" />
       </div>
 
       {/* Sidebar Overlay (Mobile) */}
@@ -83,7 +91,7 @@ export default function AdminLayout() {
       >
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
-          <img src={LOGO_URL} alt="White Dove Wellness" className="h-12" />
+          <img src={logoUrl} alt="White Dove Wellness" className="h-12" />
           <button
             className="lg:hidden p-2 text-slate-400 hover:text-slate-600"
             onClick={() => setSidebarOpen(false)}

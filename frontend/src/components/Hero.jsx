@@ -1,23 +1,30 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-const LOGO_URL = 'https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/0oowyfv8_White%20Dove%20Wellness%20-%20Logo%20-%20no%20BG%20%281%29.png';
-
-const heroImages = [
-  {
-    url: 'https://images.unsplash.com/photo-1728497872660-cc6b16238c3a?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-    alt: 'Reflexology Treatment'
-  },
-  {
-    url: 'https://images.pexels.com/photos/15174768/pexels-photo-15174768.jpeg?auto=compress&cs=tinysrgb&w=600',
-    alt: 'Calming Hands'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1611073615723-e06aceba76d4?crop=entropy&cs=srgb&fm=jpg&q=85&w=600',
-    alt: 'Spa Treatment'
-  }
-];
+import { publicApi } from '../lib/api';
 
 export default function Hero() {
+  const [settings, setSettings] = useState(null);
+  
+  const defaultImages = {
+    logo_url: '/images/logo.png',
+    hero_images: [
+      '/images/hero-1.jpg',
+      '/images/hero-2.jpg',
+      '/images/hero-3.jpg'
+    ]
+  };
+
+  useEffect(() => {
+    publicApi.getSettings().then(res => {
+      setSettings(res.data.settings);
+    }).catch(() => {});
+  }, []);
+
+  const logoUrl = settings?.images?.logo_url || defaultImages.logo_url;
+  const heroImages = settings?.images?.hero_images?.length > 0 
+    ? settings.images.hero_images 
+    : defaultImages.hero_images;
+
   const scrollToContact = () => {
     const element = document.querySelector('#contact');
     if (element) {
@@ -43,7 +50,7 @@ export default function Hero() {
           className="flex justify-center mb-12"
         >
           <img
-            src={LOGO_URL}
+            src={logoUrl}
             alt="White Dove Wellness - Holistic Therapies"
             className="w-[300px] md:w-[400px] h-auto"
             data-testid="hero-logo"
@@ -81,10 +88,10 @@ export default function Hero() {
           </button>
         </motion.div>
 
-        {/* Hero Images - Bento Grid */}
+        {/* Hero Images - Equal size grid */}
         {/* Desktop: 3 images, Mobile: 1 image */}
         <div className="hidden md:grid grid-cols-3 gap-6" data-testid="hero-images-desktop">
-          {heroImages.map((image, index) => (
+          {heroImages.map((imageUrl, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -93,8 +100,8 @@ export default function Hero() {
               className="relative rounded-3xl overflow-hidden shadow-lg h-[280px]"
             >
               <img
-                src={image.url}
-                alt={image.alt}
+                src={imageUrl}
+                alt={`Reflexology Treatment ${index + 1}`}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -112,8 +119,8 @@ export default function Hero() {
         >
           <div className="relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
             <img
-              src={heroImages[0].url}
-              alt={heroImages[0].alt}
+              src={heroImages[0]}
+              alt="Reflexology Treatment"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

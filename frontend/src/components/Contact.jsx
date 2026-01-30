@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { publicApi } from '../lib/api';
 import { Input } from '../components/ui/input';
@@ -15,6 +15,15 @@ export default function Contact() {
   });
   const [status, setStatus] = useState(null); // 'success', 'error', or null
   const [loading, setLoading] = useState(false);
+  const [contactImageUrl, setContactImageUrl] = useState('/images/contact-dove.jpg');
+
+  useEffect(() => {
+    publicApi.getSettings().then(res => {
+      if (res.data.settings?.images?.contact_image_url) {
+        setContactImageUrl(res.data.settings.images.contact_image_url);
+      }
+    }).catch(() => {});
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,7 +70,7 @@ export default function Contact() {
             {/* Decorative Image - White Dove */}
             <div className="hidden lg:block relative rounded-3xl overflow-hidden h-[400px]">
               <img
-                src="https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/u2thdxd9_1764047844095~3.jpg"
+                src={contactImageUrl}
                 alt="White Dove Wellness"
                 className="w-full h-full object-contain bg-[#F5F3FA]"
               />
