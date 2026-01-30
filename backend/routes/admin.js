@@ -19,6 +19,7 @@ function createAdminRoutes(dependencies) {
   const PolicyController = require('../controllers/PolicyController');
   const SettingsController = require('../controllers/SettingsController');
   const ClientController = require('../controllers/ClientController');
+  const UploadController = require('../controllers/UploadController');
 
   // Initialize controllers
   const authController = new AuthController(collections, authMiddleware);
@@ -30,6 +31,7 @@ function createAdminRoutes(dependencies) {
   const policyController = new PolicyController(collections);
   const settingsController = new SettingsController(collections);
   const clientController = new ClientController(collections);
+  const uploadController = new UploadController();
 
   // Auth routes (no auth required)
   router.post('/auth/login', authController.login);
@@ -40,6 +42,10 @@ function createAdminRoutes(dependencies) {
 
   // Current user
   router.get('/auth/me', authController.getCurrentUser);
+
+  // Image Upload
+  router.post('/upload', uploadController.upload.single('image'), uploadController.uploadImage);
+  router.delete('/upload/:filename', uploadController.deleteImage);
 
   // Admin Users
   router.get('/users', adminUserController.list);
