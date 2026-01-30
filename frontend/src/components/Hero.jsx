@@ -65,7 +65,7 @@ export default function Hero() {
           className="text-center mb-12"
         >
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 mb-4">
-            Welcome to Wellness
+            Welcome to White Dove Wellness Holistic Therapies
           </h1>
           <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
             Experience the healing power of holistic therapies in a serene and nurturing environment.
