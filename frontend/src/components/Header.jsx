@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 
 const LOGO_URL = 'https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/0oowyfv8_White%20Dove%20Wellness%20-%20Logo%20-%20no%20BG%20%281%29.png';
@@ -76,16 +74,6 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
-            <Link to="/admin/login">
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full border-[#9F87C4]/30 text-[#9F87C4] hover:bg-[#9F87C4]/10 hover:border-[#9F87C4]"
-                data-testid="admin-login-btn"
-              >
-                Admin
-              </Button>
-            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
