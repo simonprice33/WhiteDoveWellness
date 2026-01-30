@@ -27,8 +27,8 @@ frontend/build/
 !.env.example
 
 # Uploads (user content)
-backend/uploads/*
-!backend/uploads/.gitkeep
+frontend/public/images/uploads/*
+!frontend/public/images/uploads/.gitkeep
 
 # Logs and debug files
 npm-debug.log*
