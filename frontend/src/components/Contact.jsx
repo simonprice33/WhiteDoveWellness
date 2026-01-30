@@ -58,14 +58,13 @@ export default function Contact() {
               Ready to start your wellness journey? Send us a message and we'll get back to you to arrange your appointment.
             </p>
 
-            {/* Decorative Image */}
-            <div className="hidden lg:block relative rounded-3xl overflow-hidden h-[300px]">
+            {/* Decorative Image - White Dove */}
+            <div className="hidden lg:block relative rounded-3xl overflow-hidden h-[400px]">
               <img
                 src="https://customer-assets.emergentagent.com/job_7e232f8d-2324-4282-8851-b8c7ddbb51d5/artifacts/u2thdxd9_1764047844095~3.jpg"
                 alt="White Dove Wellness"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain bg-[#F5F3FA]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#9F87C4]/30 to-transparent" />
             </div>
           </motion.div>
 

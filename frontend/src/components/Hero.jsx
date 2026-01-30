@@ -90,9 +90,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 + index * 0.15, duration: 0.6 }}
-              className={`relative rounded-3xl overflow-hidden shadow-lg ${
-                index === 0 ? 'row-span-2 h-[400px]' : 'h-[190px]'
-              }`}
+              className="relative rounded-3xl overflow-hidden shadow-lg h-[280px]"
             >
               <img
                 src={image.url}
