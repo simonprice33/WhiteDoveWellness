@@ -14,6 +14,12 @@ export default function Hero() {
     ]
   };
 
+  const defaultHeroContent = {
+    title: 'Welcome to White Dove Wellness Holistic Therapies',
+    subtitle: 'Experience the healing power of holistic therapies in a serene and nurturing environment.',
+    button_text: 'Book Your Session'
+  };
+
   useEffect(() => {
     publicApi.getSettings().then(res => {
       setSettings(res.data.settings);
@@ -24,6 +30,12 @@ export default function Hero() {
   const heroImages = settings?.images?.hero_images?.length > 0 
     ? settings.images.hero_images 
     : defaultImages.hero_images;
+  
+  const heroContent = {
+    title: settings?.hero_content?.title || defaultHeroContent.title,
+    subtitle: settings?.hero_content?.subtitle || defaultHeroContent.subtitle,
+    button_text: settings?.hero_content?.button_text || defaultHeroContent.button_text
+  };
 
   const scrollToContact = () => {
     const element = document.querySelector('#contact');
@@ -65,10 +77,10 @@ export default function Hero() {
           className="text-center mb-12"
         >
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 mb-4">
-            Welcome to White Dove Wellness Holistic Therapies
+            {heroContent.title}
           </h1>
           <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
-            Experience the healing power of holistic therapies in a serene and nurturing environment.
+            {heroContent.subtitle}
           </p>
         </motion.div>
 
@@ -84,7 +96,7 @@ export default function Hero() {
             className="bg-[#9F87C4] text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-[#8A6EB5] transition-all hover:shadow-lg hover:-translate-y-1"
             data-testid="hero-cta-btn"
           >
-            Book Your Session
+            {heroContent.button_text}
           </button>
         </motion.div>
 
