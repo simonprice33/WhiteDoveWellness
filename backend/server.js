@@ -81,6 +81,9 @@ async function startServer() {
     app.use(express.json({ limit: '10mb' }));
     app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+    // Serve uploaded files from backend/uploads folder
+    app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+
     // 3. Initialize Database
     const dbConfig = new DatabaseConfig(config);
     const { db, collections } = await dbConfig.connect();
