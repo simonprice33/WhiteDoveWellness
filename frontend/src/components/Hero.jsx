@@ -66,7 +66,7 @@ export default function Hero() {
           className="flex justify-center mb-12"
         >
           <img
-            src={logoUrl}
+            src={getImageUrl(logoUrl)}
             alt="White Dove Wellness - Holistic Therapies"
             className="w-[300px] md:w-[400px] h-auto"
             data-testid="hero-logo"
