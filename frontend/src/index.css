@@ -77,6 +77,15 @@
     animation-play-state: paused;
 }
 
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 /* Selection styling */
 ::selection {
     background: hsl(var(--primary) / 0.2);
