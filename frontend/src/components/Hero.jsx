@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { publicApi } from '../lib/api';
+import { publicApi, getImageUrl } from '../lib/api';
 
 export default function Hero() {
   const [settings, setSettings] = useState(null);
