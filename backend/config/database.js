@@ -286,6 +286,15 @@ class DatabaseConfig {
           twitter_url: '',
           linkedin_url: ''
         },
+        images: {
+          logo_url: '/images/logo.png',
+          hero_images: [
+            '/images/hero-1.jpg',
+            '/images/hero-2.jpg',
+            '/images/hero-3.jpg'
+          ],
+          contact_image_url: '/images/contact-dove.jpg'
+        },
         updated_at: new Date().toISOString()
       };
 
