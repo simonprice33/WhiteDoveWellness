@@ -25,8 +25,13 @@ export default function Affiliations() {
     return null;
   }
 
-  // Triple the affiliations for smoother infinite scroll
-  const repeatedAffiliations = [...affiliations, ...affiliations, ...affiliations];
+  // Only use marquee if 4 or more affiliations
+  const useMarquee = affiliations.length >= 4;
+  
+  // Triple the affiliations for smoother infinite scroll (only if using marquee)
+  const displayAffiliations = useMarquee 
+    ? [...affiliations, ...affiliations, ...affiliations]
+    : affiliations;
 
   return (
     <section
@@ -47,13 +52,13 @@ export default function Affiliations() {
           <p className="text-slate-600">Accredited & Insured</p>
         </motion.div>
 
-        {/* Desktop: Auto-scrolling Marquee */}
+        {/* Desktop: Marquee (4+) or Static (less than 4) */}
         <div
-          className="hidden md:block overflow-hidden"
+          className={`hidden md:block ${useMarquee ? 'overflow-hidden' : ''}`}
           data-testid="affiliations-marquee"
         >
-          <div className="marquee-content flex items-center gap-16">
-            {repeatedAffiliations.map((affiliation, index) => (
+          <div className={`flex items-center justify-center gap-16 ${useMarquee ? 'marquee-content' : ''}`}>
+            {displayAffiliations.map((affiliation, index) => (
               <a
                 key={`${affiliation.id}-${index}`}
                 href={affiliation.website_url || '#'}
@@ -67,7 +72,6 @@ export default function Affiliations() {
                   alt={affiliation.name}
                   className="h-16 w-auto max-w-[180px] object-contain grayscale hover:grayscale-0 transition-all duration-300"
                   onError={(e) => {
-                    // Hide broken images
                     e.target.style.display = 'none';
                   }}
                 />
