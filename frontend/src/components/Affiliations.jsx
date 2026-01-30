@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { publicApi } from '../lib/api';
+import { publicApi, getImageUrl } from '../lib/api';
 
 export default function Affiliations() {
   const [affiliations, setAffiliations] = useState([]);
@@ -68,7 +68,7 @@ export default function Affiliations() {
                 data-testid={`affiliation-${affiliation.id}`}
               >
                 <img
-                  src={affiliation.logo_url}
+                  src={getImageUrl(affiliation.logo_url)}
                   alt={affiliation.name}
                   className="h-16 w-auto max-w-[180px] object-contain grayscale hover:grayscale-0 transition-all duration-300"
                   onError={(e) => {
@@ -94,7 +94,7 @@ export default function Affiliations() {
               className="flex items-center justify-center p-4 bg-white rounded-xl shadow-sm"
             >
               <img
-                src={affiliation.logo_url}
+                src={getImageUrl(affiliation.logo_url)}
                 alt={affiliation.name}
                 className="h-12 w-auto max-w-full object-contain"
                 onError={(e) => {
