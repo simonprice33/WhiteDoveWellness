@@ -102,12 +102,6 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
-            <Link
-              to="/admin/login"
-              className="block py-2 text-sm font-medium uppercase tracking-widest text-[#9F87C4]"
-            >
-              Admin Login
-            </Link>
           </nav>
         </div>
       )}
