@@ -17,6 +17,8 @@ export default function Hero() {
   const defaultHeroContent = {
     title: 'Welcome to White Dove Wellness Holistic Therapies',
     subtitle: 'Experience the healing power of holistic therapies in a serene and nurturing environment.',
+    details: '',
+    benefits: [],
     button_text: 'Book Your Session'
   };
 
@@ -34,6 +36,8 @@ export default function Hero() {
   const heroContent = {
     title: settings?.hero_content?.title || defaultHeroContent.title,
     subtitle: settings?.hero_content?.subtitle || defaultHeroContent.subtitle,
+    details: settings?.hero_content?.details || defaultHeroContent.details,
+    benefits: settings?.hero_content?.benefits || defaultHeroContent.benefits,
     button_text: settings?.hero_content?.button_text || defaultHeroContent.button_text
   };
 
