@@ -63,7 +63,7 @@ export default function Header() {
             data-testid="header-logo"
           >
             <img
-              src={logoUrl}
+              src={getImageUrl(logoUrl)}
               alt="White Dove Wellness"
               className="h-16 w-auto"
             />
