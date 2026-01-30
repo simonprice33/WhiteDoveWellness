@@ -72,6 +72,32 @@ export default function AdminSettings() {
     });
   };
 
+  const addBenefit = () => {
+    const benefits = [...(settings?.hero_content?.benefits || []), ''];
+    setSettings({
+      ...settings,
+      hero_content: { ...settings.hero_content, benefits }
+    });
+  };
+
+  const updateBenefit = (index, value) => {
+    const benefits = [...(settings?.hero_content?.benefits || [])];
+    benefits[index] = value;
+    setSettings({
+      ...settings,
+      hero_content: { ...settings.hero_content, benefits }
+    });
+  };
+
+  const removeBenefit = (index) => {
+    const benefits = [...(settings?.hero_content?.benefits || [])];
+    benefits.splice(index, 1);
+    setSettings({
+      ...settings,
+      hero_content: { ...settings.hero_content, benefits }
+    });
+  };
+
   const updateHeroImage = (index, value) => {
     const heroImages = [...(settings.images?.hero_images || [])];
     heroImages[index] = value;
