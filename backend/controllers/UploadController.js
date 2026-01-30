@@ -1,7 +1,7 @@
 /**
  * Upload Controller
  * Handles image uploads for affiliations and other site content
- * Images stored in backend/uploads/ and served via /api/uploads/
+ * Images stored in frontend/public/images/uploads/ - same pattern as PersonalTrainign
  */
 
 const multer = require('multer');
@@ -10,8 +10,8 @@ const fs = require('fs');
 
 class UploadController {
   constructor() {
-    // Store uploads in backend/uploads folder
-    this.uploadPath = path.join(__dirname, '../uploads');
+    // Store uploads in frontend/public/images/uploads (same as PersonalTrainign blog images)
+    this.uploadPath = path.join(__dirname, '../../frontend/public/images/uploads');
     if (!fs.existsSync(this.uploadPath)) {
       fs.mkdirSync(this.uploadPath, { recursive: true });
     }
@@ -56,13 +56,12 @@ class UploadController {
         });
       }
 
-      // Build full URL using request host
-      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
-      const host = req.headers['x-forwarded-host'] || req.headers.host;
-      const imageUrl = `${protocol}://${host}/api/uploads/${req.file.filename}`;
+      // URL matches PersonalTrainign pattern - relative path that nginx serves
+      const imageUrl = `/images/uploads/${req.file.filename}`;
 
       console.log(`✅ Image uploaded: ${req.file.filename}`);
       console.log(`✅ Image URL: ${imageUrl}`);
+      console.log(`✅ Stored at: ${path.join(this.uploadPath, req.file.filename)}`);
 
       res.status(200).json({
         success: true,
