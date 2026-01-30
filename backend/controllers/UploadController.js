@@ -1,7 +1,7 @@
 /**
  * Upload Controller
  * Handles image uploads for affiliations and other site content
- * Images are stored in backend/uploads and served via /api/uploads/
+ * Images stored in frontend/public/images/uploads/ - served at /images/uploads/
  */
 
 const multer = require('multer');
@@ -10,8 +10,8 @@ const fs = require('fs');
 
 class UploadController {
   constructor() {
-    // Store uploads in backend/uploads folder (persists after frontend builds)
-    this.uploadPath = path.join(__dirname, '../uploads');
+    // Store uploads in frontend/public/images/uploads (like PersonalTrainign blog images)
+    this.uploadPath = path.join(__dirname, '../../frontend/public/images/uploads');
     if (!fs.existsSync(this.uploadPath)) {
       fs.mkdirSync(this.uploadPath, { recursive: true });
     }
@@ -19,6 +19,10 @@ class UploadController {
     // Setup multer storage
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
+        // Ensure directory exists on each upload
+        if (!fs.existsSync(this.uploadPath)) {
+          fs.mkdirSync(this.uploadPath, { recursive: true });
+        }
         cb(null, this.uploadPath);
       },
       filename: (req, file, cb) => {
@@ -53,8 +57,8 @@ class UploadController {
         });
       }
 
-      // Return URL that points to backend static route
-      const imageUrl = `/api/uploads/${req.file.filename}`;
+      // Return URL that works with frontend build (same as PersonalTrainign blog)
+      const imageUrl = `/images/uploads/${req.file.filename}`;
 
       console.log(`✅ Image uploaded: ${req.file.filename}`);
 
