@@ -1,7 +1,7 @@
 /**
  * Upload Controller
  * Handles image uploads for affiliations and other site content
- * Uses UPLOAD_BASE_URL env var for URL prefix (for local dev vs production)
+ * Save to backend's public folder which is served via Express static
  */
 
 const multer = require('multer');
@@ -10,30 +10,26 @@ const fs = require('fs');
 
 class UploadController {
   constructor() {
-    // Store uploads in frontend/public/images/uploads
-    this.uploadPath = path.join(__dirname, '../../frontend/public/images/uploads');
-    if (!fs.existsSync(this.uploadPath)) {
-      fs.mkdirSync(this.uploadPath, { recursive: true });
-    }
-
-    // Setup multer storage
+    // Setup multer for image uploads
+    // Save to backend's public folder which is served via Express static
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
-        if (!fs.existsSync(this.uploadPath)) {
-          fs.mkdirSync(this.uploadPath, { recursive: true });
+        const uploadPath = path.join(__dirname, '../public/uploads/images');
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
         }
-        cb(null, this.uploadPath);
+        cb(null, uploadPath);
       },
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const ext = path.extname(file.originalname);
-        cb(null, `upload-${uniqueSuffix}${ext}`);
+        cb(null, `image-${uniqueSuffix}${ext}`);
       }
     });
 
     this.upload = multer({
       storage,
-      limits: { fileSize: 10 * 1024 * 1024 },
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
       fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|gif|webp|svg/;
         const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -56,11 +52,8 @@ class UploadController {
         });
       }
 
-      // Use UPLOAD_BASE_URL for local dev, empty for production (relative path)
-      // Local: UPLOAD_BASE_URL=http://localhost:3003 -> http://localhost:3003/images/uploads/...
-      // Production: UPLOAD_BASE_URL not set -> /images/uploads/...
-      const baseUrl = process.env.UPLOAD_BASE_URL || '';
-      const imageUrl = `${baseUrl}/images/uploads/${req.file.filename}`;
+      // URL path served via Express static
+      const imageUrl = `/uploads/images/${req.file.filename}`;
 
       console.log(`✅ Image uploaded: ${req.file.filename}`);
       console.log(`✅ URL: ${imageUrl}`);
@@ -84,7 +77,7 @@ class UploadController {
   deleteImage = async (req, res) => {
     try {
       const { filename } = req.params;
-      const imagePath = path.join(this.uploadPath, filename);
+      const imagePath = path.join(__dirname, '../public/uploads/images', filename);
 
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
