@@ -1,6 +1,7 @@
 /**
  * Upload Controller
  * Handles image uploads for affiliations and other site content
+ * Images are stored in backend/uploads and served via /api/uploads/
  */
 
 const multer = require('multer');
@@ -9,16 +10,16 @@ const fs = require('fs');
 
 class UploadController {
   constructor() {
-    // Ensure upload directory exists
-    const uploadPath = path.join(__dirname, '../../frontend/public/images/uploads');
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
+    // Store uploads in backend/uploads folder (persists after frontend builds)
+    this.uploadPath = path.join(__dirname, '../uploads');
+    if (!fs.existsSync(this.uploadPath)) {
+      fs.mkdirSync(this.uploadPath, { recursive: true });
     }
 
     // Setup multer storage
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
-        cb(null, uploadPath);
+        cb(null, this.uploadPath);
       },
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -52,7 +53,8 @@ class UploadController {
         });
       }
 
-      const imageUrl = `/images/uploads/${req.file.filename}`;
+      // Return URL that points to backend static route
+      const imageUrl = `/api/uploads/${req.file.filename}`;
 
       console.log(`✅ Image uploaded: ${req.file.filename}`);
 
@@ -75,7 +77,7 @@ class UploadController {
   deleteImage = async (req, res) => {
     try {
       const { filename } = req.params;
-      const imagePath = path.join(__dirname, '../../frontend/public/images/uploads', filename);
+      const imagePath = path.join(this.uploadPath, filename);
 
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
