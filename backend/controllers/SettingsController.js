@@ -39,6 +39,11 @@ class SettingsController {
               '/images/hero-3.jpg'
             ],
             contact_image_url: '/images/contact-dove.jpg'
+          },
+          hero_content: {
+            title: 'Welcome to White Dove Wellness Holistic Therapies',
+            subtitle: 'Experience the healing power of holistic therapies in a serene and nurturing environment.',
+            button_text: 'Book Your Session'
           }
         };
       }
@@ -53,6 +58,15 @@ class SettingsController {
             '/images/hero-3.jpg'
           ],
           contact_image_url: '/images/contact-dove.jpg'
+        };
+      }
+
+      // Ensure hero_content exists with defaults
+      if (!settings.hero_content) {
+        settings.hero_content = {
+          title: 'Welcome to White Dove Wellness Holistic Therapies',
+          subtitle: 'Experience the healing power of holistic therapies in a serene and nurturing environment.',
+          button_text: 'Book Your Session'
         };
       }
 
@@ -72,7 +86,7 @@ class SettingsController {
   // PUT /api/admin/settings (admin)
   update = async (req, res) => {
     try {
-      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images'];
+      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content'];
 
       const updateData = {
         id: 'site_settings',
