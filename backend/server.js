@@ -128,7 +128,7 @@ async function startServer() {
     const serverPort = process.env.NODE_PORT || 3001;
     app.listen(serverPort, '127.0.0.1', () => {
       console.log('='.repeat(60));
-      console.log(`🕊️  White Dove Wellness Backend running on port ${config.port}`);
+      console.log(`🕊️  White Dove Wellness Backend running on port ${serverPort}`);
       console.log(`🌍 Environment: ${config.nodeEnv}`);
       console.log(`📧 Email: ${emailConfig.getStatus().configured ? `Configured (${emailConfig.getStatus().provider})` : 'Disabled'}`);
       console.log(`💾 Database: Connected to ${config.dbName}`);
