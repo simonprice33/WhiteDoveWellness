@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { publicApi } from '../lib/api';
 import * as Icons from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 
 export default function Therapies() {
   const [therapies, setTherapies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTherapy, setSelectedTherapy] = useState(null);
 
   useEffect(() => {
     loadTherapies();
@@ -25,6 +27,11 @@ export default function Therapies() {
   const getIcon = (iconName) => {
     const Icon = Icons[iconName] || Icons.Sparkles;
     return <Icon size={32} />;
+  };
+
+  const getIconSmall = (iconName) => {
+    const Icon = Icons[iconName] || Icons.Sparkles;
+    return <Icon size={24} />;
   };
 
   if (loading) {
@@ -69,6 +76,7 @@ export default function Therapies() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               className="service-tile bg-white rounded-2xl p-8 border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(159,135,196,0.2)] group cursor-pointer"
+              onClick={() => setSelectedTherapy(therapy)}
               data-testid={`therapy-card-${therapy.id}`}
             >
               {/* Icon */}
@@ -95,6 +103,76 @@ export default function Therapies() {
           ))}
         </div>
       </div>
+
+      {/* Therapy Details Dialog */}
+      <Dialog open={!!selectedTherapy} onOpenChange={() => setSelectedTherapy(null)}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          {selectedTherapy && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#9F87C4]/10 flex items-center justify-center text-[#9F87C4]">
+                    {getIconSmall(selectedTherapy.icon)}
+                  </div>
+                  <DialogTitle className="font-serif text-2xl text-slate-800">
+                    {selectedTherapy.name}
+                  </DialogTitle>
+                </div>
+              </DialogHeader>
+              
+              <div className="mt-4 space-y-4">
+                {/* Full Description */}
+                <div>
+                  <p className="text-slate-600 leading-relaxed">
+                    {selectedTherapy.description || selectedTherapy.short_description}
+                  </p>
+                </div>
+
+                {/* Benefits if available */}
+                {selectedTherapy.benefits && selectedTherapy.benefits.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-slate-800 mb-2">Benefits</h4>
+                    <ul className="space-y-2">
+                      {selectedTherapy.benefits.map((benefit, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm">
+                          <Icons.Check size={16} className="text-[#9F87C4] mt-0.5 flex-shrink-0" />
+                          <span>{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Prices if available */}
+                {selectedTherapy.prices && selectedTherapy.prices.length > 0 && (
+                  <div className="bg-[#F5F3FA] rounded-xl p-4">
+                    <h4 className="font-medium text-slate-800 mb-3">Pricing</h4>
+                    <div className="space-y-2">
+                      {selectedTherapy.prices.map((price, idx) => (
+                        <div key={idx} className="flex justify-between items-center">
+                          <span className="text-slate-600 text-sm">{price.duration}</span>
+                          <span className="font-semibold text-[#9F87C4]">£{price.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* CTA */}
+                <div className="pt-4">
+                  <a
+                    href="#contact"
+                    onClick={() => setSelectedTherapy(null)}
+                    className="block w-full bg-[#9F87C4] hover:bg-[#8A6EB5] text-white text-center py-3 rounded-xl font-medium transition-colors"
+                  >
+                    Book This Treatment
+                  </a>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
