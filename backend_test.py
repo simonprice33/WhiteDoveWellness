@@ -231,6 +231,7 @@ class WhiteDoveAPITester:
         # Create price
         price_data = {
             "therapy_id": therapy_id,
+            "name": "Test Price",
             "duration": "60 minutes",
             "price": 75.00,
             "description": "Test price entry",
