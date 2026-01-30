@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { publicApi } from '../lib/api';
+import { publicApi, getImageUrl } from '../lib/api';
 
 const navLinks = [
   { label: 'Home', href: '#home' },
