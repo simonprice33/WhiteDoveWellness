@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminApi } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Save } from 'lucide-react';
+import { Save, Plus, Trash2, Image } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettings() {
@@ -15,7 +15,18 @@ export default function AdminSettings() {
   const loadSettings = async () => {
     try {
       const response = await adminApi.getSettings();
-      setSettings(response.data.settings);
+      const data = response.data.settings;
+      
+      // Ensure images object exists with defaults
+      if (!data.images) {
+        data.images = {
+          logo_url: '/images/logo.png',
+          hero_images: ['/images/hero-1.jpg', '/images/hero-2.jpg', '/images/hero-3.jpg'],
+          contact_image_url: '/images/contact-dove.jpg'
+        };
+      }
+      
+      setSettings(data);
     } catch (error) { toast.error('Failed to load'); }
     finally { setLoading(false); }
   };
@@ -37,18 +48,51 @@ export default function AdminSettings() {
     });
   };
 
+  const updateImage = (key, value) => {
+    setSettings({
+      ...settings,
+      images: { ...settings.images, [key]: value }
+    });
+  };
+
+  const updateHeroImage = (index, value) => {
+    const heroImages = [...(settings.images?.hero_images || [])];
+    heroImages[index] = value;
+    setSettings({
+      ...settings,
+      images: { ...settings.images, hero_images: heroImages }
+    });
+  };
+
+  const addHeroImage = () => {
+    const heroImages = [...(settings.images?.hero_images || []), ''];
+    setSettings({
+      ...settings,
+      images: { ...settings.images, hero_images: heroImages }
+    });
+  };
+
+  const removeHeroImage = (index) => {
+    const heroImages = [...(settings.images?.hero_images || [])];
+    heroImages.splice(index, 1);
+    setSettings({
+      ...settings,
+      images: { ...settings.images, hero_images: heroImages }
+    });
+  };
+
   if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>;
 
   return (
     <div className="p-6 lg:p-8" data-testid="admin-settings">
       <div className="mb-8">
         <h1 className="font-serif text-3xl text-slate-800">Site Settings</h1>
-        <p className="text-slate-600 mt-1">Manage your website settings and social links</p>
+        <p className="text-slate-600 mt-1">Manage your website settings, images, and social links</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl">
+      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         {/* Business Info */}
-        <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
+        <div className="bg-white rounded-2xl border border-slate-100 p-6">
           <h2 className="font-serif text-xl text-slate-800 mb-4">Business Information</h2>
           <div className="space-y-4">
             <div><label className="text-sm font-medium text-slate-700">Business Name</label><Input value={settings?.business_name || ''} onChange={(e) => setSettings({ ...settings, business_name: e.target.value })} className="mt-1" /></div>
@@ -59,8 +103,87 @@ export default function AdminSettings() {
           </div>
         </div>
 
+        {/* Images */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Image size={20} className="text-[#9F87C4]" />
+            <h2 className="font-serif text-xl text-slate-800">Site Images</h2>
+          </div>
+          <p className="text-sm text-slate-500 mb-4">Enter paths relative to public folder (e.g., /images/logo.png) or full URLs</p>
+          
+          <div className="space-y-4">
+            {/* Logo */}
+            <div>
+              <label className="text-sm font-medium text-slate-700">Logo Image</label>
+              <Input 
+                value={settings?.images?.logo_url || ''} 
+                onChange={(e) => updateImage('logo_url', e.target.value)} 
+                className="mt-1" 
+                placeholder="/images/logo.png"
+                data-testid="logo-url-input"
+              />
+              {settings?.images?.logo_url && (
+                <div className="mt-2 p-2 bg-slate-50 rounded-lg inline-block">
+                  <img src={settings.images.logo_url} alt="Logo preview" className="h-16 object-contain" />
+                </div>
+              )}
+            </div>
+
+            {/* Hero Images */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-slate-700">Hero Images (Desktop shows 3, Mobile shows 1)</label>
+                <Button type="button" variant="outline" size="sm" onClick={addHeroImage}>
+                  <Plus size={14} className="mr-1" /> Add
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {(settings?.images?.hero_images || []).map((url, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input 
+                      value={url} 
+                      onChange={(e) => updateHeroImage(index, e.target.value)} 
+                      placeholder={`/images/hero-${index + 1}.jpg`}
+                      data-testid={`hero-image-${index}-input`}
+                    />
+                    <Button type="button" variant="ghost" size="icon" className="text-red-500 shrink-0" onClick={() => removeHeroImage(index)}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              {(settings?.images?.hero_images || []).length > 0 && (
+                <div className="mt-2 flex gap-2 flex-wrap">
+                  {settings.images.hero_images.filter(url => url).map((url, index) => (
+                    <div key={index} className="p-1 bg-slate-50 rounded-lg">
+                      <img src={url} alt={`Hero ${index + 1}`} className="h-16 w-24 object-cover rounded" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Contact Image */}
+            <div>
+              <label className="text-sm font-medium text-slate-700">Contact Section Image</label>
+              <Input 
+                value={settings?.images?.contact_image_url || ''} 
+                onChange={(e) => updateImage('contact_image_url', e.target.value)} 
+                className="mt-1" 
+                placeholder="/images/contact-dove.jpg"
+                data-testid="contact-image-url-input"
+              />
+              {settings?.images?.contact_image_url && (
+                <div className="mt-2 p-2 bg-slate-50 rounded-lg inline-block">
+                  <img src={settings.images.contact_image_url} alt="Contact preview" className="h-20 object-contain" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Social Links */}
-        <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
+        <div className="bg-white rounded-2xl border border-slate-100 p-6">
           <h2 className="font-serif text-xl text-slate-800 mb-4">Social Links</h2>
           <div className="space-y-4">
             <div><label className="text-sm font-medium text-slate-700">Facebook URL</label><Input value={settings?.social_links?.facebook_url || ''} onChange={(e) => updateSocialLink('facebook_url', e.target.value)} className="mt-1" placeholder="https://facebook.com/..." data-testid="facebook-url-input" /></div>
