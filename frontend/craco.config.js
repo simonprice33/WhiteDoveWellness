@@ -52,6 +52,11 @@ const webpackConfig = {
         (plugin) => plugin.constructor.name !== 'ForkTsCheckerWebpackPlugin'
       );
 
+      // Remove ESLintWebpackPlugin (causes issues with Node 24)
+      webpackConfig.plugins = webpackConfig.plugins.filter(
+        (plugin) => plugin.constructor.name !== 'ESLintWebpackPlugin'
+      );
+
       // Add ignored patterns to reduce watched directories
         webpackConfig.watchOptions = {
           ...webpackConfig.watchOptions,
