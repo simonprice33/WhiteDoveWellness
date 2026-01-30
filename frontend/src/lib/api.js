@@ -9,6 +9,22 @@ const api = axios.create({
   }
 });
 
+// Helper to get full image URL for uploaded images
+// Converts /api/uploads/xxx.png to http://localhost:3003/api/uploads/xxx.png
+export const getImageUrl = (path) => {
+  if (!path) return '';
+  // Already a full URL
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  // Uploaded image path - prepend backend URL
+  if (path.startsWith('/api/uploads/')) {
+    return `${API_URL}${path}`;
+  }
+  // Other paths (like /images/logo.png) - keep as-is for local public folder
+  return path;
+};
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
