@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, X } from 'lucide-react';
 import { publicApi } from '../lib/api';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from '../components/ui/dialog';
 
 export default function Footer() {
   const [settings, setSettings] = useState(null);
   const [policies, setPolicies] = useState([]);
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -31,6 +39,32 @@ export default function Footer() {
     }
   };
 
+  const openPolicy = (policy) => {
+    setSelectedPolicy(policy);
+    setDialogOpen(true);
+  };
+
+  // Simple markdown-to-HTML renderer
+  const renderContent = (content) => {
+    if (!content) return null;
+    
+    return content.split('\n').map((line, i) => {
+      if (line.startsWith('# ')) {
+        return <h1 key={i} className="font-serif text-2xl text-slate-800 mb-4">{line.slice(2)}</h1>;
+      }
+      if (line.startsWith('## ')) {
+        return <h2 key={i} className="font-serif text-xl text-slate-800 mt-6 mb-3">{line.slice(3)}</h2>;
+      }
+      if (line.startsWith('### ')) {
+        return <h3 key={i} className="font-serif text-lg text-slate-800 mt-4 mb-2">{line.slice(4)}</h3>;
+      }
+      if (line.trim() === '') {
+        return <br key={i} />;
+      }
+      return <p key={i} className="text-slate-600 mb-2">{line}</p>;
+    });
+  };
+
   return (
     <footer className="bg-slate-900 text-white" data-testid="main-footer">
       {/* Policies Section */}
@@ -39,14 +73,14 @@ export default function Footer() {
           <h3 className="font-serif text-2xl mb-6 text-center">Our Policies</h3>
           <div className="flex flex-wrap justify-center gap-4">
             {policies.map((policy) => (
-              <a
+              <button
                 key={policy.id}
-                href={`/policy/${policy.slug}`}
+                onClick={() => openPolicy(policy)}
                 className="text-slate-400 hover:text-[#A7D7C5] transition-colors text-sm"
                 data-testid={`policy-link-${policy.slug}`}
               >
                 {policy.title}
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -152,6 +186,25 @@ export default function Footer() {
           </p>
         </div>
       </div>
+
+      {/* Policy Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto" data-testid="policy-dialog">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl text-slate-800">
+              {selectedPolicy?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {renderContent(selectedPolicy?.content)}
+          </div>
+          {selectedPolicy?.updated_at && (
+            <p className="text-sm text-slate-400 mt-6 pt-4 border-t">
+              Last updated: {new Date(selectedPolicy.updated_at).toLocaleDateString()}
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
     </footer>
   );
 }
