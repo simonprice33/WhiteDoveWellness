@@ -121,9 +121,16 @@ export default function Therapies() {
                   <div className="w-12 h-12 rounded-xl bg-[#9F87C4]/10 flex items-center justify-center text-[#9F87C4]">
                     {getIconSmall(selectedTherapy.icon)}
                   </div>
-                  <DialogTitle className="font-serif text-2xl text-slate-800">
-                    {selectedTherapy.name}
-                  </DialogTitle>
+                  <div>
+                    <DialogTitle className="font-serif text-2xl text-slate-800">
+                      {selectedTherapy.name}
+                    </DialogTitle>
+                    {selectedTherapy.coming_soon && (
+                      <span className="inline-block mt-1 px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                        Coming Soon
+                      </span>
+                    )}
+                  </div>
                 </div>
               </DialogHeader>
               
@@ -167,13 +174,19 @@ export default function Therapies() {
 
                 {/* CTA */}
                 <div className="pt-4">
-                  <a
-                    href="#contact"
-                    onClick={() => setSelectedTherapy(null)}
-                    className="block w-full bg-[#9F87C4] hover:bg-[#8A6EB5] text-white text-center py-3 rounded-xl font-medium transition-colors"
-                  >
-                    Book This Treatment
-                  </a>
+                  {selectedTherapy.coming_soon ? (
+                    <div className="block w-full bg-slate-200 text-slate-500 text-center py-3 rounded-xl font-medium cursor-not-allowed">
+                      Coming Soon - Contact Us For Updates
+                    </div>
+                  ) : (
+                    <a
+                      href="#contact"
+                      onClick={() => setSelectedTherapy(null)}
+                      className="block w-full bg-[#9F87C4] hover:bg-[#8A6EB5] text-white text-center py-3 rounded-xl font-medium transition-colors"
+                    >
+                      Book This Treatment
+                    </a>
+                  )}
                 </div>
               </div>
             </>
