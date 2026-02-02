@@ -250,16 +250,29 @@ export default function AdminTherapies() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="rounded border-slate-300"
-                data-testid="therapy-active-checkbox"
-              />
-              <label htmlFor="is_active" className="text-sm text-slate-700">Active</label>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                  className="rounded border-slate-300"
+                  data-testid="therapy-active-checkbox"
+                />
+                <label htmlFor="is_active" className="text-sm text-slate-700">Active</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="coming_soon"
+                  checked={formData.coming_soon}
+                  onChange={(e) => setFormData({ ...formData, coming_soon: e.target.checked })}
+                  className="rounded border-slate-300"
+                  data-testid="therapy-coming-soon-checkbox"
+                />
+                <label htmlFor="coming_soon" className="text-sm text-slate-700">Coming Soon</label>
+              </div>
             </div>
 
             <DialogFooter>
