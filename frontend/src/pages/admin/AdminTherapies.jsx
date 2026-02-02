@@ -140,6 +140,11 @@ export default function AdminTherapies() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-slate-800">{therapy.name}</p>
+                    {therapy.coming_soon && (
+                      <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded font-medium">
+                        Coming Soon
+                      </span>
+                    )}
                     {!therapy.is_active && (
                       <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs rounded">
                         Inactive
