@@ -28,7 +28,8 @@ export default function AdminTherapies() {
     full_description: '',
     icon: 'Sparkles',
     display_order: 0,
-    is_active: true
+    is_active: true,
+    coming_soon: false
   });
 
   useEffect(() => {
