@@ -75,10 +75,17 @@ export default function Therapies() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="service-tile bg-white rounded-2xl p-8 border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(159,135,196,0.2)] group cursor-pointer"
+              className="service-tile bg-white rounded-2xl p-8 border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(159,135,196,0.2)] group cursor-pointer relative"
               onClick={() => setSelectedTherapy(therapy)}
               data-testid={`therapy-card-${therapy.id}`}
             >
+              {/* Coming Soon Badge */}
+              {therapy.coming_soon && (
+                <div className="absolute top-4 right-4 px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                  Coming Soon
+                </div>
+              )}
+
               {/* Icon */}
               <div className="w-16 h-16 rounded-2xl bg-[#9F87C4]/10 flex items-center justify-center mb-6 text-[#9F87C4] group-hover:bg-[#9F87C4] group-hover:text-white transition-all">
                 {getIcon(therapy.icon)}
