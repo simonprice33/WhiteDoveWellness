@@ -119,7 +119,7 @@ class TherapyController {
   update = async (req, res) => {
     try {
       const { id } = req.params;
-      const updateFields = ['name', 'short_description', 'full_description', 'image_url', 'icon', 'display_order', 'is_active'];
+      const updateFields = ['name', 'short_description', 'full_description', 'image_url', 'icon', 'display_order', 'is_active', 'coming_soon'];
 
       const therapy = await this.collections.therapies.findOne({ id });
 
