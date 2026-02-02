@@ -74,7 +74,8 @@ class TherapyController {
         image_url,
         icon,
         display_order,
-        is_active
+        is_active,
+        coming_soon
       } = req.body;
 
       if (!name || !short_description) {
@@ -93,6 +94,7 @@ class TherapyController {
         icon: icon || 'Sparkles',
         display_order: display_order || 0,
         is_active: is_active !== false,
+        coming_soon: coming_soon === true,
         created_at: new Date().toISOString()
       };
 
