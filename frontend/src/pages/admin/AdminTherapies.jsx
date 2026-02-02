@@ -56,7 +56,8 @@ export default function AdminTherapies() {
         full_description: therapy.full_description || '',
         icon: therapy.icon || 'Sparkles',
         display_order: therapy.display_order || 0,
-        is_active: therapy.is_active !== false
+        is_active: therapy.is_active !== false,
+        coming_soon: therapy.coming_soon === true
       });
     } else {
       setEditingTherapy(null);
@@ -66,7 +67,8 @@ export default function AdminTherapies() {
         full_description: '',
         icon: 'Sparkles',
         display_order: therapies.length,
-        is_active: true
+        is_active: true,
+        coming_soon: false
       });
     }
     setDialogOpen(true);
