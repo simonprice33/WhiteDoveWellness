@@ -246,7 +246,7 @@ export default function AdminClients() {
                 <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ClipboardList size={20} className="text-[#9F87C4]" />
-                    <h3 className="font-medium text-slate-800">Consultation Records</h3>
+                    <h3 className="font-medium text-slate-800">Consultation Records ({consultations.length})</h3>
                   </div>
                   <Button size="sm" onClick={() => setConsultationDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-consultation-btn">
                     <Plus size={16} className="mr-1" />New Consultation
@@ -255,7 +255,7 @@ export default function AdminClients() {
                 {consultations.length === 0 ? (
                   <div className="p-8 text-center text-slate-500">No consultation records</div>
                 ) : (
-                  <div className="divide-y divide-slate-50 max-h-[250px] overflow-y-auto">
+                  <div className={`divide-y divide-slate-50 ${consultations.length > 5 ? 'max-h-[360px] overflow-y-auto' : ''}`}>
                     {consultations.map((consultation) => (
                       <div key={consultation.id} className="p-4 flex items-center justify-between hover:bg-slate-50">
                         <div className="flex items-center gap-3">
