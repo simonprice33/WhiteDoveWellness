@@ -44,24 +44,107 @@ export default function Footer() {
     setDialogOpen(true);
   };
 
-  // Simple markdown-to-HTML renderer
+  // Markdown-to-HTML renderer with full support
   const renderContent = (content) => {
     if (!content) return null;
     
-    return content.split('\n').map((line, i) => {
+    const lines = content.split('\n');
+    const elements = [];
+    let i = 0;
+    
+    while (i < lines.length) {
+      const line = lines[i];
+      
+      // Horizontal rule
+      if (line.trim() === '---') {
+        elements.push(<hr key={i} className="my-6 border-slate-200" />);
+        i++;
+        continue;
+      }
+      
+      // Headers
       if (line.startsWith('# ')) {
-        return <h1 key={i} className="font-serif text-2xl text-slate-800 mb-4">{line.slice(2)}</h1>;
+        // Skip the first h1 as it's already in the dialog title
+        i++;
+        continue;
       }
       if (line.startsWith('## ')) {
-        return <h2 key={i} className="font-serif text-xl text-slate-800 mt-6 mb-3">{line.slice(3)}</h2>;
+        elements.push(
+          <h2 key={i} className="font-serif text-xl text-slate-800 mt-6 mb-3">
+            {formatInlineMarkdown(line.slice(3))}
+          </h2>
+        );
+        i++;
+        continue;
       }
       if (line.startsWith('### ')) {
-        return <h3 key={i} className="font-serif text-lg text-slate-800 mt-4 mb-2">{line.slice(4)}</h3>;
+        elements.push(
+          <h3 key={i} className="font-serif text-lg text-slate-700 mt-4 mb-2">
+            {formatInlineMarkdown(line.slice(4))}
+          </h3>
+        );
+        i++;
+        continue;
       }
+      
+      // Bullet points - collect consecutive lines
+      if (line.trim().startsWith('- ')) {
+        const bulletItems = [];
+        while (i < lines.length && lines[i].trim().startsWith('- ')) {
+          bulletItems.push(lines[i].trim().slice(2));
+          i++;
+        }
+        elements.push(
+          <ul key={`ul-${i}`} className="list-disc list-inside space-y-2 my-4 text-slate-600">
+            {bulletItems.map((item, idx) => (
+              <li key={idx} className="leading-relaxed">{formatInlineMarkdown(item)}</li>
+            ))}
+          </ul>
+        );
+        continue;
+      }
+      
+      // Empty line
       if (line.trim() === '') {
-        return <br key={i} />;
+        i++;
+        continue;
       }
-      return <p key={i} className="text-slate-600 mb-2">{line}</p>;
+      
+      // Italic paragraph (wrapped in *)
+      if (line.trim().startsWith('*') && line.trim().endsWith('*') && !line.includes('**')) {
+        elements.push(
+          <p key={i} className="text-slate-500 italic my-4">
+            {line.trim().slice(1, -1)}
+          </p>
+        );
+        i++;
+        continue;
+      }
+      
+      // Regular paragraph
+      elements.push(
+        <p key={i} className="text-slate-600 mb-3 leading-relaxed">
+          {formatInlineMarkdown(line)}
+        </p>
+      );
+      i++;
+    }
+    
+    return elements;
+  };
+
+  // Format inline markdown (bold, etc.)
+  const formatInlineMarkdown = (text) => {
+    if (!text) return text;
+    
+    // Split by bold markers and process
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    
+    return parts.map((part, idx) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={idx} className="font-semibold text-slate-800">{part.slice(2, -2)}</strong>;
+      }
+      return part;
     });
   };
 
