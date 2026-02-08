@@ -19,15 +19,20 @@ export default function Footer() {
   }, []);
 
   const loadData = async () => {
+    // Load settings
     try {
-      const [settingsRes, policiesRes] = await Promise.all([
-        publicApi.getSettings(),
-        publicApi.getPolicies()
-      ]);
+      const settingsRes = await publicApi.getSettings();
       setSettings(settingsRes.data.settings);
+    } catch (error) {
+      console.error('Failed to load settings:', error);
+    }
+    
+    // Load policies independently
+    try {
+      const policiesRes = await publicApi.getPolicies();
       setPolicies(policiesRes.data.policies || []);
     } catch (error) {
-      console.error('Failed to load footer data:', error);
+      console.error('Failed to load policies:', error);
     }
   };
 
