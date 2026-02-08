@@ -467,6 +467,7 @@ class ClientController {
         smoker: consultationData.smoker || '',
         exercise: consultationData.exercise || '',
         hobbies: consultationData.hobbies || '',
+        lifestyle: consultationData.lifestyle || {},
         // Treatment objectives
         treatment_objectives: consultationData.treatment_objectives || [],
         treatment_objectives_other: consultationData.treatment_objectives_other || '',
@@ -476,8 +477,10 @@ class ClientController {
         contact_preferences: consultationData.contact_preferences || [],
         consent_data_storage: consultationData.consent_data_storage || false,
         client_signature: consultationData.client_signature || '',
+        client_signature_image: consultationData.client_signature_image || '',
         client_signature_date: consultationData.client_signature_date || '',
         therapist_signature: consultationData.therapist_signature || '',
+        therapist_signature_image: consultationData.therapist_signature_image || '',
         therapist_signature_date: consultationData.therapist_signature_date || '',
         // Metadata
         created_at: new Date().toISOString(),
