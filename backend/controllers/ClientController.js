@@ -354,6 +354,229 @@ class ClientController {
       });
     }
   };
+
+  // ==================== CONSULTATIONS ====================
+
+  // GET /api/admin/clients/:id/consultations
+  listConsultations = async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const client = await this.collections.clients.findOne({ id });
+      if (!client) {
+        return res.status(404).json({
+          success: false,
+          message: 'Client not found'
+        });
+      }
+
+      const consultations = await this.collections.consultations
+        .find({ client_id: id }, { projection: { _id: 0 } })
+        .sort({ consultation_date: -1 })
+        .toArray();
+
+      res.json({
+        success: true,
+        consultations
+      });
+    } catch (error) {
+      console.error('List consultations error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to list consultations'
+      });
+    }
+  };
+
+  // GET /api/admin/clients/:id/consultations/:consultationId
+  getConsultation = async (req, res) => {
+    try {
+      const { id, consultationId } = req.params;
+
+      const consultation = await this.collections.consultations.findOne(
+        { id: consultationId, client_id: id },
+        { projection: { _id: 0 } }
+      );
+
+      if (!consultation) {
+        return res.status(404).json({
+          success: false,
+          message: 'Consultation not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        consultation
+      });
+    } catch (error) {
+      console.error('Get consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get consultation'
+      });
+    }
+  };
+
+  // POST /api/admin/clients/:id/consultations
+  createConsultation = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const consultationData = req.body;
+
+      const client = await this.collections.clients.findOne({ id });
+      if (!client) {
+        return res.status(404).json({
+          success: false,
+          message: 'Client not found'
+        });
+      }
+
+      const consultation = {
+        id: uuidv4(),
+        client_id: id,
+        consultation_date: consultationData.consultation_date || new Date().toISOString(),
+        // Client info (pre-filled from client record but can be overridden)
+        client_code: consultationData.client_code || '',
+        gender: consultationData.gender || '',
+        dob: consultationData.dob || client.dob || '',
+        address: consultationData.address || client.address || '',
+        telephone: consultationData.telephone || client.phone || '',
+        age_of_children: consultationData.age_of_children || '',
+        // GP Details
+        gp_name: consultationData.gp_name || '',
+        gp_address: consultationData.gp_address || '',
+        gp_telephone: consultationData.gp_telephone || '',
+        gp_permission: consultationData.gp_permission || false,
+        // Occupation
+        occupation: consultationData.occupation || '',
+        occupation_type: consultationData.occupation_type || '', // part-time, full-time
+        // Contra-indications (array of selected conditions)
+        contra_indications: consultationData.contra_indications || [],
+        covid_symptoms: consultationData.covid_symptoms || false,
+        recent_covid_test: consultationData.recent_covid_test || false,
+        contra_indications_other: consultationData.contra_indications_other || '',
+        // Lifestyle
+        energy_levels: consultationData.energy_levels || '',
+        stress_levels: consultationData.stress_levels || '',
+        ability_to_relax: consultationData.ability_to_relax || '',
+        sleep_pattern: consultationData.sleep_pattern || '',
+        dietary_intake: consultationData.dietary_intake || '',
+        fluid_intake: consultationData.fluid_intake || '',
+        alcohol_units: consultationData.alcohol_units || '',
+        smoker: consultationData.smoker || '',
+        exercise: consultationData.exercise || '',
+        hobbies: consultationData.hobbies || '',
+        // Treatment objectives
+        treatment_objectives: consultationData.treatment_objectives || [],
+        treatment_objectives_other: consultationData.treatment_objectives_other || '',
+        // Modifications
+        recommended_frequency: consultationData.recommended_frequency || '',
+        // Consent
+        contact_preferences: consultationData.contact_preferences || [],
+        consent_data_storage: consultationData.consent_data_storage || false,
+        client_signature: consultationData.client_signature || '',
+        client_signature_date: consultationData.client_signature_date || '',
+        therapist_signature: consultationData.therapist_signature || '',
+        therapist_signature_date: consultationData.therapist_signature_date || '',
+        // Metadata
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      await this.collections.consultations.insertOne(consultation);
+
+      console.log(`✅ Created consultation for client: ${id}`);
+
+      res.status(201).json({
+        success: true,
+        consultation
+      });
+    } catch (error) {
+      console.error('Create consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create consultation'
+      });
+    }
+  };
+
+  // PUT /api/admin/clients/:id/consultations/:consultationId
+  updateConsultation = async (req, res) => {
+    try {
+      const { id, consultationId } = req.params;
+      const updateData = req.body;
+
+      const consultation = await this.collections.consultations.findOne({
+        id: consultationId,
+        client_id: id
+      });
+
+      if (!consultation) {
+        return res.status(404).json({
+          success: false,
+          message: 'Consultation not found'
+        });
+      }
+
+      updateData.updated_at = new Date().toISOString();
+
+      await this.collections.consultations.updateOne(
+        { id: consultationId },
+        { $set: updateData }
+      );
+
+      const updated = await this.collections.consultations.findOne(
+        { id: consultationId },
+        { projection: { _id: 0 } }
+      );
+
+      res.json({
+        success: true,
+        consultation: updated
+      });
+    } catch (error) {
+      console.error('Update consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update consultation'
+      });
+    }
+  };
+
+  // DELETE /api/admin/clients/:id/consultations/:consultationId
+  deleteConsultation = async (req, res) => {
+    try {
+      const { id, consultationId } = req.params;
+
+      const consultation = await this.collections.consultations.findOne({
+        id: consultationId,
+        client_id: id
+      });
+
+      if (!consultation) {
+        return res.status(404).json({
+          success: false,
+          message: 'Consultation not found'
+        });
+      }
+
+      await this.collections.consultations.deleteOne({ id: consultationId });
+
+      console.log(`✅ Deleted consultation: ${consultationId}`);
+
+      res.json({
+        success: true,
+        message: 'Consultation deleted'
+      });
+    } catch (error) {
+      console.error('Delete consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete consultation'
+      });
+    }
+  };
 }
 
 module.exports = ClientController;
