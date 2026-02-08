@@ -386,10 +386,15 @@ export default function ConsultationForm({ client, onClose, onSaved }) {
         </label>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
+          <div className="space-y-4 p-4 bg-slate-50 rounded-lg">
             <h4 className="text-sm font-semibold text-slate-700">Client Signature</h4>
+            <SignaturePad
+              label="Draw signature"
+              value={formData.client_signature_image}
+              onChange={(img) => setFormData({ ...formData, client_signature_image: img })}
+            />
             <div>
-              <label className="text-sm text-slate-600">Name (as signature)</label>
+              <label className="text-sm text-slate-600">Print Name</label>
               <Input value={formData.client_signature} onChange={(e) => setFormData({ ...formData, client_signature: e.target.value })} className="mt-1" placeholder="Type full name" />
             </div>
             <div>
@@ -397,10 +402,15 @@ export default function ConsultationForm({ client, onClose, onSaved }) {
               <Input type="date" value={formData.client_signature_date} onChange={(e) => setFormData({ ...formData, client_signature_date: e.target.value })} className="mt-1" />
             </div>
           </div>
-          <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
+          <div className="space-y-4 p-4 bg-slate-50 rounded-lg">
             <h4 className="text-sm font-semibold text-slate-700">Therapist Signature</h4>
+            <SignaturePad
+              label="Draw signature"
+              value={formData.therapist_signature_image}
+              onChange={(img) => setFormData({ ...formData, therapist_signature_image: img })}
+            />
             <div>
-              <label className="text-sm text-slate-600">Name (as signature)</label>
+              <label className="text-sm text-slate-600">Print Name</label>
               <Input value={formData.therapist_signature} onChange={(e) => setFormData({ ...formData, therapist_signature: e.target.value })} className="mt-1" placeholder="Type full name" />
             </div>
             <div>
