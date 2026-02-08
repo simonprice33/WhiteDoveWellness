@@ -551,15 +551,37 @@ export function ConsultationView({ consultation, onClose }) {
           <Field label="Contact Preferences" value={consultation.contact_preferences?.join(', ')} />
           <Field label="Data Storage Consent" value={consultation.consent_data_storage ? 'Yes' : 'No'} />
         </div>
-        <div className="grid grid-cols-2 gap-6 mt-4 p-4 bg-slate-50 rounded-lg">
-          <div>
-            <p className="text-sm font-medium text-slate-700">Client Signature</p>
-            <p className="text-sm text-slate-800">{consultation.client_signature || 'Not signed'}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          <div className="p-4 bg-slate-50 rounded-lg">
+            <p className="text-sm font-medium text-slate-700 mb-2">Client Signature</p>
+            {consultation.client_signature_image ? (
+              <div className="bg-white border border-slate-200 rounded-lg p-2 mb-2">
+                <img 
+                  src={consultation.client_signature_image} 
+                  alt="Client signature" 
+                  className="h-[80px] w-auto"
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 italic mb-2">No signature drawn</p>
+            )}
+            <p className="text-sm text-slate-800">{consultation.client_signature || 'Name not provided'}</p>
             <p className="text-xs text-slate-500">{formatDate(consultation.client_signature_date)}</p>
           </div>
-          <div>
-            <p className="text-sm font-medium text-slate-700">Therapist Signature</p>
-            <p className="text-sm text-slate-800">{consultation.therapist_signature || 'Not signed'}</p>
+          <div className="p-4 bg-slate-50 rounded-lg">
+            <p className="text-sm font-medium text-slate-700 mb-2">Therapist Signature</p>
+            {consultation.therapist_signature_image ? (
+              <div className="bg-white border border-slate-200 rounded-lg p-2 mb-2">
+                <img 
+                  src={consultation.therapist_signature_image} 
+                  alt="Therapist signature" 
+                  className="h-[80px] w-auto"
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 italic mb-2">No signature drawn</p>
+            )}
+            <p className="text-sm text-slate-800">{consultation.therapist_signature || 'Name not provided'}</p>
             <p className="text-xs text-slate-500">{formatDate(consultation.therapist_signature_date)}</p>
           </div>
         </div>
