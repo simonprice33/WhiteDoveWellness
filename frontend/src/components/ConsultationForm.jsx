@@ -111,7 +111,7 @@ export default function ConsultationForm({ client, onClose, onSaved }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="text-sm font-medium text-slate-700">Client Code</label>
-            <Input value={formData.client_code} onChange={(e) => setFormData({ ...formData, client_code: e.target.value })} className="mt-1" />
+            <Input value={formData.client_code} readOnly disabled className="mt-1 bg-slate-50 text-slate-500" />
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700">Gender</label>
