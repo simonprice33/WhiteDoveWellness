@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { adminApi, publicApi } from '../lib/api';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { ChevronDown, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import SignaturePad from './SignaturePad';
 
