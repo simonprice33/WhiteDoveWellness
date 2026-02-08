@@ -111,8 +111,10 @@ const getInitialFormData = (client) => ({
   contact_preferences: [],
   consent_data_storage: false,
   client_signature: '',
+  client_signature_image: '',
   client_signature_date: '',
   therapist_signature: '',
+  therapist_signature_image: '',
   therapist_signature_date: ''
 });
 
