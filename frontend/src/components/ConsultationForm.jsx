@@ -8,7 +8,7 @@ import SignaturePad from './SignaturePad';
 // Initial form state
 const getInitialFormData = (client) => ({
   consultation_date: new Date().toISOString().split('T')[0],
-  client_code: '',
+  client_code: client?.id || '',
   gender: '',
   dob: client?.date_of_birth || '',
   address: client?.address || '',
