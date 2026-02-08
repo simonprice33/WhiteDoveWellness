@@ -57,6 +57,8 @@ class DatabaseConfig {
       await this.collections.contactSubmissions.createIndex({ created_at: -1 });
       await this.collections.clients.createIndex({ email: 1 });
       await this.collections.policies.createIndex({ slug: 1 }, { unique: true });
+      await this.collections.consultations.createIndex({ client_id: 1 });
+      await this.collections.consultations.createIndex({ consultation_date: -1 });
       console.log('✅ Database indexes created');
     } catch (error) {
       console.warn('⚠️ Some indexes may already exist:', error.message);
