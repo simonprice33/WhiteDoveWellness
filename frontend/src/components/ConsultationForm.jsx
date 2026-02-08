@@ -339,13 +339,21 @@ export default function ConsultationForm({ client, onClose, onSaved }) {
       <section>
         <h3 className="text-lg font-semibold text-slate-800 border-b border-[#9F87C4]/30 pb-2 mb-4">Treatment Objectives / Reason for Seeking Treatment</h3>
         
-        <MultiSelect
-          label="Objectives"
-          options={options.treatment_objectives}
-          selected={formData.treatment_objectives}
-          onChange={(val) => setFormData({ ...formData, treatment_objectives: val })}
-          placeholder="Select treatment objectives..."
-        />
+        <div className="flex flex-wrap gap-4 p-4 bg-slate-50 rounded-lg">
+          {options.treatment_objectives.map((objective) => (
+            <label key={objective} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.treatment_objectives.includes(objective)}
+                onChange={() => handleCheckboxArray('treatment_objectives', objective)}
+                className="rounded border-slate-300"
+              />
+              <span className={formData.treatment_objectives.includes(objective) ? 'text-[#9F87C4] font-medium' : 'text-slate-700'}>
+                {objective}
+              </span>
+            </label>
+          ))}
+        </div>
 
         <div className="mt-4">
           <label className="text-sm font-medium text-slate-700">Other objectives not listed</label>
