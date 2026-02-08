@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { ChevronDown, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import SignaturePad from './SignaturePad';
 
 // Multi-select dropdown component
 function MultiSelect({ label, options, selected, onChange, placeholder = "Select options..." }) {
