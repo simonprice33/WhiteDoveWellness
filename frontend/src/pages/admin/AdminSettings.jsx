@@ -420,6 +420,206 @@ export default function AdminSettings() {
           </div>
         </div>
 
+        {/* Consultation Form Options */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <ClipboardList size={20} className="text-[#9F87C4]" />
+            <h2 className="font-serif text-xl text-slate-800">Consultation Form Options</h2>
+          </div>
+          <p className="text-sm text-slate-500 mb-6">Configure the dropdown options for client consultation forms</p>
+
+          {/* Contra-indications */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-slate-700">Contra-indications List</label>
+              <Button type="button" variant="outline" size="sm" onClick={() => {
+                const current = settings?.consultation_options?.contra_indications || [];
+                setSettings({
+                  ...settings,
+                  consultation_options: {
+                    ...settings?.consultation_options,
+                    contra_indications: [...current, '']
+                  }
+                });
+              }}>
+                <Plus size={14} className="mr-1" /> Add
+              </Button>
+            </div>
+            <div className="space-y-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-lg">
+              {(settings?.consultation_options?.contra_indications || []).map((item, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={item}
+                    onChange={(e) => {
+                      const updated = [...(settings?.consultation_options?.contra_indications || [])];
+                      updated[index] = e.target.value;
+                      setSettings({
+                        ...settings,
+                        consultation_options: { ...settings?.consultation_options, contra_indications: updated }
+                      });
+                    }}
+                    placeholder="e.g. Diabetes, Epilepsy..."
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="ghost" size="icon" className="text-red-500 shrink-0" onClick={() => {
+                    const updated = [...(settings?.consultation_options?.contra_indications || [])];
+                    updated.splice(index, 1);
+                    setSettings({
+                      ...settings,
+                      consultation_options: { ...settings?.consultation_options, contra_indications: updated }
+                    });
+                  }}>
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              ))}
+              {(settings?.consultation_options?.contra_indications || []).length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-2">No items. Click "Add" to create.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Treatment Objectives */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-slate-700">Treatment Objectives List</label>
+              <Button type="button" variant="outline" size="sm" onClick={() => {
+                const current = settings?.consultation_options?.treatment_objectives || [];
+                setSettings({
+                  ...settings,
+                  consultation_options: {
+                    ...settings?.consultation_options,
+                    treatment_objectives: [...current, '']
+                  }
+                });
+              }}>
+                <Plus size={14} className="mr-1" /> Add
+              </Button>
+            </div>
+            <div className="space-y-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-lg">
+              {(settings?.consultation_options?.treatment_objectives || []).map((item, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={item}
+                    onChange={(e) => {
+                      const updated = [...(settings?.consultation_options?.treatment_objectives || [])];
+                      updated[index] = e.target.value;
+                      setSettings({
+                        ...settings,
+                        consultation_options: { ...settings?.consultation_options, treatment_objectives: updated }
+                      });
+                    }}
+                    placeholder="e.g. Relaxation, Stress relief..."
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="ghost" size="icon" className="text-red-500 shrink-0" onClick={() => {
+                    const updated = [...(settings?.consultation_options?.treatment_objectives || [])];
+                    updated.splice(index, 1);
+                    setSettings({
+                      ...settings,
+                      consultation_options: { ...settings?.consultation_options, treatment_objectives: updated }
+                    });
+                  }}>
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              ))}
+              {(settings?.consultation_options?.treatment_objectives || []).length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-2">No items. Click "Add" to create.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Lifestyle Questions - More complex structure */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-slate-700">Lifestyle Questions</label>
+              <Button type="button" variant="outline" size="sm" onClick={() => {
+                const current = settings?.consultation_options?.lifestyle_questions || [];
+                setSettings({
+                  ...settings,
+                  consultation_options: {
+                    ...settings?.consultation_options,
+                    lifestyle_questions: [...current, { id: `lifestyle_${Date.now()}`, label: '', type: 'text', options: [] }]
+                  }
+                });
+              }}>
+                <Plus size={14} className="mr-1" /> Add Question
+              </Button>
+            </div>
+            <div className="space-y-3 max-h-64 overflow-y-auto p-2 bg-slate-50 rounded-lg">
+              {(settings?.consultation_options?.lifestyle_questions || []).map((question, index) => (
+                <div key={index} className="p-3 bg-white rounded-lg border border-slate-200">
+                  <div className="flex gap-2 mb-2">
+                    <Input
+                      value={question.label}
+                      onChange={(e) => {
+                        const updated = [...(settings?.consultation_options?.lifestyle_questions || [])];
+                        updated[index] = { ...updated[index], label: e.target.value };
+                        setSettings({
+                          ...settings,
+                          consultation_options: { ...settings?.consultation_options, lifestyle_questions: updated }
+                        });
+                      }}
+                      placeholder="Question label (e.g. Energy Levels)"
+                      className="flex-1"
+                    />
+                    <select
+                      value={question.type}
+                      onChange={(e) => {
+                        const updated = [...(settings?.consultation_options?.lifestyle_questions || [])];
+                        updated[index] = { ...updated[index], type: e.target.value };
+                        setSettings({
+                          ...settings,
+                          consultation_options: { ...settings?.consultation_options, lifestyle_questions: updated }
+                        });
+                      }}
+                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                    >
+                      <option value="text">Text Input</option>
+                      <option value="select">Dropdown</option>
+                    </select>
+                    <Button type="button" variant="ghost" size="icon" className="text-red-500 shrink-0" onClick={() => {
+                      const updated = [...(settings?.consultation_options?.lifestyle_questions || [])];
+                      updated.splice(index, 1);
+                      setSettings({
+                        ...settings,
+                        consultation_options: { ...settings?.consultation_options, lifestyle_questions: updated }
+                      });
+                    }}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                  {question.type === 'select' && (
+                    <div className="mt-2">
+                      <label className="text-xs text-slate-500">Options (comma-separated)</label>
+                      <Input
+                        value={(question.options || []).join(', ')}
+                        onChange={(e) => {
+                          const updated = [...(settings?.consultation_options?.lifestyle_questions || [])];
+                          updated[index] = { 
+                            ...updated[index], 
+                            options: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
+                          };
+                          setSettings({
+                            ...settings,
+                            consultation_options: { ...settings?.consultation_options, lifestyle_questions: updated }
+                          });
+                        }}
+                        placeholder="e.g. High, Average, Low"
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+              {(settings?.consultation_options?.lifestyle_questions || []).length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-2">No questions. Click "Add Question" to create.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
         <Button type="submit" disabled={saving} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="save-settings-btn">
           <Save size={18} className="mr-2" />
           {saving ? 'Saving...' : 'Save Settings'}
