@@ -270,15 +270,23 @@ export default function ConsultationForm({ client, onClose, onSaved }) {
       {/* Section: Contra-indications */}
       <section>
         <h3 className="text-lg font-semibold text-slate-800 border-b border-[#9F87C4]/30 pb-2 mb-4">Contra-indications</h3>
-        <p className="text-sm text-slate-500 mb-4">Select any conditions applicable to the client</p>
+        <p className="text-sm text-slate-500 mb-4">Highlight any conditions applicable to client</p>
         
-        <MultiSelect
-          label="Medical Conditions"
-          options={options.contra_indications}
-          selected={formData.contra_indications}
-          onChange={(val) => setFormData({ ...formData, contra_indications: val })}
-          placeholder="Select conditions..."
-        />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 bg-slate-50 rounded-lg max-h-64 overflow-y-auto">
+          {options.contra_indications.map((condition) => (
+            <label key={condition} className="flex items-center gap-2 cursor-pointer text-sm">
+              <input
+                type="checkbox"
+                checked={formData.contra_indications.includes(condition)}
+                onChange={() => handleCheckboxArray('contra_indications', condition)}
+                className="rounded border-slate-300"
+              />
+              <span className={formData.contra_indications.includes(condition) ? 'text-red-600 font-medium' : 'text-slate-700'}>
+                {condition}
+              </span>
+            </label>
+          ))}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <label className="flex items-center gap-2 cursor-pointer">
