@@ -97,6 +97,13 @@ function createAdminRoutes(dependencies) {
   router.put('/clients/:id/notes/:noteId', clientController.updateNote);
   router.delete('/clients/:id/notes/:noteId', clientController.deleteNote);
 
+  // Client Consultations (admin)
+  router.get('/clients/:id/consultations', clientController.listConsultations);
+  router.get('/clients/:id/consultations/:consultationId', clientController.getConsultation);
+  router.post('/clients/:id/consultations', clientController.createConsultation);
+  router.put('/clients/:id/consultations/:consultationId', clientController.updateConsultation);
+  router.delete('/clients/:id/consultations/:consultationId', clientController.deleteConsultation);
+
   return router;
 }
 
