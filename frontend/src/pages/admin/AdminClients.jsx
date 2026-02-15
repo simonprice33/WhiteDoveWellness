@@ -234,16 +234,33 @@ export default function AdminClients() {
         }`}
       >
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-          <div className="p-4 border-b border-slate-100">
-            <h2 className="font-medium text-slate-800">All Clients ({clients.length})</h2>
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 className="font-medium text-slate-800">
+              {searchTerm || activeFilter !== 'all' ? (
+                <>Showing {filteredClients.length} of {clients.length} clients</>
+              ) : (
+                <>All Clients ({clients.length})</>
+              )}
+            </h2>
+            {(searchTerm || activeFilter !== 'all') && (
+              <button
+                onClick={() => { setSearchTerm(''); setActiveFilter('all'); }}
+                className="text-sm text-[#9F87C4] hover:text-[#8A6EB5] font-medium"
+                data-testid="clear-filters-btn"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
           {loading ? (
             <div className="p-8 text-center text-slate-500">Loading...</div>
-          ) : clients.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">No clients found</div>
+          ) : filteredClients.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">
+              {clients.length === 0 ? 'No clients found' : 'No clients match your search'}
+            </div>
           ) : (
             <div className="divide-y divide-slate-50">
-              {clients.map((client) => (
+              {filteredClients.map((client) => (
                 <button
                   key={client.id}
                   onClick={() => selectClient(client)}
@@ -254,9 +271,23 @@ export default function AdminClients() {
                     <div className="w-10 h-10 rounded-full bg-[#9F87C4]/10 flex items-center justify-center flex-shrink-0">
                       <User size={20} className="text-[#9F87C4]" />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <p className="font-medium text-slate-800">{client.first_name} {client.last_name}</p>
-                      <p className="text-sm text-slate-500">{client.email || client.phone || 'No contact'}</p>
+                      <div className="flex items-center gap-3 text-sm text-slate-500">
+                        {client.email && (
+                          <span className="flex items-center gap-1 truncate">
+                            <Mail size={12} />
+                            <span className="truncate">{client.email}</span>
+                          </span>
+                        )}
+                        {client.phone && (
+                          <span className="flex items-center gap-1">
+                            <Phone size={12} />
+                            {client.phone}
+                          </span>
+                        )}
+                        {!client.email && !client.phone && <span>No contact info</span>}
+                      </div>
                     </div>
                   </div>
                 </button>
