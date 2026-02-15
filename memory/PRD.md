@@ -20,16 +20,17 @@ Reflexology business website for White Dove Wellness - Holistic Therapies. Singl
 - Client management with notes for admin
 - Secure admin panel with JWT authentication
 
-## What's Been Implemented (Jan 30, 2026)
+## What's Been Implemented (Feb 15, 2026)
 
 ### Public Website
 - [x] Sticky header with navigation links
-- [x] Hero section with White Dove Wellness logo (400x300)
+- [x] Hero section with dynamic content management (title, subtitle, details, benefits)
 - [x] Three images on desktop, one on mobile
 - [x] Therapies section with 6 sample therapies
+- [x] Therapy Details Modal - view full description and pricing on click
 - [x] Prices section grouped by therapy
 - [x] Contact form (stores in DB + email notification)
-- [x] Affiliations section (marquee on desktop, static on mobile)
+- [x] Affiliations section (auto-scrolling marquee if 4+, centered static if <4)
 - [x] Footer with policies and social links (Facebook, Instagram)
 
 ### Admin Panel
@@ -38,11 +39,15 @@ Reflexology business website for White Dove Wellness - Holistic Therapies. Singl
 - [x] Therapies CRUD management
 - [x] Prices CRUD management (linked to therapies)
 - [x] Contact submissions view
-- [x] Client management with notes
+- [x] Client management with accordion-style UI (Feb 15, 2026)
+  - Click client to view details (hides list)
+  - Styled "Close" button to return to list
+- [x] Client notes management
 - [x] Affiliations CRUD management
 - [x] Policies CRUD management
 - [x] Admin users management
-- [x] Site settings (social links, business info)
+- [x] Site settings (social links, business info, hero content)
+- [x] Image upload system (stores in backend/public/uploads, served statically)
 
 ### Backend (SOLID Architecture)
 - [x] Separate controllers for each resource
