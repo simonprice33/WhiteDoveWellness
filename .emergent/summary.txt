@@ -2,22 +2,15 @@
 The user requested a website for a reflexology business, White Dove Wellness.
 
 **PRODUCT REQUIREMENTS:**
-- **Frameworks:** React frontend and a backend system. The user later specified a preference for Node.js/Express over the initial Python/FastAPI.
-- **Design:** A single-page application with a sticky header. The layout should include a header, a centered logo, a hero section with images, and sections for therapies, prices, a contact form, and affiliations. The footer should contain policies and social media links.
-- **Content Management:** The entire site's content must be editable via a secure admin panel. This includes:
-    - Therapies and their associated Prices.
-    - Affiliations (to be displayed in a marquee on desktop).
-    - Policies (Terms of Service, Privacy Policy, etc.).
-    - Social media links (Facebook, Instagram).
-    - All images used on the site (logo, hero images, etc.).
+- **Frameworks:** React frontend and a Node.js/Express backend.
+- **Design:** A single-page application with a sticky header, hero section, therapies, prices, contact form, and affiliations.
+- **Content Management:** The entire site's content must be editable via a secure admin panel. This includes therapies, prices, affiliations, policies, social media links, all images (logo, hero, etc.), and hero section text (title, subtitle, details, benefits).
 - **Functionality:**
-    - Contact form submissions must be stored in the database and also sent via email.
-    - Email integration should support both GoDaddy SMTP and Microsoft Graph API, configurable via  variables.
-    - The admin panel should allow management of client information and notes.
-- **Authentication:** Admin access should be protected by a JWT with a 20-minute lifespan and a 5-hour refresh window.
+    - Contact form submissions must be stored in the database.
+    - Image uploads must be supported in the admin panel and should not require a frontend rebuild to appear live.
+- **Authentication:** Admin access protected by JWT.
 - **User Preferences:**
-    - The backend should follow SOLID principles with separate controllers.
-    - The user is running the environment locally on Windows and prefers npm <command>
+    - The user runs the environment locally on Windows with npm <command>
 
 Usage:
 
@@ -50,160 +43,176 @@ or on the command line via: npm <command> --key=value
 More configuration info: npm help config
 Configuration fields: npm help 7 config
 
-npm@10.8.2 /usr/lib/node_modules/npm.
-    - All images should be stored locally in the repository, not hotlinked.
+npm@10.8.2 /usr/lib/node_modules/npm and a specific Node.js version (v24.5.0), and deploys to a Windows server with Nginx.
+    - The build process must work on their server via  without complex workarounds.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application has been created. The backend is a Node.js/Express application that follows SOLID principles, launched via a Python proxy to comply with the environment's supervisor configuration. The frontend is a single-page React application built with Tailwind CSS and Shadcn UI components. It includes a complete public-facing site and a comprehensive admin dashboard for managing all content, including images. The application is configured to seed itself with initial data on first launch.
+A full-stack application with a React frontend and a Node.js/Express backend. The frontend uses Tailwind CSS and Shadcn UI components. A comprehensive admin panel allows for management of all site content, including text, prices, and images. The application now uses  to manage the React build process, aligning it with the user's other projects and ensuring compatibility with their specific Node.js version. The image upload functionality has been stabilized to store files on the backend and serve them statically, which avoids the need for frontend rebuilds after an upload.
 
 **Last working item**:
--   **Last item agent was working**: The user reported a crash when running  locally: . The agent identified this as a dependency conflict and was about to fix the .
+-   **Last item agent was working**: The user requested a UI improvement for the admin client management page. Specifically, when a client is selected from the list, the list should hide, and only the selected client's details should be visible. A close button should then hide the details and show the full client list again.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: manual testing by curl
+-   **Which testing method agent to use?**: screenshot tool
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Local frontend server fails to start (P0)**
-    -   **Description**: The user is unable to run the frontend application locally using . The command fails with the error , which blocks all frontend development and testing for the user.
-    -   **Status**: IN PROGRESS
-    -   **Attempted fixes**: None for this specific error. An  file was previously added to solve a different  issue, but this is a runtime error.
-    -   **Next debug checklist**:
-        1.  Edit .
-        2.  Add an  section to force a compatible version of . A common fix is . The  block should look like this:
-            
-        3.  Instruct the user to delete their  folder and  file.
-        4.  Instruct the user to run  followed by .
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical blocker. Fixing it will allow the user to run the frontend locally, test the application, and verify all the recent changes.
-    -   **Is recurring issue?**: N
+-   **Issue 1: Frontend Build/Environment Fragility (P1 - Recurring)**
+    -   **Description**: The session was dominated by a recurring and frustrating loop of  and  failing in the user's local and server environments due to incompatibilities between , its dependencies (, ), and the user's preferred Node.js version (v24+).
+    -   **Status**: RESOLVED (but high risk of recurrence if build tools are changed). The final fix was to implement  to manage webpack aliases, mirroring the user's other working project.
+    -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Frontend
 
 **In progress Task List**:
-There are no in-progress tasks. The current focus is on the bug fix above.
+-   **Task 1: Implement Accordion UI for Admin Client Management (P0)**
+    -   **Where to resume**: Modify . The agent has viewed the file and is ready to implement the logic.
+    -   **What will be achieved with this?**: The user experience in the admin panel for managing clients will be improved as per the user's request, making it cleaner and more focused.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Blocked on something**: No.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **P1: User Verification of Recent Changes:** After the  issue is resolved, the agent needs to confirm with the user that all recent fixes (image sizing, policy modal, removed admin link) are working as expected in their local environment.
+  - **P1: User Verification of Recent Changes:** Confirm with the user that the new Hero section content management (details, benefits) is working correctly in their environment.
 - **Future Tasks:**
-  - **P2: Windows/Nginx Deployment Configuration:** The user has indicated they will need help configuring the application for deployment on a Windows server using Nginx as a reverse proxy.
-  - **P2: Replace Placeholder Affiliation Logos:** The affiliations section is functional but uses placeholder images. This is a content management task that the client will handle, but the agent may be asked for assistance.
+  - **P2: Windows/Nginx Deployment Configuration:** The user has indicated they may need further help configuring the application for deployment on a Windows server using Nginx, although they have a working setup now.
 
 **Completed work in this session**
-- **Backend Architecture Migration:** Successfully switched the backend from Python/FastAPI to Node.js/Express based on user request, implementing a SOLID-like controller structure.
-- **Full-Stack Implementation:** Built the complete public-facing SPA and a secure admin dashboard.
-- **Content & Image Management System:** Implemented a full CMS for therapies, prices, policies, affiliations, and all site images, which are now stored locally.
-- **Local Setup & Configuration:**
-    - Provided detailed instructions and a quick-start script for running the application locally.
-    - Implemented robust startup configuration checks in the backend to validate  settings.
-    - Created an  file to resolve an initial  peer dependency conflict.
-- **UI/UX Fixes:**
-    - **Image Sizing:** Corrected the hero images to be of uniform size and fixed the contact image to prevent cropping.
-    - **Navigation:** Removed the Admin link from the public navigation bar.
-    - **Policy Modals:** Changed policy links to open in a modal dialog instead of navigating to a new page.
-- **Asset Generation:** Created a multi-resolution  and an  from the client's logo.
-- **Code Cleanup:** Attempted to remove the Made with Emergent badge and successfully removed all related tracking scripts from the application code, concluding the badge is injected at the platform level.
+- **Frontend Build System Overhaul:** After numerous failed attempts (using , disabling plugins, migrating to Vite and reverting), the agent successfully stabilized the frontend build process on Node.js v24 by implementing  to handle webpack configurations, matching the user's reference project.
+- **Image Upload System Rework:** The image upload functionality was implemented and refactored multiple times. The final, working solution stores images in  and serves them via an Express static route, making new uploads visible immediately without a frontend rebuild.
+- **Hero Section Content Management:** Added functionality to the admin panel to manage the Hero section's title, subtitle, details text, a dynamic list of benefits, and button text.
+- **Therapy Details Modal:** Implemented a modal dialog that appears when a user clicks View Details on a therapy card, showing the full description and pricing.
+- **Affiliations Carousel Logic:** Modified the affiliations component to display a static, centered list if there are fewer than 4 affiliations, and an auto-scrolling marquee if there are 4 or more.
+- **Deployment & Local Environment Setup:**
+    - Provided detailed instructions for local and production deployment on Windows/Nginx.
+    - Created a  script for the backend.
+    - Added a  to the frontend  to facilitate local development.
+- **Gitignore Management:** Cleaned up the  file and added rules for  and the backend uploads folder.
+
+**Earlier issues found/mentioned but not fixed**
+There are no outstanding issues that were mentioned and not addressed. The primary focus was resolving the critical build and image upload problems.
+
+**Known issue recurrence from previous fork**
+-   **Issue recurrence in previous fork**: The initial  crash reported in the handoff was a symptom of the larger, underlying issue of Node.js version incompatibility with the Create React App toolchain.
+-   **Recurrence count**: This issue recurred over 10 times throughout the session in different forms ( error,  error,  error) until the  solution was implemented.
+-   **Status**: RESOLVED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend**: React, Tailwind CSS, Shadcn/UI, Craco
-- **Backend**: Node.js, Express.js, Mongoose
+- **Frontend**: React 18, Tailwind CSS, Shadcn/UI, Craco (for build configuration)
+- **Backend**: Node.js, Express.js, Mongoose, Multer (for file uploads)
 - **Database**: MongoDB
-- **Architecture**: Single-Page Application (SPA) with a Node.js backend. A Python proxy is used as a workaround to launch the Node.js server within the supervisor-managed environment.
-- **Authentication**: JWT for securing the admin API endpoints.
+- **Build Process**: The frontend now uses  to override the default  configuration, specifically to add a path alias for  to . This was the key to making the build work on the user's Node v24 environment.
+- **Image Handling**: Images are uploaded to  and served statically by the Express backend at the  route. This decouples image assets from the frontend build process.
 
 **key DB schema**
--   **Users**: 
--   **Therapies**: 
--   **Prices**: 
--   **Contacts**: 
--   **Clients**: 
--   **Affiliations**: 
--   **Policies**: 
--   **Settings**: A singleton document  for global site configuration.
+-   **Settings**: A singleton document 
+
+(Other schemas remain the same as in the initial handoff)
 
 **changes in tech stack**
-- The backend was migrated from the platform's default Python/FastAPI stack to a Node.js/Express stack to meet the user's specific request.
+- Frontend build system switched from  to .
+-  was added to the backend for handling file uploads.
 
 **All files of reference**
--   : The main entry point for the Node.js backend.
--   : A proxy script used by the supervisor to start the Node.js server.
--   : Contains the crucial startup configuration checks.
--   : The file that needs to be modified to fix the current  error.
--   : The root of the React application, containing the router setup.
--   : Directory containing all content-managed images.
--   : Created to resolve  peer dependency issues.
--   : Project Requirements Document created during the session.
+-   : Heavily modified to manage dependencies, add , and include a  setting for local development.
+-   : **(New & Critical)** The file that solved the build issues by adding a webpack alias for .
+-   : The logic for handling image uploads. Final version saves files to  and returns a full URL.
+-   : Modified to add  middleware to serve the  directory.
+-   : The next file to be modified for the accordion UI task.
+-   : Updated to fetch and display dynamic content.
+-   : Updated to include input fields for the new hero section content.
+-   : Updated to ignore the  directory.
+
+**Areas that need refactoring**:
+- The  file was cleaned up multiple times but might still contain redundancies. A final review could be beneficial.
+
+**key api endpoints**
+-   : Handles image uploads via .
+-   : Retrieves all site settings, now including hero content.
+-   : Updates all site settings.
 
 **Critical Info for New Agent**
-- The user is technically proficient, has specific architectural preferences (Node.js, SOLID), and is running the project on a local Windows machine using npm <command>
-
-Usage:
-
-npm install        install all the dependencies in your project
-npm install <foo>  add the <foo> dependency to your project
-npm test           run this project's tests
-npm run <foo>      run the script named <foo>
-npm <command> -h   quick help on <command>
-npm -l             display usage info for all commands
-npm help <term>    search for help on <term>
-npm help npm       more involved overview
-
-All commands:
-
-    access, adduser, audit, bugs, cache, ci, completion,
-    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
-    edit, exec, explain, explore, find-dupes, fund, get, help,
-    help-search, hook, init, install, install-ci-test,
-    install-test, link, ll, login, logout, ls, org, outdated,
-    owner, pack, ping, pkg, prefix, profile, prune, publish,
-    query, rebuild, repo, restart, root, run-script, sbom,
-    search, set, shrinkwrap, star, stars, start, stop, team,
-    test, token, uninstall, unpublish, unstar, update, version,
-    view, whoami
-
-Specify configs in the ini-formatted file:
-    /root/.npmrc
-or on the command line via: npm <command> --key=value
-
-More configuration info: npm help config
-Configuration fields: npm help 7 config
-
-npm@10.8.2 /usr/lib/node_modules/npm.
-- The immediate priority is to fix the  error that is blocking the user.
-- The use of a Python script () to launch the Node.js backend is an intentional workaround for the environment's limitations. Do not try to change the supervisor configuration.
-- The Made with Emergent badge is injected by the platform infrastructure and cannot be removed from within the application's code. This has been communicated to the user.
+-   **User Environment is King:** The user is very specific about their local (Windows, Node v24.5.0) and production (Windows, Nginx) environments. They get very frustrated when solutions don't work there. The agent wasted a lot of time suggesting solutions (like Vite or Node v20) that the user rejected. The breakthrough came from analyzing the user's *other* project () to replicate its exact setup (). Always refer to that project as the source of truth for build configuration.
+-   **Image Uploads are Sensitive:** The image upload logic has been a major point of contention. The final working pattern is:
+    1.  Files are uploaded to .
+    2.  The backend  serves this folder using .
+    3.  The upload controller returns a full URL (e.g., ) constructed using an environment variable . This works for both local development and production. **Do not change this pattern.**
+-   **Backend Restarts:** The user is aware but sometimes forgets that backend changes require a manual server restart ( or ). Node.js does not hot-reload by default in this setup.
 
 **documents and test reports created in this job**
--   
--   
+- 
+- 
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **User**: Inquires about email provider configuration options. (COMPLETED)
--   **User**: Requests backend startup checks for environment variables. (COMPLETED)
--   **User**: Asks for a  file to be created from the logo for the browser tab. (COMPLETED)
--   **User**: Mentions a future need for Nginx configuration on a Windows server. (ACKNOWLEDGED)
--   **User**: Requests all images be stored locally and made content-manageable. (COMPLETED)
--   **User**: Reports a crash when running  locally, with the error . (PENDING - CURRENT ISSUE)
+- **User:** Requests the accordion-style UI for the admin client management page. (PENDING IMPLEMENTATION)
+- **User:** Confirms the image upload is now working locally. (RESOLVED)
+- **Agent:** Reverts the last breaking commit related to image uploads. (DONE)
+- **User:** Reports that the last commit broke the working image upload functionality. (PENDING)
+- **Agent:** Finalizes the image upload logic to match the user's reference project. (DONE)
+- **User:** States they don't want to rebuild every time an image is changed. (PENDING)
+- **User:** Reports that even with the KUBERNETES_SERVICE_PORT_HTTPS=443
+PYTHON_SHA256=8d3ed8ec5c88c1c95f5e558612a725450d2452813ddad5e58fdb1a53b1209b78
+KUBERNETES_SERVICE_PORT=443
+PYTHONUNBUFFERED=1
+PIP_NO_INPUT=1
+STRIPE_API_KEY=sk_test_emergent
+HOSTNAME=agent-env-e3bee4da-9533-4d56-af5c-b88ac60a7bec
+PYTHON_VERSION=3.11.14
+base_url=https://demobackend.emergentagent.com
+run_id=e3bee4da-9533-4d56-af5c-b88ac60a7bec
+UV_COMPILE_BYTECODE=1
+PLUGIN_VENV_PATH=/opt/plugins-venv
+PWD=/app
+code_server_password=24a7d789
+HOME=/root
+LANG=C.UTF-8
+KUBERNETES_PORT_443_TCP=tcp://34.118.224.1:443
+VIRTUAL_ENV=/root/.venv
+GPG_KEY=A035C8C19219BA821ECEA86B64E628F8D684696D
+PLAYWRIGHT_BROWSERS_PATH=/pw-browsers
+integration_proxy_url=https://integrations.emergentagent.com
+preview_endpoint=https://dove-wellness.preview.emergentagent.com
+ENABLE_RELOAD=true
+SHLVL=0
+KUBERNETES_PORT_443_TCP_PROTO=tcp
+KUBERNETES_PORT_443_TCP_ADDR=34.118.224.1
+KUBERNETES_SERVICE_HOST=34.118.224.1
+KUBERNETES_PORT=tcp://34.118.224.1:443
+KUBERNETES_PORT_443_TCP_PORT=443
+PATH=/root/.venv/bin:/opt/plugins-venv/bin:/opt/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+monitor_polling_interval=1
+NEXT_TELEMETRY_DISABLED=1
+NODE_VERSION=20
+DEBIAN_FRONTEND=noninteractive
+_=/usr/bin/env file fixed, the image is uploaded but not showing. (PENDING)
+- **User:** Provides a video showing the local environment setup and a successful upload. (DONE)
+- **User:** States they will test the image upload fix. Also requests content management for the text in the hero section. (PENDING)
+- **User:** Reports the  change broke the build and asks to revert. (PENDING)
 
 **Project Health Check:**
--   **Broken**: The frontend local development environment is currently broken due to the  error.
+-   **Broken**: None. The frontend build and image upload issues, which were the main blockers, are now resolved.
 -   **Mocked**: None.
 
 **3rd Party Integrations**
--   **GoDaddy SMTP**: For sending emails. Requires user-provided credentials.
--   **Microsoft Graph API**: Alternative for sending emails. Requires user-provided credentials from an Azure App Registration.
+- **GoDaddy SMTP**: For sending emails.
+- **Microsoft Graph API**: Alternative for sending emails.
+- **Multer**: Used in the Node.js backend for handling , primarily for image uploads.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES
+-   **Testing agent used after significant changes**: NO
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None
--   **Known regressions**: The local development server () is currently crashing.
+-   **Known regressions**: The frontend build process is fragile. Any deviation from the current  setup is likely to reintroduce build errors on the user's specific Node.js version.
 
 **Credentials to test flow:**
 -   **Admin URL**: 
 -   **Username**: 
--   **Password**: </analysis>
+-   **Password**: 
+
+**What agent forgot to execute**
+The agent struggled significantly to diagnose the root cause of the user's environment-specific build failures. It cycled through several incorrect solutions (Vite, disabling ESLint, downgrading React) before finally analyzing the user's provided reference project () to find the correct solution (). This caused significant user frustration and wasted time. The agent should have requested to analyze the working reference project much earlier in the debugging process.</analysis>
