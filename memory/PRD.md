@@ -54,6 +54,13 @@ Reflexology business website for White Dove Wellness - Holistic Therapies. Singl
 - [x] Auth service with JWT (20 min access, 5 hr refresh)
 - [x] Email service (GoDaddy SMTP + Microsoft Graph toggle)
 - [x] MongoDB with proper indexes
+- [x] Image upload with Multer (stored in backend/public/uploads)
+- [x] Static file serving via Express for uploaded images
+
+### Build System (Feb 2026)
+- [x] Frontend uses @craco/craco for webpack configuration
+- [x] Compatible with Node.js v24+ environments
+- [x] Webpack alias for '@/' to 'src/' directory
 
 ## Prioritized Backlog
 
