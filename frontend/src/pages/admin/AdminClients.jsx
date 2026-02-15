@@ -198,13 +198,12 @@ export default function AdminClients() {
           <div className="space-y-6">
             {/* Close Button */}
             <Button 
-              variant="outline" 
               onClick={closeClientDetail}
-              className="mb-4"
+              className="mb-4 bg-slate-700 hover:bg-slate-800 text-white px-5 py-2 shadow-md"
               data-testid="close-client-btn"
             >
               <ChevronLeft size={18} className="mr-2" />
-              Back to Client List
+              Close
             </Button>
 
             {/* Client Info Card */}
