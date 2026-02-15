@@ -42,6 +42,10 @@ Reflexology business website for White Dove Wellness - Holistic Therapies. Singl
 - [x] Client management with accordion-style UI (Feb 15, 2026)
   - Click client to view details (hides list)
   - Styled "Close" button to return to list
+- [x] Client search and filtering (Feb 15, 2026)
+  - Instant search by name, email, or phone
+  - Filter chips: All Clients, Has Email, Has Phone
+  - Clear filters button
 - [x] Client notes management
 - [x] Affiliations CRUD management
 - [x] Policies CRUD management
