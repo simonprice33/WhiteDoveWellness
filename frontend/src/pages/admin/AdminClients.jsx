@@ -4,7 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog';
-import { Plus, Pencil, Trash2, Search, User, FileText } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, User, FileText, X, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminClients() {
@@ -46,6 +46,11 @@ export default function AdminClients() {
   const selectClient = async (client) => {
     setSelectedClient(client);
     await loadClientNotes(client.id);
+  };
+
+  const closeClientDetail = () => {
+    setSelectedClient(null);
+    setClientNotes([]);
   };
 
   const openDialog = (client = null) => {
@@ -130,20 +135,26 @@ export default function AdminClients() {
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="relative mb-6">
-        <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-        <Input
-          value={searchTerm}
-          onChange={(e) => { setSearchTerm(e.target.value); loadClients(); }}
-          placeholder="Search clients..."
-          className="pl-10"
-          data-testid="client-search-input"
-        />
-      </div>
+      {/* Search - only show when no client selected */}
+      {!selectedClient && (
+        <div className="relative mb-6">
+          <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Input
+            value={searchTerm}
+            onChange={(e) => { setSearchTerm(e.target.value); loadClients(); }}
+            placeholder="Search clients..."
+            className="pl-10"
+            data-testid="client-search-input"
+          />
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Client List */}
+      {/* Client List - show when no client selected */}
+      <div 
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          selectedClient ? 'max-h-0 opacity-0' : 'max-h-[2000px] opacity-100'
+        }`}
+      >
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
           <div className="p-4 border-b border-slate-100">
             <h2 className="font-medium text-slate-800">All Clients ({clients.length})</h2>
@@ -153,94 +164,128 @@ export default function AdminClients() {
           ) : clients.length === 0 ? (
             <div className="p-8 text-center text-slate-500">No clients found</div>
           ) : (
-            <div className="divide-y divide-slate-50 max-h-[500px] overflow-y-auto">
+            <div className="divide-y divide-slate-50">
               {clients.map((client) => (
                 <button
                   key={client.id}
                   onClick={() => selectClient(client)}
-                  className={`w-full text-left p-4 hover:bg-slate-50 ${selectedClient?.id === client.id ? 'bg-[#9F87C4]/5' : ''}`}
+                  className="w-full text-left p-4 hover:bg-slate-50 transition-colors"
                   data-testid={`client-item-${client.id}`}
                 >
-                  <p className="font-medium text-slate-800">{client.first_name} {client.last_name}</p>
-                  <p className="text-sm text-slate-500">{client.email || client.phone || 'No contact'}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#9F87C4]/10 flex items-center justify-center flex-shrink-0">
+                      <User size={20} className="text-[#9F87C4]" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-800">{client.first_name} {client.last_name}</p>
+                      <p className="text-sm text-slate-500">{client.email || client.phone || 'No contact'}</p>
+                    </div>
+                  </div>
                 </button>
               ))}
             </div>
           )}
         </div>
+      </div>
 
-        {/* Client Detail */}
-        <div className="lg:col-span-2 space-y-6">
-          {selectedClient ? (
-            <>
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-[#9F87C4]/10 flex items-center justify-center">
-                      <User size={32} className="text-[#9F87C4]" />
-                    </div>
-                    <div>
-                      <h2 className="font-serif text-2xl text-slate-800">{selectedClient.first_name} {selectedClient.last_name}</h2>
-                      <p className="text-slate-500">{selectedClient.email}</p>
-                    </div>
+      {/* Client Detail - show when client selected */}
+      <div 
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          selectedClient ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        {selectedClient && (
+          <div className="space-y-6">
+            {/* Close Button */}
+            <Button 
+              variant="outline" 
+              onClick={closeClientDetail}
+              className="mb-4"
+              data-testid="close-client-btn"
+            >
+              <ChevronLeft size={18} className="mr-2" />
+              Back to Client List
+            </Button>
+
+            {/* Client Info Card */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-[#9F87C4]/10 flex items-center justify-center">
+                    <User size={32} className="text-[#9F87C4]" />
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => openDialog(selectedClient)}><Pencil size={16} /></Button>
-                    <Button variant="outline" size="sm" className="text-red-500" onClick={() => handleDelete(selectedClient)}><Trash2 size={16} /></Button>
+                  <div>
+                    <h2 className="font-serif text-2xl text-slate-800">{selectedClient.first_name} {selectedClient.last_name}</h2>
+                    <p className="text-slate-500">{selectedClient.email}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-slate-500">Phone:</span> {selectedClient.phone || 'N/A'}</div>
-                  <div><span className="text-slate-500">DOB:</span> {selectedClient.date_of_birth || 'N/A'}</div>
-                  <div className="col-span-2"><span className="text-slate-500">Address:</span> {selectedClient.address || 'N/A'}</div>
-                </div>
-                {selectedClient.medical_notes && (
-                  <div className="mt-4 p-4 bg-amber-50 rounded-xl">
-                    <h4 className="text-sm font-medium text-amber-800 mb-2">Medical Notes</h4>
-                    <p className="text-sm text-amber-700">{selectedClient.medical_notes}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Notes */}
-              <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                  <h3 className="font-medium text-slate-800">Session Notes</h3>
-                  <Button size="sm" onClick={() => setNoteDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-note-btn">
-                    <Plus size={16} className="mr-1" />Add Note
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => openDialog(selectedClient)}>
+                    <Pencil size={16} className="mr-1" /> Edit
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(selectedClient)}>
+                    <Trash2 size={16} className="mr-1" /> Delete
                   </Button>
                 </div>
-                {clientNotes.length === 0 ? (
-                  <div className="p-8 text-center text-slate-500">No notes yet</div>
-                ) : (
-                  <div className="divide-y divide-slate-50 max-h-[300px] overflow-y-auto">
-                    {clientNotes.map((note) => (
-                      <div key={note.id} className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="text-slate-800">{note.note}</p>
-                            <p className="text-xs text-slate-400 mt-2">
-                              {note.session_date && `Session: ${note.session_date} • `}
-                              {new Date(note.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <Button variant="ghost" size="icon" className="text-red-500" onClick={() => handleDeleteNote(note.id)}>
-                            <Trash2 size={14} />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            </>
-          ) : (
-            <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center text-slate-500">
-              <FileText size={48} className="mx-auto mb-4 opacity-30" />
-              <p>Select a client to view details</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <span className="text-slate-500 block text-xs uppercase tracking-wide mb-1">Phone</span>
+                  <span className="text-slate-800">{selectedClient.phone || 'N/A'}</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <span className="text-slate-500 block text-xs uppercase tracking-wide mb-1">Date of Birth</span>
+                  <span className="text-slate-800">{selectedClient.date_of_birth || 'N/A'}</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-lg md:col-span-2">
+                  <span className="text-slate-500 block text-xs uppercase tracking-wide mb-1">Address</span>
+                  <span className="text-slate-800">{selectedClient.address || 'N/A'}</span>
+                </div>
+              </div>
+              {selectedClient.medical_notes && (
+                <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                  <h4 className="text-sm font-medium text-amber-800 mb-2">Medical Notes</h4>
+                  <p className="text-sm text-amber-700">{selectedClient.medical_notes}</p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+
+            {/* Session Notes */}
+            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 className="font-medium text-slate-800">Session Notes ({clientNotes.length})</h3>
+                <Button size="sm" onClick={() => setNoteDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-note-btn">
+                  <Plus size={16} className="mr-1" />Add Note
+                </Button>
+              </div>
+              {clientNotes.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <FileText size={32} className="mx-auto mb-2 opacity-30" />
+                  <p>No session notes yet</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-50">
+                  {clientNotes.map((note) => (
+                    <div key={note.id} className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-slate-800">{note.note}</p>
+                          <p className="text-xs text-slate-400 mt-2">
+                            {note.session_date && <span className="bg-slate-100 px-2 py-0.5 rounded mr-2">Session: {note.session_date}</span>}
+                            Added: {new Date(note.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDeleteNote(note.id)}>
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Client Dialog */}
