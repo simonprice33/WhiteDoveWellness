@@ -161,17 +161,69 @@ export default function AdminClients() {
         </Button>
       </div>
 
-      {/* Search - only show when no client selected */}
+      {/* Search and Filters - only show when no client selected */}
       {!selectedClient && (
-        <div className="relative mb-6">
-          <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <Input
-            value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); loadClients(); }}
-            placeholder="Search clients..."
-            className="pl-10"
-            data-testid="client-search-input"
-          />
+        <div className="space-y-4 mb-6">
+          {/* Search Input */}
+          <div className="relative">
+            <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by name, email, or phone..."
+              className="pl-10"
+              data-testid="client-search-input"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                data-testid="clear-search-btn"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+          
+          {/* Filter Chips */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <Filter size={16} className="text-slate-400" />
+            <button
+              onClick={() => setActiveFilter('all')}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                activeFilter === 'all' 
+                  ? 'bg-[#9F87C4] text-white' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              data-testid="filter-all"
+            >
+              All Clients
+            </button>
+            <button
+              onClick={() => setActiveFilter('with-email')}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                activeFilter === 'with-email' 
+                  ? 'bg-[#9F87C4] text-white' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              data-testid="filter-with-email"
+            >
+              <Mail size={14} />
+              Has Email
+            </button>
+            <button
+              onClick={() => setActiveFilter('with-phone')}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                activeFilter === 'with-phone' 
+                  ? 'bg-[#9F87C4] text-white' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              data-testid="filter-with-phone"
+            >
+              <Phone size={14} />
+              Has Phone
+            </button>
+          </div>
         </div>
       )}
 
