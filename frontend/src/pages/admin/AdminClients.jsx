@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { adminApi } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog';
-import { Plus, Pencil, Trash2, Search, User, FileText, X, ChevronLeft } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, User, FileText, X, ChevronLeft, Mail, Phone, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminClients() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'with-email', 'with-phone'
   const [selectedClient, setSelectedClient] = useState(null);
   const [clientNotes, setClientNotes] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -25,7 +26,7 @@ export default function AdminClients() {
 
   const loadClients = async () => {
     try {
-      const response = await adminApi.getClients(searchTerm);
+      const response = await adminApi.getClients();
       setClients(response.data.clients || []);
     } catch (error) {
       toast.error('Failed to load clients');
@@ -33,6 +34,31 @@ export default function AdminClients() {
       setLoading(false);
     }
   };
+
+  // Client-side filtering for instant search
+  const filteredClients = useMemo(() => {
+    let result = clients;
+    
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(client => 
+        client.first_name?.toLowerCase().includes(term) ||
+        client.last_name?.toLowerCase().includes(term) ||
+        client.email?.toLowerCase().includes(term) ||
+        client.phone?.includes(term)
+      );
+    }
+    
+    // Apply category filter
+    if (activeFilter === 'with-email') {
+      result = result.filter(client => client.email && client.email.trim() !== '');
+    } else if (activeFilter === 'with-phone') {
+      result = result.filter(client => client.phone && client.phone.trim() !== '');
+    }
+    
+    return result;
+  }, [clients, searchTerm, activeFilter]);
 
   const loadClientNotes = async (clientId) => {
     try {
