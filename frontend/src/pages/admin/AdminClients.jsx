@@ -346,15 +346,9 @@ export default function AdminClients() {
                   </div>
                 )}
               </div>
-            </>
-          ) : (
-            <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center text-slate-500">
-              <FileText size={48} className="mx-auto mb-4 opacity-30" />
-              <p>Select a client to view details</p>
             </div>
           )}
         </div>
-      </div>
 
       {/* Client Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
