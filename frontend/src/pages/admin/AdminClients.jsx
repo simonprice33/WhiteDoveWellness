@@ -4,7 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog';
-import { Plus, Pencil, Trash2, Search, User, FileText, ClipboardList, Eye } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, User, FileText, ClipboardList, Eye, X, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import ConsultationForm, { ConsultationView } from '../../components/ConsultationForm';
 
