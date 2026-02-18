@@ -131,6 +131,13 @@ export const adminApi = {
   updateClientNote: (clientId, noteId, data) => api.put(`/admin/clients/${clientId}/notes/${noteId}`, data),
   deleteClientNote: (clientId, noteId) => api.delete(`/admin/clients/${clientId}/notes/${noteId}`),
   
+  // Client Consultations
+  getClientConsultations: (clientId) => api.get(`/admin/clients/${clientId}/consultations`),
+  createConsultation: (clientId, data) => api.post(`/admin/clients/${clientId}/consultations`, data),
+  getConsultation: (clientId, consultationId) => api.get(`/admin/clients/${clientId}/consultations/${consultationId}`),
+  updateConsultation: (clientId, consultationId, data) => api.put(`/admin/clients/${clientId}/consultations/${consultationId}`, data),
+  deleteConsultation: (clientId, consultationId) => api.delete(`/admin/clients/${clientId}/consultations/${consultationId}`),
+  
   // Image Upload
   uploadImage: (formData) => api.post('/admin/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
