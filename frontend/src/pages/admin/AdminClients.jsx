@@ -4,8 +4,9 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog';
-import { Plus, Pencil, Trash2, Search, User, FileText, X, ChevronLeft, Mail, Phone, Filter } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, User, FileText, X, ChevronLeft, Mail, Phone, Filter, ClipboardList, Eye } from 'lucide-react';
 import { toast } from 'sonner';
+import ConsultationForm, { ConsultationView } from '../../components/ConsultationForm';
 
 export default function AdminClients() {
   const [clients, setClients] = useState([]);
@@ -14,8 +15,11 @@ export default function AdminClients() {
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'with-email', 'with-phone'
   const [selectedClient, setSelectedClient] = useState(null);
   const [clientNotes, setClientNotes] = useState([]);
+  const [clientConsultations, setClientConsultations] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
+  const [consultationDialogOpen, setConsultationDialogOpen] = useState(false);
+  const [viewConsultation, setViewConsultation] = useState(null);
   const [editingClient, setEditingClient] = useState(null);
   const [formData, setFormData] = useState({ first_name: '', last_name: '', email: '', phone: '', address: '', date_of_birth: '', medical_notes: '' });
   const [noteFormData, setNoteFormData] = useState({ note: '', session_date: '' });
