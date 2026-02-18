@@ -384,41 +384,6 @@ export default function AdminClients() {
               )}
             </div>
 
-            {/* Session Notes */}
-            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="font-medium text-slate-800">Session Notes ({clientNotes.length})</h3>
-                <Button size="sm" onClick={() => setNoteDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-note-btn">
-                  <Plus size={16} className="mr-1" />Add Note
-                </Button>
-              </div>
-              {clientNotes.length === 0 ? (
-                <div className="p-8 text-center text-slate-500">
-                  <FileText size={32} className="mx-auto mb-2 opacity-30" />
-                  <p>No session notes yet</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-slate-50">
-                  {clientNotes.map((note) => (
-                    <div key={note.id} className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <p className="text-slate-800">{note.note}</p>
-                          <p className="text-xs text-slate-400 mt-2">
-                            {note.session_date && <span className="bg-slate-100 px-2 py-0.5 rounded mr-2">Session: {note.session_date}</span>}
-                            Added: {new Date(note.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDeleteNote(note.id)}>
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* Consultations */}
             <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between">
@@ -461,6 +426,41 @@ export default function AdminClients() {
                             <Trash2 size={14} />
                           </Button>
                         </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Session Notes */}
+            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 className="font-medium text-slate-800">Session Notes ({clientNotes.length})</h3>
+                <Button size="sm" onClick={() => setNoteDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-note-btn">
+                  <Plus size={16} className="mr-1" />Add Note
+                </Button>
+              </div>
+              {clientNotes.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <FileText size={32} className="mx-auto mb-2 opacity-30" />
+                  <p>No session notes yet</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-50">
+                  {clientNotes.map((note) => (
+                    <div key={note.id} className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-slate-800">{note.note}</p>
+                          <p className="text-xs text-slate-400 mt-2">
+                            {note.session_date && <span className="bg-slate-100 px-2 py-0.5 rounded mr-2">Session: {note.session_date}</span>}
+                            Added: {new Date(note.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDeleteNote(note.id)}>
+                          <Trash2 size={14} />
+                        </Button>
                       </div>
                     </div>
                   ))}
