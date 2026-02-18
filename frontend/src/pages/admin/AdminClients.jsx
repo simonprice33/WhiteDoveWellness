@@ -418,6 +418,55 @@ export default function AdminClients() {
                 </div>
               )}
             </div>
+
+            {/* Consultations */}
+            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 className="font-medium text-slate-800">Consultations ({clientConsultations.length})</h3>
+                <Button size="sm" onClick={() => setConsultationDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-consultation-btn">
+                  <Plus size={16} className="mr-1" />New Consultation
+                </Button>
+              </div>
+              {clientConsultations.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <ClipboardList size={32} className="mx-auto mb-2 opacity-30" />
+                  <p>No consultation records yet</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-50">
+                  {clientConsultations.map((consultation) => (
+                    <div key={consultation.id} className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-800">
+                            Consultation - {new Date(consultation.consultation_date).toLocaleDateString('en-GB')}
+                          </p>
+                          <div className="text-sm text-slate-500 mt-1">
+                            {consultation.treatment_objectives?.length > 0 && (
+                              <p>Objectives: {consultation.treatment_objectives.slice(0, 3).join(', ')}{consultation.treatment_objectives.length > 3 ? '...' : ''}</p>
+                            )}
+                            {consultation.contra_indications?.length > 0 && (
+                              <p className="text-amber-600">Contra-indications: {consultation.contra_indications.length} noted</p>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-2">
+                            Added: {new Date(consultation.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-700 hover:bg-slate-100" onClick={() => setViewConsultation(consultation)} data-testid={`view-consultation-${consultation.id}`}>
+                            <Eye size={14} />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDeleteConsultation(consultation.id)}>
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
