@@ -32,7 +32,8 @@ class DatabaseConfig {
         policies: this.db.collection('policies'),
         siteSettings: this.db.collection('site_settings'),
         clients: this.db.collection('clients'),
-        clientNotes: this.db.collection('client_notes')
+        clientNotes: this.db.collection('client_notes'),
+        consultations: this.db.collection('consultations')
       };
 
       // Create indexes
