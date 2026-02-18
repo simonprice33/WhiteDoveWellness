@@ -170,40 +170,45 @@ export default function AdminClients() {
           <h1 className="font-serif text-3xl text-slate-800">Clients</h1>
           <p className="text-slate-600 mt-1">Manage client information, consultations and notes</p>
         </div>
-        <Button onClick={() => openDialog()} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-client-btn">
-          <Plus size={18} className="mr-2" />Add Client
-        </Button>
+        {!selectedClient && (
+          <Button onClick={() => openDialog()} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-client-btn">
+            <Plus size={18} className="mr-2" />Add Client
+          </Button>
+        )}
       </div>
 
-      {/* Search */}
-      <div className="relative mb-6">
-        <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-        <Input
-          value={searchTerm}
-          onChange={(e) => { setSearchTerm(e.target.value); loadClients(); }}
-          placeholder="Search clients..."
-          className="pl-10"
-          data-testid="client-search-input"
-        />
-      </div>
+      {/* Client List - Hidden when client selected */}
+      <div className={`transition-all duration-300 ease-in-out ${selectedClient ? 'max-h-0 opacity-0 overflow-hidden' : 'max-h-[2000px] opacity-100'}`}>
+        {/* Search */}
+        <div className="relative mb-6">
+          <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Input
+            value={searchTerm}
+            onChange={(e) => { setSearchTerm(e.target.value); loadClients(); }}
+            placeholder="Search clients..."
+            className="pl-10"
+            data-testid="client-search-input"
+          />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Client List */}
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-          <div className="p-4 border-b border-slate-100">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
             <h2 className="font-medium text-slate-800">All Clients ({clients.length})</h2>
+            <Button onClick={() => openDialog()} size="sm" className="bg-[#9F87C4] hover:bg-[#8A6EB5]">
+              <Plus size={16} className="mr-1" />Add Client
+            </Button>
           </div>
           {loading ? (
             <div className="p-8 text-center text-slate-500">Loading...</div>
           ) : clients.length === 0 ? (
             <div className="p-8 text-center text-slate-500">No clients found</div>
           ) : (
-            <div className="divide-y divide-slate-50 max-h-[500px] overflow-y-auto">
+            <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">
               {clients.map((client) => (
                 <button
                   key={client.id}
                   onClick={() => selectClient(client)}
-                  className={`w-full text-left p-4 hover:bg-slate-50 ${selectedClient?.id === client.id ? 'bg-[#9F87C4]/5' : ''}`}
+                  className="w-full text-left p-4 hover:bg-slate-50 transition-colors"
                   data-testid={`client-item-${client.id}`}
                 >
                   <p className="font-medium text-slate-800">{client.first_name} {client.last_name}</p>
@@ -213,51 +218,64 @@ export default function AdminClients() {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Client Detail */}
-        <div className="lg:col-span-2 space-y-6">
-          {selectedClient ? (
-            <>
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-[#9F87C4]/10 flex items-center justify-center">
-                      <User size={32} className="text-[#9F87C4]" />
-                    </div>
-                    <div>
-                      <h2 className="font-serif text-2xl text-slate-800">{selectedClient.first_name} {selectedClient.last_name}</h2>
-                      <p className="text-slate-500">{selectedClient.email}</p>
-                    </div>
+      {/* Client Detail - Shown when client selected */}
+      <div className={`transition-all duration-300 ease-in-out ${selectedClient ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+        {selectedClient && (
+          <div className="space-y-6">
+            {/* Close Button */}
+            <Button 
+              variant="outline" 
+              onClick={closeClientDetail}
+              className="mb-2"
+              data-testid="close-client-btn"
+            >
+              <ChevronLeft size={18} className="mr-2" />
+              Back to Client List
+            </Button>
+
+            {/* Client Info Card */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-[#9F87C4]/10 flex items-center justify-center">
+                    <User size={32} className="text-[#9F87C4]" />
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => openDialog(selectedClient)}><Pencil size={16} /></Button>
-                    <Button variant="outline" size="sm" className="text-red-500" onClick={() => handleDelete(selectedClient)}><Trash2 size={16} /></Button>
+                  <div>
+                    <h2 className="font-serif text-2xl text-slate-800">{selectedClient.first_name} {selectedClient.last_name}</h2>
+                    <p className="text-slate-500">{selectedClient.email}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-slate-500">Phone:</span> {selectedClient.phone || 'N/A'}</div>
-                  <div><span className="text-slate-500">DOB:</span> {selectedClient.date_of_birth || 'N/A'}</div>
-                  <div className="col-span-2"><span className="text-slate-500">Address:</span> {selectedClient.address || 'N/A'}</div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => openDialog(selectedClient)}><Pencil size={16} /></Button>
+                  <Button variant="outline" size="sm" className="text-red-500" onClick={() => handleDelete(selectedClient)}><Trash2 size={16} /></Button>
                 </div>
-                {selectedClient.medical_notes && (
-                  <div className="mt-4 p-4 bg-amber-50 rounded-xl">
-                    <h4 className="text-sm font-medium text-amber-800 mb-2">Medical Notes</h4>
-                    <p className="text-sm text-amber-700">{selectedClient.medical_notes}</p>
-                  </div>
-                )}
               </div>
-
-              {/* Consultations */}
-              <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ClipboardList size={20} className="text-[#9F87C4]" />
-                    <h3 className="font-medium text-slate-800">Consultation Records ({consultations.length})</h3>
-                  </div>
-                  <Button size="sm" onClick={() => setConsultationDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-consultation-btn">
-                    <Plus size={16} className="mr-1" />New Consultation
-                  </Button>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div><span className="text-slate-500">Phone:</span> {selectedClient.phone || 'N/A'}</div>
+                <div><span className="text-slate-500">DOB:</span> {selectedClient.date_of_birth || 'N/A'}</div>
+                <div className="col-span-2"><span className="text-slate-500">Address:</span> {selectedClient.address || 'N/A'}</div>
+              </div>
+              {selectedClient.medical_notes && (
+                <div className="mt-4 p-4 bg-amber-50 rounded-xl">
+                  <h4 className="text-sm font-medium text-amber-800 mb-2">Medical Notes</h4>
+                  <p className="text-sm text-amber-700">{selectedClient.medical_notes}</p>
                 </div>
+              )}
+            </div>
+
+            {/* Consultations */}
+            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ClipboardList size={20} className="text-[#9F87C4]" />
+                  <h3 className="font-medium text-slate-800">Consultation Records ({consultations.length})</h3>
+                </div>
+                <Button size="sm" onClick={() => setConsultationDialogOpen(true)} className="bg-[#9F87C4] hover:bg-[#8A6EB5]" data-testid="add-consultation-btn">
+                  <Plus size={16} className="mr-1" />New Consultation
+                </Button>
+              </div>
                 {consultations.length === 0 ? (
                   <div className="p-8 text-center text-slate-500">No consultation records</div>
                 ) : (
