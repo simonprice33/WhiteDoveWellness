@@ -354,6 +354,192 @@ class ClientController {
       });
     }
   };
+
+  // ==================== CONSULTATIONS ====================
+
+  // GET /api/admin/clients/:id/consultations
+  listConsultations = async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const client = await this.collections.clients.findOne({ id });
+      if (!client) {
+        return res.status(404).json({
+          success: false,
+          message: 'Client not found'
+        });
+      }
+
+      const consultations = await this.collections.consultations
+        .find({ client_id: id }, { projection: { _id: 0 } })
+        .sort({ consultation_date: -1 })
+        .toArray();
+
+      res.json({
+        success: true,
+        consultations
+      });
+    } catch (error) {
+      console.error('List consultations error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to list consultations'
+      });
+    }
+  };
+
+  // POST /api/admin/clients/:id/consultations
+  createConsultation = async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const client = await this.collections.clients.findOne({ id });
+      if (!client) {
+        return res.status(404).json({
+          success: false,
+          message: 'Client not found'
+        });
+      }
+
+      const now = new Date().toISOString();
+      const consultation = {
+        id: uuidv4(),
+        client_id: id,
+        ...req.body,
+        created_at: now,
+        updated_at: now,
+        created_by: req.user.id
+      };
+
+      await this.collections.consultations.insertOne(consultation);
+
+      console.log(`✅ Created consultation for client: ${id}`);
+
+      res.status(201).json({
+        success: true,
+        consultation
+      });
+    } catch (error) {
+      console.error('Create consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create consultation'
+      });
+    }
+  };
+
+  // GET /api/admin/clients/:id/consultations/:consultationId
+  getConsultation = async (req, res) => {
+    try {
+      const { id, consultationId } = req.params;
+
+      const consultation = await this.collections.consultations.findOne(
+        { id: consultationId, client_id: id },
+        { projection: { _id: 0 } }
+      );
+
+      if (!consultation) {
+        return res.status(404).json({
+          success: false,
+          message: 'Consultation not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        consultation
+      });
+    } catch (error) {
+      console.error('Get consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get consultation'
+      });
+    }
+  };
+
+  // PUT /api/admin/clients/:id/consultations/:consultationId
+  updateConsultation = async (req, res) => {
+    try {
+      const { id, consultationId } = req.params;
+
+      const consultation = await this.collections.consultations.findOne({
+        id: consultationId,
+        client_id: id
+      });
+
+      if (!consultation) {
+        return res.status(404).json({
+          success: false,
+          message: 'Consultation not found'
+        });
+      }
+
+      const updateData = {
+        ...req.body,
+        updated_at: new Date().toISOString()
+      };
+      delete updateData.id;
+      delete updateData.client_id;
+      delete updateData.created_at;
+      delete updateData.created_by;
+
+      await this.collections.consultations.updateOne(
+        { id: consultationId },
+        { $set: updateData }
+      );
+
+      const updated = await this.collections.consultations.findOne(
+        { id: consultationId },
+        { projection: { _id: 0 } }
+      );
+
+      res.json({
+        success: true,
+        consultation: updated
+      });
+    } catch (error) {
+      console.error('Update consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update consultation'
+      });
+    }
+  };
+
+  // DELETE /api/admin/clients/:id/consultations/:consultationId
+  deleteConsultation = async (req, res) => {
+    try {
+      const { id, consultationId } = req.params;
+
+      const consultation = await this.collections.consultations.findOne({
+        id: consultationId,
+        client_id: id
+      });
+
+      if (!consultation) {
+        return res.status(404).json({
+          success: false,
+          message: 'Consultation not found'
+        });
+      }
+
+      await this.collections.consultations.deleteOne({ id: consultationId });
+
+      console.log(`✅ Deleted consultation: ${consultationId}`);
+
+      res.json({
+        success: true,
+        message: 'Consultation deleted'
+      });
+    } catch (error) {
+      console.error('Delete consultation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete consultation'
+      });
+    }
+  };
 }
 
 module.exports = ClientController;
