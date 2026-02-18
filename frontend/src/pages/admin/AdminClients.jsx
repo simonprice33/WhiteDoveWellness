@@ -503,6 +503,29 @@ export default function AdminClients() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Consultation Form Dialog */}
+      <Dialog open={consultationDialogOpen} onOpenChange={setConsultationDialogOpen}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh]" data-testid="consultation-dialog">
+          <DialogHeader><DialogTitle className="font-serif text-xl">New Consultation</DialogTitle></DialogHeader>
+          <ConsultationForm 
+            client={selectedClient} 
+            onClose={() => setConsultationDialogOpen(false)} 
+            onSaved={() => loadClientConsultations(selectedClient.id)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* View Consultation Dialog */}
+      <Dialog open={!!viewConsultation} onOpenChange={() => setViewConsultation(null)}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh]" data-testid="view-consultation-dialog">
+          <DialogHeader><DialogTitle className="font-serif text-xl">Consultation Details</DialogTitle></DialogHeader>
+          <ConsultationView 
+            consultation={viewConsultation} 
+            onClose={() => setViewConsultation(null)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
