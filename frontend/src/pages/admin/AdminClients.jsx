@@ -73,14 +73,36 @@ export default function AdminClients() {
     }
   };
 
+  const loadClientConsultations = async (clientId) => {
+    try {
+      const response = await adminApi.getClientConsultations(clientId);
+      setClientConsultations(response.data.consultations || []);
+    } catch (error) {
+      console.error('Failed to load consultations');
+    }
+  };
+
   const selectClient = async (client) => {
     setSelectedClient(client);
     await loadClientNotes(client.id);
+    await loadClientConsultations(client.id);
   };
 
   const closeClientDetail = () => {
     setSelectedClient(null);
     setClientNotes([]);
+    setClientConsultations([]);
+  };
+
+  const handleDeleteConsultation = async (consultationId) => {
+    if (!window.confirm('Delete this consultation record?')) return;
+    try {
+      await adminApi.deleteConsultation(selectedClient.id, consultationId);
+      toast.success('Consultation deleted');
+      loadClientConsultations(selectedClient.id);
+    } catch (error) {
+      toast.error('Failed to delete consultation');
+    }
   };
 
   const openDialog = (client = null) => {
