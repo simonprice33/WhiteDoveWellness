@@ -65,6 +65,12 @@ export default function AdminClients() {
     ]);
   };
 
+  const closeClientDetail = () => {
+    setSelectedClient(null);
+    setClientNotes([]);
+    setConsultations([]);
+  };
+
   const openDialog = (client = null) => {
     if (client) {
       setEditingClient(client);
