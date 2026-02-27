@@ -307,6 +307,14 @@ export default function AdminClients() {
                             <Eye size={16} className="mr-1" />View
                           </Button>
                           <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditConsultation(consultation)}
+                            data-testid={`edit-consultation-${consultation.id}`}
+                          >
+                            <Pencil size={16} className="mr-1" />Edit
+                          </Button>
+                          <Button
                             variant="ghost"
                             size="icon"
                             className="text-red-500 h-8 w-8"
