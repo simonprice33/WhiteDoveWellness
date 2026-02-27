@@ -19,6 +19,7 @@ export default function AdminClients() {
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [consultationDialogOpen, setConsultationDialogOpen] = useState(false);
   const [viewConsultationDialogOpen, setViewConsultationDialogOpen] = useState(false);
+  const [editConsultationDialogOpen, setEditConsultationDialogOpen] = useState(false);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [editingClient, setEditingClient] = useState(null);
   const [formData, setFormData] = useState({ first_name: '', last_name: '', email: '', phone: '', address: '', date_of_birth: '', medical_notes: '' });
