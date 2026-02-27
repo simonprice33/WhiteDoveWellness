@@ -389,7 +389,7 @@ export default function ConsultationForm({ client, consultation, onClose, onSave
       <div className="sticky bottom-0 bg-white pt-4 pb-2 border-t flex justify-end gap-3">
         <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
         <Button type="submit" disabled={saving} className="bg-[#9F87C4] hover:bg-[#8A6EB5]">
-          {saving ? 'Saving...' : 'Save Consultation'}
+          {saving ? 'Saving...' : (isEditing ? 'Update Consultation' : 'Save Consultation')}
         </Button>
       </div>
     </form>
