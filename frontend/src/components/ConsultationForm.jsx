@@ -45,8 +45,8 @@ const getInitialFormData = (client) => ({
   therapist_signature_date: ''
 });
 
-export default function ConsultationForm({ client, onClose, onSaved }) {
-  const [formData, setFormData] = useState(getInitialFormData(client));
+export default function ConsultationForm({ client, consultation, onClose, onSaved }) {
+  const [formData, setFormData] = useState(consultation || getInitialFormData(client));
   const [saving, setSaving] = useState(false);
   const [options, setOptions] = useState({
     contra_indications: [],
@@ -54,9 +54,25 @@ export default function ConsultationForm({ client, onClose, onSaved }) {
     treatment_objectives: []
   });
 
+  const isEditing = !!consultation;
+
   useEffect(() => {
     loadOptions();
   }, []);
+
+  useEffect(() => {
+    // If editing, populate form with consultation data
+    if (consultation) {
+      setFormData({
+        ...getInitialFormData(client),
+        ...consultation,
+        // Ensure date formats are correct for inputs
+        consultation_date: consultation.consultation_date?.split('T')[0] || '',
+        client_signature_date: consultation.client_signature_date?.split('T')[0] || '',
+        therapist_signature_date: consultation.therapist_signature_date?.split('T')[0] || ''
+      });
+    }
+  }, [consultation, client]);
 
   const loadOptions = async () => {
     try {
@@ -92,12 +108,17 @@ export default function ConsultationForm({ client, onClose, onSaved }) {
     e.preventDefault();
     setSaving(true);
     try {
-      await adminApi.createConsultation(client.id, formData);
-      toast.success('Consultation saved');
+      if (isEditing) {
+        await adminApi.updateConsultation(client.id, consultation.id, formData);
+        toast.success('Consultation updated');
+      } else {
+        await adminApi.createConsultation(client.id, formData);
+        toast.success('Consultation saved');
+      }
       onSaved && onSaved();
       onClose();
     } catch (error) {
-      toast.error('Failed to save consultation');
+      toast.error(isEditing ? 'Failed to update consultation' : 'Failed to save consultation');
     } finally {
       setSaving(false);
     }
