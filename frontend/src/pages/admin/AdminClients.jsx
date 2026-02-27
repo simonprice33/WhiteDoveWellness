@@ -148,6 +148,11 @@ export default function AdminClients() {
     setViewConsultationDialogOpen(true);
   };
 
+  const handleEditConsultation = async (consultation) => {
+    setSelectedConsultation(consultation);
+    setEditConsultationDialogOpen(true);
+  };
+
   const handleDeleteConsultation = async (consultationId) => {
     if (!window.confirm('Delete this consultation record?')) return;
     try {
