@@ -435,6 +435,27 @@ export default function AdminClients() {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Edit Consultation Dialog */}
+      <Dialog open={editConsultationDialogOpen} onOpenChange={setEditConsultationDialogOpen}>
+        <DialogContent className="w-[95vw] max-w-[95vw] md:w-[80vw] md:max-w-[80vw] h-[90vh] max-h-[90vh]" data-testid="edit-consultation-dialog">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl flex items-center gap-3">
+              <Pencil className="text-[#9F87C4]" />
+              Edit Consultation
+              <span className="text-sm font-normal text-slate-500 ml-2">
+                {formatDate(selectedConsultation?.consultation_date)}
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          <ConsultationForm 
+            client={selectedClient}
+            consultation={selectedConsultation}
+            onClose={() => setEditConsultationDialogOpen(false)}
+            onSaved={() => loadConsultations(selectedClient.id)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
