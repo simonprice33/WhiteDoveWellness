@@ -19,6 +19,7 @@ export default function AdminClients() {
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [consultationDialogOpen, setConsultationDialogOpen] = useState(false);
   const [viewConsultationDialogOpen, setViewConsultationDialogOpen] = useState(false);
+  const [editConsultationDialogOpen, setEditConsultationDialogOpen] = useState(false);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [editingClient, setEditingClient] = useState(null);
   const [formData, setFormData] = useState({ first_name: '', last_name: '', email: '', phone: '', address: '', date_of_birth: '', medical_notes: '' });
@@ -145,6 +146,11 @@ export default function AdminClients() {
   const handleViewConsultation = async (consultation) => {
     setSelectedConsultation(consultation);
     setViewConsultationDialogOpen(true);
+  };
+
+  const handleEditConsultation = async (consultation) => {
+    setSelectedConsultation(consultation);
+    setEditConsultationDialogOpen(true);
   };
 
   const handleDeleteConsultation = async (consultationId) => {
@@ -301,6 +307,14 @@ export default function AdminClients() {
                             <Eye size={16} className="mr-1" />View
                           </Button>
                           <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditConsultation(consultation)}
+                            data-testid={`edit-consultation-${consultation.id}`}
+                          >
+                            <Pencil size={16} className="mr-1" />Edit
+                          </Button>
+                          <Button
                             variant="ghost"
                             size="icon"
                             className="text-red-500 h-8 w-8"
@@ -418,6 +432,27 @@ export default function AdminClients() {
           <ConsultationView 
             consultation={selectedConsultation}
             onClose={() => setViewConsultationDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Consultation Dialog */}
+      <Dialog open={editConsultationDialogOpen} onOpenChange={setEditConsultationDialogOpen}>
+        <DialogContent className="w-[95vw] max-w-[95vw] md:w-[80vw] md:max-w-[80vw] h-[90vh] max-h-[90vh]" data-testid="edit-consultation-dialog">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl flex items-center gap-3">
+              <Pencil className="text-[#9F87C4]" />
+              Edit Consultation
+              <span className="text-sm font-normal text-slate-500 ml-2">
+                {formatDate(selectedConsultation?.consultation_date)}
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          <ConsultationForm 
+            client={selectedClient}
+            consultation={selectedConsultation}
+            onClose={() => setEditConsultationDialogOpen(false)}
+            onSaved={() => loadConsultations(selectedClient.id)}
           />
         </DialogContent>
       </Dialog>
