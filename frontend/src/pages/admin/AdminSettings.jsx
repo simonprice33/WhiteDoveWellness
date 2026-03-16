@@ -181,6 +181,47 @@ export default function AdminSettings() {
     if (heroInputRefs.current[index]) heroInputRefs.current[index].value = '';
   };
 
+  // About Me helpers
+  const updateAboutMe = (key, value) => {
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, [key]: value }
+    });
+  };
+
+  const addQualification = () => {
+    const qualifications = [...(settings?.about_me?.qualifications || []), ''];
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, qualifications }
+    });
+  };
+
+  const updateQualification = (index, value) => {
+    const qualifications = [...(settings?.about_me?.qualifications || [])];
+    qualifications[index] = value;
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, qualifications }
+    });
+  };
+
+  const removeQualification = (index) => {
+    const qualifications = [...(settings?.about_me?.qualifications || [])];
+    qualifications.splice(index, 1);
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, qualifications }
+    });
+  };
+
+  // About photo upload
+  const handleAboutPhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    handleFileUpload(file, (url) => updateAboutMe('photo_url', url), 'about_photo');
+    if (aboutPhotoInputRef.current) aboutPhotoInputRef.current.value = '';
+  };
+
   if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>;
 
   return (
