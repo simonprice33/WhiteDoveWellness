@@ -95,6 +95,13 @@ class SettingsController {
         subtitle: 'Experience the healing power of holistic therapies in a serene and nurturing environment.',
         button_text: 'Book Your Session'
       },
+      about_me: {
+        enabled: false,
+        name: '',
+        bio: '',
+        qualifications: [],
+        photo_url: ''
+      },
       consultation_options: {
         contra_indications: DEFAULT_CONTRA_INDICATIONS,
         lifestyle_questions: DEFAULT_LIFESTYLE_QUESTIONS,
