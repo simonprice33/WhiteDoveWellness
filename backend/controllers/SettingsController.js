@@ -138,13 +138,24 @@ class SettingsController {
       };
     }
 
+    // Ensure about_me exists with defaults
+    if (!settings.about_me) {
+      settings.about_me = {
+        enabled: false,
+        name: '',
+        bio: '',
+        qualifications: [],
+        photo_url: ''
+      };
+    }
+
     return settings;
   }
 
   // PUT /api/admin/settings (admin)
   update = async (req, res) => {
     try {
-      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'consultation_options'];
+      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options'];
 
       const updateData = {
         id: 'site_settings',
