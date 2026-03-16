@@ -3,7 +3,7 @@ import { adminApi, getImageUrl } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList } from 'lucide-react';
+import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettings() {
@@ -13,6 +13,7 @@ export default function AdminSettings() {
   const [uploading, setUploading] = useState({});
   
   const logoInputRef = useRef(null);
+  const aboutPhotoInputRef = useRef(null);
   const contactInputRef = useRef(null);
   const heroInputRefs = useRef({});
 
