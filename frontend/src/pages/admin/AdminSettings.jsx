@@ -3,7 +3,7 @@ import { adminApi, getImageUrl } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList } from 'lucide-react';
+import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettings() {
@@ -13,6 +13,7 @@ export default function AdminSettings() {
   const [uploading, setUploading] = useState({});
   
   const logoInputRef = useRef(null);
+  const aboutPhotoInputRef = useRef(null);
   const contactInputRef = useRef(null);
   const heroInputRefs = useRef({});
 
@@ -180,6 +181,47 @@ export default function AdminSettings() {
     if (heroInputRefs.current[index]) heroInputRefs.current[index].value = '';
   };
 
+  // About Me helpers
+  const updateAboutMe = (key, value) => {
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, [key]: value }
+    });
+  };
+
+  const addQualification = () => {
+    const qualifications = [...(settings?.about_me?.qualifications || []), ''];
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, qualifications }
+    });
+  };
+
+  const updateQualification = (index, value) => {
+    const qualifications = [...(settings?.about_me?.qualifications || [])];
+    qualifications[index] = value;
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, qualifications }
+    });
+  };
+
+  const removeQualification = (index) => {
+    const qualifications = [...(settings?.about_me?.qualifications || [])];
+    qualifications.splice(index, 1);
+    setSettings({
+      ...settings,
+      about_me: { ...settings?.about_me, qualifications }
+    });
+  };
+
+  // About photo upload
+  const handleAboutPhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    handleFileUpload(file, (url) => updateAboutMe('photo_url', url), 'about_photo');
+    if (aboutPhotoInputRef.current) aboutPhotoInputRef.current.value = '';
+  };
+
   if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>;
 
   return (
@@ -274,6 +316,107 @@ export default function AdminSettings() {
             <div><label className="text-sm font-medium text-slate-700">Email</label><Input type="email" value={settings?.email || ''} onChange={(e) => setSettings({ ...settings, email: e.target.value })} className="mt-1" /></div>
             <div><label className="text-sm font-medium text-slate-700">Phone</label><Input value={settings?.phone || ''} onChange={(e) => setSettings({ ...settings, phone: e.target.value })} className="mt-1" /></div>
             <div><label className="text-sm font-medium text-slate-700">Address</label><Input value={settings?.address || ''} onChange={(e) => setSettings({ ...settings, address: e.target.value })} className="mt-1" /></div>
+          </div>
+        </div>
+
+        {/* About Me */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <User size={20} className="text-[#9F87C4]" />
+            <h2 className="font-serif text-xl text-slate-800">About Me Section</h2>
+          </div>
+          <p className="text-sm text-slate-500 mb-4">This section appears above the Contact section on the homepage when enabled</p>
+          
+          <div className="space-y-4">
+            {/* Enable/Disable Toggle */}
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+              <input
+                type="checkbox"
+                id="about_me_enabled"
+                checked={settings?.about_me?.enabled || false}
+                onChange={(e) => updateAboutMe('enabled', e.target.checked)}
+                className="rounded border-slate-300 w-5 h-5"
+              />
+              <label htmlFor="about_me_enabled" className="text-sm font-medium text-slate-700 cursor-pointer">
+                Show About Me section on homepage
+              </label>
+            </div>
+
+            {/* Name */}
+            <div>
+              <label className="text-sm font-medium text-slate-700">Name / Title</label>
+              <Input 
+                value={settings?.about_me?.name || ''} 
+                onChange={(e) => updateAboutMe('name', e.target.value)} 
+                className="mt-1" 
+                placeholder="e.g. Sarah Smith, Reflexologist"
+              />
+            </div>
+
+            {/* Bio */}
+            <div>
+              <label className="text-sm font-medium text-slate-700">Bio</label>
+              <Textarea 
+                value={settings?.about_me?.bio || ''} 
+                onChange={(e) => updateAboutMe('bio', e.target.value)} 
+                className="mt-1" 
+                rows={5}
+                placeholder="Tell your story... your journey, passion for holistic therapies, etc."
+              />
+            </div>
+
+            {/* Qualifications */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-slate-700">Qualifications</label>
+                <Button type="button" variant="outline" size="sm" onClick={addQualification}>
+                  <Plus size={14} className="mr-1" /> Add
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {(settings?.about_me?.qualifications || []).map((qual, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input 
+                      value={qual} 
+                      onChange={(e) => updateQualification(index, e.target.value)} 
+                      placeholder="e.g. Level 3 Diploma in Reflexology"
+                    />
+                    <Button type="button" variant="ghost" size="icon" className="text-red-500 shrink-0" onClick={() => removeQualification(index)}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                ))}
+                {(settings?.about_me?.qualifications || []).length === 0 && (
+                  <p className="text-sm text-slate-400 py-2">No qualifications added yet</p>
+                )}
+              </div>
+            </div>
+
+            {/* Photo */}
+            <div>
+              <label className="text-sm font-medium text-slate-700">Photo</label>
+              <div className="mt-2 space-y-2">
+                {settings?.about_me?.photo_url && (
+                  <div className="relative inline-block">
+                    <img src={getImageUrl(settings.about_me.photo_url)} alt="About me" className="h-32 w-auto object-cover rounded-lg border border-slate-200" />
+                    <button
+                      type="button"
+                      onClick={() => updateAboutMe('photo_url', '')}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <input ref={aboutPhotoInputRef} type="file" accept="image/*" onChange={handleAboutPhotoUpload} className="hidden" id="about-photo-upload" />
+                  <Button type="button" variant="outline" onClick={() => aboutPhotoInputRef.current?.click()} disabled={uploading.about_photo} className="flex items-center gap-2">
+                    <Upload size={16} />
+                    {uploading.about_photo ? 'Uploading...' : 'Upload Photo'}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

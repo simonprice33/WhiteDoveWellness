@@ -95,6 +95,13 @@ class SettingsController {
         subtitle: 'Experience the healing power of holistic therapies in a serene and nurturing environment.',
         button_text: 'Book Your Session'
       },
+      about_me: {
+        enabled: false,
+        name: '',
+        bio: '',
+        qualifications: [],
+        photo_url: ''
+      },
       consultation_options: {
         contra_indications: DEFAULT_CONTRA_INDICATIONS,
         lifestyle_questions: DEFAULT_LIFESTYLE_QUESTIONS,
@@ -131,13 +138,24 @@ class SettingsController {
       };
     }
 
+    // Ensure about_me exists with defaults
+    if (!settings.about_me) {
+      settings.about_me = {
+        enabled: false,
+        name: '',
+        bio: '',
+        qualifications: [],
+        photo_url: ''
+      };
+    }
+
     return settings;
   }
 
   // PUT /api/admin/settings (admin)
   update = async (req, res) => {
     try {
-      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'consultation_options'];
+      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options'];
 
       const updateData = {
         id: 'site_settings',
