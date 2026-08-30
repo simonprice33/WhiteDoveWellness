@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { publicApi } from '../lib/api';
 import { Button } from '../components/ui/button';
@@ -23,6 +23,10 @@ export default function BookingForm({ onClose }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Refs for scrolling
+  const pricesSectionRef = useRef(null);
+  const modalContentRef = useRef(null);
   
   // Data
   const [therapies, setTherapies] = useState([]);
@@ -59,6 +63,16 @@ export default function BookingForm({ onClose }) {
       loadPrices(selectedTherapy.id);
     }
   }, [selectedTherapy]);
+
+  // Auto-scroll to prices when therapy is selected and prices are loaded
+  useEffect(() => {
+    if (selectedTherapy && prices.length > 0 && pricesSectionRef.current && modalContentRef.current) {
+      // Small delay to allow render
+      setTimeout(() => {
+        pricesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [selectedTherapy, prices]);
 
   useEffect(() => {
     if (selectedDate && selectedPrice) {
@@ -235,7 +249,7 @@ export default function BookingForm({ onClose }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6" ref={modalContentRef}>
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
               {error}
@@ -275,7 +289,7 @@ export default function BookingForm({ onClose }) {
                 </div>
 
                 {selectedTherapy && prices.length > 0 && (
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-6 space-y-4" ref={pricesSectionRef}>
                     <h3 className="text-lg font-medium text-slate-800">Select Duration & Price</h3>
                     <div className="grid gap-3">
                       {prices.map((price) => (
