@@ -33,6 +33,8 @@ export default function BookingForm({ onClose }) {
   const [prices, setPrices] = useState([]);
   const [bookingSettings, setBookingSettings] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [availableDates, setAvailableDates] = useState([]);
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
   
   // Selections
   const [selectedTherapy, setSelectedTherapy] = useState(null);
@@ -63,6 +65,13 @@ export default function BookingForm({ onClose }) {
       loadPrices(selectedTherapy.id);
     }
   }, [selectedTherapy]);
+
+  // Load available dates when price is selected or calendar month changes
+  useEffect(() => {
+    if (selectedPrice) {
+      loadAvailableDates();
+    }
+  }, [selectedPrice, calendarMonth]);
 
   // Auto-scroll to prices when therapy is selected and prices are loaded
   useEffect(() => {
@@ -111,6 +120,20 @@ export default function BookingForm({ onClose }) {
     }
   };
 
+  const loadAvailableDates = async () => {
+    if (!selectedPrice) return;
+    
+    try {
+      const month = calendarMonth.getMonth() + 1;
+      const year = calendarMonth.getFullYear();
+      const response = await publicApi.getAvailableDates(selectedPrice.id, month, year);
+      setAvailableDates(response.data.available_dates || []);
+    } catch (err) {
+      console.error('Failed to load available dates:', err);
+      setAvailableDates([]);
+    }
+  };
+
   const loadAvailability = async () => {
     if (!selectedDate || !selectedPrice) return;
     
@@ -130,6 +153,15 @@ export default function BookingForm({ onClose }) {
   const isDateDisabled = (date) => {
     if (!bookingSettings) return true;
     
+    // Format date to match availableDates format (YYYY-MM-DD)
+    const dateStr = date.toISOString().split('T')[0];
+    
+    // If we have availableDates loaded, use them
+    if (availableDates.length > 0) {
+      return !availableDates.includes(dateStr);
+    }
+    
+    // Fallback to basic checks if availableDates not loaded yet
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -330,12 +362,15 @@ export default function BookingForm({ onClose }) {
                 className="space-y-4"
               >
                 <h3 className="text-lg font-medium text-slate-800">Choose a Date</h3>
+                <p className="text-sm text-slate-500">Dates with no available slots are disabled</p>
                 <div className="flex justify-center">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
                     onSelect={setSelectedDate}
                     disabled={isDateDisabled}
+                    month={calendarMonth}
+                    onMonthChange={setCalendarMonth}
                     className="rounded-xl border shadow-sm"
                   />
                 </div>

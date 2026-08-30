@@ -61,6 +61,7 @@ function createPublicRoutes(dependencies) {
 
   // Bookings (public)
   router.get('/bookings/settings', bookingController.getBookingSettings);
+  router.get('/bookings/available-dates', bookingController.getAvailableDates);
   router.get('/bookings/availability', bookingController.getAvailability);
   router.post('/bookings/create', bookingController.create);
   router.post('/bookings/:id/confirm', bookingController.confirmPayment);

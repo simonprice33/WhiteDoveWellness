@@ -219,6 +219,155 @@ class BookingController {
     }
   };
 
+  // GET /api/bookings/available-dates (public)
+  // Get dates with availability for a given month and price option
+  getAvailableDates = async (req, res) => {
+    try {
+      const { price_id, month, year } = req.query;
+
+      if (!price_id) {
+        return res.status(400).json({
+          success: false,
+          message: 'price_id is required'
+        });
+      }
+
+      // Get the price option to determine duration
+      const priceOption = await this.collections.prices.findOne(
+        { id: price_id },
+        { projection: { _id: 0 } }
+      );
+
+      if (!priceOption) {
+        return res.status(404).json({
+          success: false,
+          message: 'Price option not found'
+        });
+      }
+
+      const durationMinutes = priceOption.duration_minutes || this.parseDurationToMinutes(priceOption.duration);
+      const bookingSettings = await this.getAvailabilitySettings();
+
+      if (!bookingSettings.enabled) {
+        return res.status(400).json({
+          success: false,
+          message: 'Online booking is currently disabled'
+        });
+      }
+
+      const targetMonth = parseInt(month) || new Date().getMonth() + 1;
+      const targetYear = parseInt(year) || new Date().getFullYear();
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const maxDate = new Date(today);
+      maxDate.setDate(maxDate.getDate() + bookingSettings.advance_booking_days);
+
+      // Get all bookings for this month
+      const startDate = `${targetYear}-${targetMonth.toString().padStart(2, '0')}-01`;
+      const endDate = `${targetYear}-${targetMonth.toString().padStart(2, '0')}-31`;
+      
+      const existingBookings = await this.collections.bookings.find({
+        booking_date: { $gte: startDate, $lte: endDate },
+        status: { $in: ['confirmed', 'pending_payment'] }
+      }).toArray();
+
+      // Group bookings by date
+      const bookingsByDate = {};
+      for (const booking of existingBookings) {
+        if (!bookingsByDate[booking.booking_date]) {
+          bookingsByDate[booking.booking_date] = [];
+        }
+        bookingsByDate[booking.booking_date].push({
+          start: booking.start_minutes,
+          end: booking.end_minutes
+        });
+      }
+
+      const gap = bookingSettings.gap_between_appointments;
+      const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const availableDates = [];
+      const unavailableDates = [];
+
+      // Check each day in the month
+      const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${targetYear}-${targetMonth.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const date = new Date(dateStr);
+        
+        // Skip past dates
+        if (date < today) {
+          unavailableDates.push(dateStr);
+          continue;
+        }
+        
+        // Skip dates beyond advance booking window
+        if (date > maxDate) {
+          unavailableDates.push(dateStr);
+          continue;
+        }
+
+        // Check if this day is a working day
+        const dayOfWeek = days[date.getDay()];
+        const daySettings = bookingSettings.working_hours[dayOfWeek];
+        
+        if (!daySettings || !daySettings.enabled) {
+          unavailableDates.push(dateStr);
+          continue;
+        }
+
+        // Calculate available slots for this day
+        const [startHour, startMin] = daySettings.start.split(':').map(Number);
+        const [endHour, endMin] = daySettings.end.split(':').map(Number);
+        const startMinutes = startHour * 60 + startMin;
+        const endMinutes = endHour * 60 + endMin;
+
+        // Get blocked ranges for this date
+        const blockedRanges = (bookingsByDate[dateStr] || []).map(booking => ({
+          start: booking.start,
+          end: booking.end + gap
+        }));
+
+        // Check if any slot is available
+        let hasAvailableSlot = false;
+        for (let slotStart = startMinutes; slotStart + durationMinutes <= endMinutes; slotStart += 30) {
+          const slotEnd = slotStart + durationMinutes;
+          
+          const isBlocked = blockedRanges.some(range => 
+            (slotStart < range.end && slotEnd > range.start)
+          );
+
+          if (!isBlocked) {
+            hasAvailableSlot = true;
+            break;
+          }
+        }
+
+        if (hasAvailableSlot) {
+          availableDates.push(dateStr);
+        } else {
+          unavailableDates.push(dateStr);
+        }
+      }
+
+      res.json({
+        success: true,
+        month: targetMonth,
+        year: targetYear,
+        available_dates: availableDates,
+        unavailable_dates: unavailableDates
+      });
+    } catch (error) {
+      console.error('Get available dates error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get available dates'
+      });
+    }
+  };
+
   // POST /api/bookings/create (public)
   // Create a booking (pending payment)
   create = async (req, res) => {

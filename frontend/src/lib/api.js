@@ -86,6 +86,7 @@ export const publicApi = {
   
   // Bookings
   getBookingSettings: () => api.get('/bookings/settings'),
+  getAvailableDates: (priceId, month, year) => api.get(`/bookings/available-dates?price_id=${priceId}&month=${month}&year=${year}`),
   getAvailability: (date, priceId) => api.get(`/bookings/availability?date=${date}&price_id=${priceId}`),
   createBooking: (data) => api.post('/bookings/create', data),
   confirmBooking: (id, data) => api.post(`/bookings/${id}/confirm`, data),
