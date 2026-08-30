@@ -106,6 +106,23 @@ class SettingsController {
         contra_indications: DEFAULT_CONTRA_INDICATIONS,
         lifestyle_questions: DEFAULT_LIFESTYLE_QUESTIONS,
         treatment_objectives: DEFAULT_TREATMENT_OBJECTIVES
+      },
+      booking_settings: {
+        enabled: false,
+        gap_between_appointments: 30,
+        advance_booking_days: 30,
+        working_hours: {
+          monday: { enabled: true, start: '09:00', end: '17:00' },
+          tuesday: { enabled: true, start: '09:00', end: '17:00' },
+          wednesday: { enabled: true, start: '09:00', end: '17:00' },
+          thursday: { enabled: true, start: '09:00', end: '17:00' },
+          friday: { enabled: true, start: '09:00', end: '17:00' },
+          saturday: { enabled: false, start: '09:00', end: '17:00' },
+          sunday: { enabled: false, start: '09:00', end: '17:00' }
+        },
+        location_type: 'both',
+        fixed_location_address: '',
+        email_notifications_enabled: false
       }
     };
   }
@@ -149,13 +166,34 @@ class SettingsController {
       };
     }
 
+    // Ensure booking_settings exists with defaults
+    if (!settings.booking_settings) {
+      settings.booking_settings = {
+        enabled: false,
+        gap_between_appointments: 30,
+        advance_booking_days: 30,
+        working_hours: {
+          monday: { enabled: true, start: '09:00', end: '17:00' },
+          tuesday: { enabled: true, start: '09:00', end: '17:00' },
+          wednesday: { enabled: true, start: '09:00', end: '17:00' },
+          thursday: { enabled: true, start: '09:00', end: '17:00' },
+          friday: { enabled: true, start: '09:00', end: '17:00' },
+          saturday: { enabled: false, start: '09:00', end: '17:00' },
+          sunday: { enabled: false, start: '09:00', end: '17:00' }
+        },
+        location_type: 'both',
+        fixed_location_address: '',
+        email_notifications_enabled: false
+      };
+    }
+
     return settings;
   }
 
   // PUT /api/admin/settings (admin)
   update = async (req, res) => {
     try {
-      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options'];
+      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options', 'booking_settings'];
 
       const updateData = {
         id: 'site_settings',

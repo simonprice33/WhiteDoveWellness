@@ -20,6 +20,7 @@ function createAdminRoutes(dependencies) {
   const SettingsController = require('../controllers/SettingsController');
   const ClientController = require('../controllers/ClientController');
   const UploadController = require('../controllers/UploadController');
+  const BookingController = require('../controllers/BookingController');
 
   // Initialize controllers
   const authController = new AuthController(collections, authMiddleware);
@@ -32,6 +33,7 @@ function createAdminRoutes(dependencies) {
   const settingsController = new SettingsController(collections);
   const clientController = new ClientController(collections);
   const uploadController = new UploadController();
+  const bookingController = new BookingController(collections);
 
   // Auth routes (no auth required)
   router.post('/auth/login', authController.login);
@@ -103,6 +105,14 @@ function createAdminRoutes(dependencies) {
   router.post('/clients/:id/consultations', clientController.createConsultation);
   router.put('/clients/:id/consultations/:consultationId', clientController.updateConsultation);
   router.delete('/clients/:id/consultations/:consultationId', clientController.deleteConsultation);
+
+  // Bookings (admin)
+  router.get('/bookings', bookingController.list);
+  router.get('/bookings/calendar', bookingController.getCalendar);
+  router.get('/bookings/:id', bookingController.get);
+  router.put('/bookings/:id', bookingController.update);
+  router.put('/bookings/:id/status', bookingController.updateStatus);
+  router.delete('/bookings/:id', bookingController.delete);
 
   return router;
 }

@@ -82,7 +82,14 @@ export const publicApi = {
   getPolicies: () => api.get('/policies?active_only=true'),
   getPolicy: (slug) => api.get(`/policies/slug/${slug}`),
   getSettings: () => api.get('/settings'),
-  submitContact: (data) => api.post('/contact', data)
+  submitContact: (data) => api.post('/contact', data),
+  
+  // Bookings
+  getBookingSettings: () => api.get('/bookings/settings'),
+  getAvailability: (date, priceId) => api.get(`/bookings/availability?date=${date}&price_id=${priceId}`),
+  createBooking: (data) => api.post('/bookings/create', data),
+  confirmBooking: (id, data) => api.post(`/bookings/${id}/confirm`, data),
+  cancelBooking: (id) => api.post(`/bookings/${id}/cancel`)
 };
 
 // Admin API
@@ -158,7 +165,18 @@ export const adminApi = {
   uploadImage: (formData) => api.post('/admin/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
-  deleteImage: (filename) => api.delete(`/admin/upload/${filename}`)
+  deleteImage: (filename) => api.delete(`/admin/upload/${filename}`),
+  
+  // Bookings
+  getBookings: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/admin/bookings${queryString ? `?${queryString}` : ''}`);
+  },
+  getBooking: (id) => api.get(`/admin/bookings/${id}`),
+  getBookingsCalendar: (month, year) => api.get(`/admin/bookings/calendar?month=${month}&year=${year}`),
+  updateBooking: (id, data) => api.put(`/admin/bookings/${id}`, data),
+  updateBookingStatus: (id, status) => api.put(`/admin/bookings/${id}/status`, { status }),
+  deleteBooking: (id) => api.delete(`/admin/bookings/${id}`)
 };
 
 export default api;

@@ -33,7 +33,8 @@ class DatabaseConfig {
         siteSettings: this.db.collection('site_settings'),
         clients: this.db.collection('clients'),
         clientNotes: this.db.collection('client_notes'),
-        consultations: this.db.collection('consultations')
+        consultations: this.db.collection('consultations'),
+        bookings: this.db.collection('bookings')
       };
 
       // Create indexes
@@ -59,6 +60,9 @@ class DatabaseConfig {
       await this.collections.policies.createIndex({ slug: 1 }, { unique: true });
       await this.collections.consultations.createIndex({ client_id: 1 });
       await this.collections.consultations.createIndex({ consultation_date: -1 });
+      await this.collections.bookings.createIndex({ booking_date: 1, start_minutes: 1 });
+      await this.collections.bookings.createIndex({ status: 1 });
+      await this.collections.bookings.createIndex({ client_email: 1 });
       console.log('✅ Database indexes created');
     } catch (error) {
       console.warn('⚠️ Some indexes may already exist:', error.message);

@@ -16,6 +16,7 @@ function createPublicRoutes(dependencies) {
   const AffiliationController = require('../controllers/AffiliationController');
   const PolicyController = require('../controllers/PolicyController');
   const SettingsController = require('../controllers/SettingsController');
+  const BookingController = require('../controllers/BookingController');
 
   // Initialize controllers
   const therapyController = new TherapyController(collections);
@@ -24,6 +25,7 @@ function createPublicRoutes(dependencies) {
   const affiliationController = new AffiliationController(collections);
   const policyController = new PolicyController(collections);
   const settingsController = new SettingsController(collections);
+  const bookingController = new BookingController(collections);
 
   // Health check
   router.get('/health', (req, res) => {
@@ -56,6 +58,13 @@ function createPublicRoutes(dependencies) {
 
   // Settings (public)
   router.get('/settings', settingsController.get);
+
+  // Bookings (public)
+  router.get('/bookings/settings', bookingController.getBookingSettings);
+  router.get('/bookings/availability', bookingController.getAvailability);
+  router.post('/bookings/create', bookingController.create);
+  router.post('/bookings/:id/confirm', bookingController.confirmPayment);
+  router.post('/bookings/:id/cancel', bookingController.cancelBooking);
 
   return router;
 }

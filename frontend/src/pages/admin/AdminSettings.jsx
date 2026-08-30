@@ -3,7 +3,7 @@ import { adminApi, getImageUrl } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User } from 'lucide-react';
+import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User, Calendar as CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettings() {
@@ -759,6 +759,206 @@ export default function AdminSettings() {
               {(settings?.consultation_options?.lifestyle_questions || []).length === 0 && (
                 <p className="text-sm text-slate-400 text-center py-2">No questions. Click "Add Question" to create.</p>
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* Booking Settings */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 space-y-6" data-testid="booking-settings-section">
+          <div className="flex items-center gap-3 border-b pb-4">
+            <div className="p-2 bg-[#F5F3FA] rounded-lg">
+              <CalendarIcon size={20} className="text-[#9F87C4]" />
+            </div>
+            <h2 className="font-serif text-xl text-slate-800">Online Booking Settings</h2>
+          </div>
+
+          {/* Enable Booking */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="booking_enabled"
+              checked={settings?.booking_settings?.enabled || false}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, enabled: e.target.checked }
+              })}
+              className="w-5 h-5 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+            />
+            <label htmlFor="booking_enabled" className="text-sm font-medium text-slate-700 cursor-pointer">
+              Enable online booking
+            </label>
+          </div>
+
+          {/* Gap Between Appointments */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Gap Between Appointments (minutes)
+              </label>
+              <Input
+                type="number"
+                min="0"
+                max="120"
+                value={settings?.booking_settings?.gap_between_appointments || 30}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  booking_settings: { ...settings?.booking_settings, gap_between_appointments: parseInt(e.target.value) || 0 }
+                })}
+                data-testid="gap-input"
+              />
+              <p className="text-xs text-slate-500 mt-1">Travel time between appointments</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Advance Booking Window (days)
+              </label>
+              <Input
+                type="number"
+                min="1"
+                max="365"
+                value={settings?.booking_settings?.advance_booking_days || 30}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  booking_settings: { ...settings?.booking_settings, advance_booking_days: parseInt(e.target.value) || 30 }
+                })}
+                data-testid="advance-days-input"
+              />
+              <p className="text-xs text-slate-500 mt-1">How far ahead clients can book</p>
+            </div>
+          </div>
+
+          {/* Location Settings */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Location Options</label>
+            <div className="flex flex-wrap gap-4">
+              {[
+                { value: 'fixed', label: 'Fixed Location Only' },
+                { value: 'mobile', label: 'Home Visits Only' },
+                { value: 'both', label: 'Both Options' }
+              ].map((option) => (
+                <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="location_type"
+                    value={option.value}
+                    checked={(settings?.booking_settings?.location_type || 'both') === option.value}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      booking_settings: { ...settings?.booking_settings, location_type: e.target.value }
+                    })}
+                    className="w-4 h-4 text-[#9F87C4]"
+                  />
+                  <span className="text-sm">{option.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Fixed Location Address */}
+          {(settings?.booking_settings?.location_type === 'fixed' || settings?.booking_settings?.location_type === 'both') && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Clinic/Fixed Location Address
+              </label>
+              <Textarea
+                value={settings?.booking_settings?.fixed_location_address || ''}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  booking_settings: { ...settings?.booking_settings, fixed_location_address: e.target.value }
+                })}
+                placeholder="Enter your clinic address..."
+                rows={2}
+              />
+            </div>
+          )}
+
+          {/* Email Notifications */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="email_notifications"
+              checked={settings?.booking_settings?.email_notifications_enabled || false}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, email_notifications_enabled: e.target.checked }
+              })}
+              className="w-5 h-5 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+              disabled={true}
+            />
+            <label htmlFor="email_notifications" className="text-sm font-medium text-slate-700 cursor-pointer">
+              Send email confirmations (requires email setup)
+            </label>
+          </div>
+
+          {/* Working Hours */}
+          <div>
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Working Hours</h3>
+            <div className="space-y-3">
+              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
+                const daySettings = settings?.booking_settings?.working_hours?.[day] || { enabled: false, start: '09:00', end: '17:00' };
+                return (
+                  <div key={day} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg">
+                    <div className="w-28">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={daySettings.enabled}
+                          onChange={(e) => setSettings({
+                            ...settings,
+                            booking_settings: {
+                              ...settings?.booking_settings,
+                              working_hours: {
+                                ...settings?.booking_settings?.working_hours,
+                                [day]: { ...daySettings, enabled: e.target.checked }
+                              }
+                            }
+                          })}
+                          className="w-4 h-4 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+                        />
+                        <span className="text-sm font-medium capitalize">{day}</span>
+                      </label>
+                    </div>
+                    {daySettings.enabled && (
+                      <div className="flex items-center gap-2 flex-1">
+                        <Input
+                          type="time"
+                          value={daySettings.start}
+                          onChange={(e) => setSettings({
+                            ...settings,
+                            booking_settings: {
+                              ...settings?.booking_settings,
+                              working_hours: {
+                                ...settings?.booking_settings?.working_hours,
+                                [day]: { ...daySettings, start: e.target.value }
+                              }
+                            }
+                          })}
+                          className="w-32"
+                        />
+                        <span className="text-slate-500">to</span>
+                        <Input
+                          type="time"
+                          value={daySettings.end}
+                          onChange={(e) => setSettings({
+                            ...settings,
+                            booking_settings: {
+                              ...settings?.booking_settings,
+                              working_hours: {
+                                ...settings?.booking_settings?.working_hours,
+                                [day]: { ...daySettings, end: e.target.value }
+                              }
+                            }
+                          })}
+                          className="w-32"
+                        />
+                      </div>
+                    )}
+                    {!daySettings.enabled && (
+                      <span className="text-sm text-slate-400">Closed</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -15,7 +15,8 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Calendar
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 
@@ -23,6 +24,7 @@ const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
   { label: 'Therapies', icon: Sparkles, href: '/admin/therapies' },
   { label: 'Prices', icon: PoundSterling, href: '/admin/prices' },
+  { label: 'Bookings', icon: Calendar, href: '/admin/bookings' },
   { label: 'Contacts', icon: MessageSquare, href: '/admin/contacts' },
   { label: 'Clients', icon: Users, href: '/admin/clients' },
   { label: 'Affiliations', icon: Award, href: '/admin/affiliations' },

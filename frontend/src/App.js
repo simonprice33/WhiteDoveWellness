@@ -14,6 +14,7 @@ import AdminTherapies from './pages/admin/AdminTherapies';
 import AdminPrices from './pages/admin/AdminPrices';
 import AdminContacts from './pages/admin/AdminContacts';
 import AdminClients from './pages/admin/AdminClients';
+import AdminBookings from './pages/admin/AdminBookings';
 import AdminAffiliations from './pages/admin/AdminAffiliations';
 import AdminPolicies from './pages/admin/AdminPolicies';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -65,6 +66,7 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="therapies" element={<AdminTherapies />} />
             <Route path="prices" element={<AdminPrices />} />
+            <Route path="bookings" element={<AdminBookings />} />
             <Route path="contacts" element={<AdminContacts />} />
             <Route path="clients" element={<AdminClients />} />
             <Route path="affiliations" element={<AdminAffiliations />} />
