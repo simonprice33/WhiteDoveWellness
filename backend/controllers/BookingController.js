@@ -207,7 +207,10 @@ class BookingController {
           advance_booking_days: bookingSettings.advance_booking_days,
           working_hours: bookingSettings.working_hours,
           location_type: bookingSettings.location_type,
-          fixed_location_address: bookingSettings.fixed_location_address
+          fixed_location_address: bookingSettings.fixed_location_address,
+          require_online_payment: bookingSettings.require_online_payment || false,
+          payment_button_text: bookingSettings.payment_button_text || 'Complete Booking Request',
+          confirmation_message: bookingSettings.confirmation_message || 'Your booking request has been submitted. We will confirm your appointment shortly.'
         }
       });
     } catch (error) {

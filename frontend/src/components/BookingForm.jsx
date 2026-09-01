@@ -545,8 +545,14 @@ export default function BookingForm({ onClose }) {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Check className="h-8 w-8 text-green-600" />
                   </div>
-                  <h3 className="text-xl font-medium text-slate-800">Booking Created!</h3>
-                  <p className="text-slate-500 mt-1">Please complete payment to confirm your booking.</p>
+                  <h3 className="text-xl font-medium text-slate-800">
+                    {bookingSettings?.require_online_payment ? 'Booking Created!' : 'Booking Request Submitted!'}
+                  </h3>
+                  <p className="text-slate-500 mt-1">
+                    {bookingSettings?.require_online_payment 
+                      ? 'Please complete payment to confirm your booking.'
+                      : bookingSettings?.confirmation_message || 'Your booking request has been submitted. We will confirm your appointment shortly.'}
+                  </p>
                 </div>
                 
                 {/* Booking Summary */}
@@ -573,20 +579,39 @@ export default function BookingForm({ onClose }) {
                   </div>
                 </div>
                 
-                <Button
-                  onClick={handlePayment}
-                  className="w-full bg-[#9F87C4] hover:bg-[#8A74B0] text-white py-6 text-lg"
-                  data-testid="pay-now-btn"
-                >
-                  <CreditCard className="mr-2" />
-                  Pay Now with SumUp
-                </Button>
-                
-                <p className="text-center text-sm text-slate-500">
-                  Your booking will be confirmed once payment is complete.
-                  <br />
-                  Booking reference: <span className="font-mono">{booking.id.slice(0, 8)}</span>
-                </p>
+                {bookingSettings?.require_online_payment ? (
+                  <>
+                    <Button
+                      onClick={handlePayment}
+                      className="w-full bg-[#9F87C4] hover:bg-[#8A74B0] text-white py-6 text-lg"
+                      data-testid="pay-now-btn"
+                    >
+                      <CreditCard className="mr-2" />
+                      Pay Now with SumUp
+                    </Button>
+                    <p className="text-center text-sm text-slate-500">
+                      Your booking will be confirmed once payment is complete.
+                      <br />
+                      Booking reference: <span className="font-mono">{booking.id.slice(0, 8)}</span>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={onClose}
+                      className="w-full bg-[#9F87C4] hover:bg-[#8A74B0] text-white py-6 text-lg"
+                      data-testid="complete-booking-btn"
+                    >
+                      <Check className="mr-2" />
+                      {bookingSettings?.payment_button_text || 'Complete Booking Request'}
+                    </Button>
+                    <p className="text-center text-sm text-slate-500">
+                      Booking reference: <span className="font-mono">{booking.id.slice(0, 8)}</span>
+                      <br />
+                      We will contact you to confirm your appointment.
+                    </p>
+                  </>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -639,7 +664,7 @@ export default function BookingForm({ onClose }) {
                   </>
                 ) : (
                   <>
-                    Continue to Payment
+                    Continue
                     <ChevronRight className="ml-1 h-4 w-4" />
                   </>
                 )}

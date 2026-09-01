@@ -890,6 +890,62 @@ export default function AdminSettings() {
             </label>
           </div>
 
+          {/* Payment Settings */}
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Payment Settings</h3>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="require_online_payment"
+                  checked={settings?.booking_settings?.require_online_payment || false}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    booking_settings: { ...settings?.booking_settings, require_online_payment: e.target.checked }
+                  })}
+                  className="w-5 h-5 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+                />
+                <label htmlFor="require_online_payment" className="text-sm font-medium text-slate-700 cursor-pointer">
+                  Require online payment (SumUp) to confirm booking
+                </label>
+              </div>
+              
+              {!settings?.booking_settings?.require_online_payment && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Complete Booking Button Text
+                    </label>
+                    <Input
+                      value={settings?.booking_settings?.payment_button_text || 'Complete Booking Request'}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        booking_settings: { ...settings?.booking_settings, payment_button_text: e.target.value }
+                      })}
+                      placeholder="Complete Booking Request"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Confirmation Message
+                    </label>
+                    <Textarea
+                      value={settings?.booking_settings?.confirmation_message || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        booking_settings: { ...settings?.booking_settings, confirmation_message: e.target.value }
+                      })}
+                      placeholder="Your booking request has been submitted. We will confirm your appointment shortly."
+                      rows={2}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
           {/* Working Hours */}
           <div>
             <h3 className="text-sm font-medium text-slate-700 mb-3">Working Hours</h3>

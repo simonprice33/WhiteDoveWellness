@@ -122,7 +122,10 @@ class SettingsController {
         },
         location_type: 'both',
         fixed_location_address: '',
-        email_notifications_enabled: false
+        email_notifications_enabled: false,
+        require_online_payment: false,
+        payment_button_text: 'Complete Booking Request',
+        confirmation_message: 'Your booking request has been submitted. We will confirm your appointment shortly.'
       }
     };
   }
@@ -183,8 +186,18 @@ class SettingsController {
         },
         location_type: 'both',
         fixed_location_address: '',
-        email_notifications_enabled: false
+        email_notifications_enabled: false,
+        require_online_payment: false,
+        payment_button_text: 'Complete Booking Request',
+        confirmation_message: 'Your booking request has been submitted. We will confirm your appointment shortly.'
       };
+    }
+
+    // Ensure payment settings exist in booking_settings
+    if (settings.booking_settings && settings.booking_settings.require_online_payment === undefined) {
+      settings.booking_settings.require_online_payment = false;
+      settings.booking_settings.payment_button_text = 'Complete Booking Request';
+      settings.booking_settings.confirmation_message = 'Your booking request has been submitted. We will confirm your appointment shortly.';
     }
 
     return settings;
