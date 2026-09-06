@@ -721,8 +721,8 @@ export default function AdminBookings() {
 
       {/* New Booking Modal */}
       {showNewBookingModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-[101]">
             <div className="p-6 border-b flex items-center justify-between">
               <h2 className="text-xl font-serif text-slate-800">New Booking</h2>
               <button 
@@ -939,8 +939,8 @@ export default function AdminBookings() {
 
       {/* Block Time Modal */}
       {showBlockTimeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-[101]">
             <div className="p-6 border-b flex items-center justify-between">
               <h2 className="text-xl font-serif text-slate-800">Block Out Times</h2>
               <button 
