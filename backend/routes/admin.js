@@ -21,6 +21,7 @@ function createAdminRoutes(dependencies) {
   const ClientController = require('../controllers/ClientController');
   const UploadController = require('../controllers/UploadController');
   const BookingController = require('../controllers/BookingController');
+  const GoogleCalendarController = require('../controllers/GoogleCalendarController');
 
   // Initialize controllers
   const authController = new AuthController(collections, authMiddleware);
@@ -34,6 +35,7 @@ function createAdminRoutes(dependencies) {
   const clientController = new ClientController(collections);
   const uploadController = new UploadController();
   const bookingController = new BookingController(collections);
+  const googleCalendarController = new GoogleCalendarController(collections);
 
   // Auth routes (no auth required)
   router.post('/auth/login', authController.login);
@@ -113,6 +115,14 @@ function createAdminRoutes(dependencies) {
   router.put('/bookings/:id', bookingController.update);
   router.put('/bookings/:id/status', bookingController.updateStatus);
   router.delete('/bookings/:id', bookingController.delete);
+
+  // Google Calendar (admin)
+  router.get('/google-calendar/status', googleCalendarController.getStatus);
+  router.get('/google-calendar/config', googleCalendarController.getConfig);
+  router.post('/google-calendar/config', googleCalendarController.saveConfig);
+  router.get('/google-calendar/auth-url', googleCalendarController.getAuthUrl);
+  router.post('/google-calendar/disconnect', googleCalendarController.disconnect);
+  router.post('/google-calendar/test', googleCalendarController.testConnection);
 
   return router;
 }

@@ -17,6 +17,7 @@ function createPublicRoutes(dependencies) {
   const PolicyController = require('../controllers/PolicyController');
   const SettingsController = require('../controllers/SettingsController');
   const BookingController = require('../controllers/BookingController');
+  const GoogleCalendarController = require('../controllers/GoogleCalendarController');
 
   // Initialize controllers
   const therapyController = new TherapyController(collections);
@@ -26,6 +27,7 @@ function createPublicRoutes(dependencies) {
   const policyController = new PolicyController(collections);
   const settingsController = new SettingsController(collections);
   const bookingController = new BookingController(collections);
+  const googleCalendarController = new GoogleCalendarController(collections);
 
   // Health check
   router.get('/health', (req, res) => {
@@ -66,6 +68,9 @@ function createPublicRoutes(dependencies) {
   router.post('/bookings/create', bookingController.create);
   router.post('/bookings/:id/confirm', bookingController.confirmPayment);
   router.post('/bookings/:id/cancel', bookingController.cancelBooking);
+
+  // Google OAuth Callback (public - redirect from Google)
+  router.get('/oauth/google/callback', googleCalendarController.handleCallback);
 
   return router;
 }

@@ -177,7 +177,15 @@ export const adminApi = {
   getBookingsCalendar: (month, year) => api.get(`/admin/bookings/calendar?month=${month}&year=${year}`),
   updateBooking: (id, data) => api.put(`/admin/bookings/${id}`, data),
   updateBookingStatus: (id, status) => api.put(`/admin/bookings/${id}/status`, { status }),
-  deleteBooking: (id) => api.delete(`/admin/bookings/${id}`)
+  deleteBooking: (id) => api.delete(`/admin/bookings/${id}`),
+
+  // Google Calendar
+  getGoogleCalendarStatus: () => api.get('/admin/google-calendar/status'),
+  getGoogleCalendarConfig: () => api.get('/admin/google-calendar/config'),
+  saveGoogleCalendarConfig: (config) => api.post('/admin/google-calendar/config', config),
+  getGoogleCalendarAuthUrl: () => api.get('/admin/google-calendar/auth-url'),
+  disconnectGoogleCalendar: () => api.post('/admin/google-calendar/disconnect'),
+  testGoogleCalendar: () => api.post('/admin/google-calendar/test')
 };
 
 export default api;
