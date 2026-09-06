@@ -38,6 +38,9 @@ export default function AdminBookings() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [calendarData, setCalendarData] = useState({});
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [dayAppointments, setDayAppointments] = useState([]);
+  const [showDayModal, setShowDayModal] = useState(false);
   
   // New booking modal state
   const [showNewBookingModal, setShowNewBookingModal] = useState(false);
@@ -172,14 +175,41 @@ export default function AdminBookings() {
     try {
       await adminApi.updateBookingStatus(bookingId, newStatus);
       loadBookings();
+      loadCalendar();
       if (selectedBooking?.id === bookingId) {
         setSelectedBooking({ ...selectedBooking, status: newStatus });
+      }
+      // Also update day appointments if modal is open
+      if (showDayModal && selectedDate) {
+        handleDayClick(selectedDate);
       }
       toast.success('Status updated');
     } catch (error) {
       console.error('Failed to update status:', error);
       toast.error('Failed to update status');
     }
+  };
+
+  const handleDayClick = async (dateStr) => {
+    setSelectedDate(dateStr);
+    // Get appointments for this date from calendarData
+    const dayData = calendarData[dateStr];
+    if (dayData && dayData.bookings) {
+      setDayAppointments(dayData.bookings);
+    } else {
+      setDayAppointments([]);
+    }
+    setShowDayModal(true);
+  };
+
+  const formatDateDisplay = (dateStr) => {
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('en-GB', { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    });
   };
 
   const createBooking = async () => {
@@ -341,27 +371,36 @@ export default function AdminBookings() {
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      const dayBookings = calendarData[dateStr] || [];
+      const dayData = calendarData[dateStr];
+      const dayBookings = dayData?.bookings || [];
       const isToday = new Date().toISOString().split('T')[0] === dateStr;
+      const hasBookings = dayBookings.length > 0;
       
       days.push(
         <div 
           key={day} 
-          className={`h-24 border border-slate-200 p-1 overflow-hidden ${
+          onClick={() => handleDayClick(dateStr)}
+          className={`h-24 border border-slate-200 p-1 overflow-hidden cursor-pointer transition-colors hover:bg-slate-50 ${
             isToday ? 'bg-[#F5F3FA]' : 'bg-white'
-          }`}
+          } ${hasBookings ? 'ring-1 ring-inset ring-[#9F87C4]/30' : ''}`}
+          data-testid={`calendar-day-${dateStr}`}
         >
           <div className={`text-sm font-medium mb-1 ${isToday ? 'text-[#9F87C4]' : 'text-slate-600'}`}>
             {day}
+            {hasBookings && (
+              <span className="ml-1 inline-flex items-center justify-center w-5 h-5 text-xs bg-[#9F87C4] text-white rounded-full">
+                {dayBookings.length}
+              </span>
+            )}
           </div>
           <div className="space-y-1">
             {dayBookings.slice(0, 2).map((booking, idx) => (
               <div 
                 key={idx}
-                className="text-xs bg-[#9F87C4]/20 text-[#7B6BA8] px-1 py-0.5 rounded truncate cursor-pointer hover:bg-[#9F87C4]/30"
+                className="text-xs bg-[#9F87C4]/20 text-[#7B6BA8] px-1 py-0.5 rounded truncate"
                 title={`${booking.time} - ${booking.client_name}`}
               >
-                {formatTime(booking.time)} {booking.client_name.split(' ')[0]}
+                {formatTime(booking.time)} {booking.client_name?.split(' ')[0]}
               </div>
             ))}
             {dayBookings.length > 2 && (
@@ -718,6 +757,134 @@ export default function AdminBookings() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Day Appointments Modal */}
+      {showDayModal && createPortal(
+        <>
+          <div 
+            className="fixed bg-black/60" 
+            style={{ 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 99998
+            }}
+            onClick={() => setShowDayModal(false)} 
+          />
+          <div 
+            className="fixed flex items-center justify-center p-4"
+            style={{ 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 99999,
+              pointerEvents: 'none'
+            }}
+          >
+            <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto" style={{ pointerEvents: 'auto' }}>
+              <div className="p-6 border-b flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-serif text-slate-800">Appointments</h2>
+                  <p className="text-sm text-slate-500">{selectedDate && formatDateDisplay(selectedDate)}</p>
+                </div>
+                <button 
+                  onClick={() => setShowDayModal(false)}
+                  className="p-2 hover:bg-slate-100 rounded-full"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <div className="p-4">
+                {dayAppointments.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-3" />
+                    <p className="text-slate-500">No appointments on this day</p>
+                    <Button
+                      onClick={() => {
+                        setShowDayModal(false);
+                        setNewBookingData({ ...newBookingData, booking_date: selectedDate });
+                        setShowNewBookingModal(true);
+                      }}
+                      className="mt-4 bg-[#9F87C4] hover:bg-[#8A6EB5]"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Booking
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {dayAppointments.map((appointment) => (
+                      <div
+                        key={appointment.id}
+                        onClick={() => {
+                          setShowDayModal(false);
+                          setSelectedBooking(appointment);
+                        }}
+                        className="p-4 border rounded-xl hover:border-[#9F87C4] hover:bg-slate-50 cursor-pointer transition-colors"
+                        data-testid={`day-appointment-${appointment.id}`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-slate-800">
+                                {appointment.client_name || `${appointment.first_name} ${appointment.last_name || ''}`}
+                              </span>
+                              {getStatusBadge(appointment.status)}
+                            </div>
+                            <p className="text-sm text-slate-500">
+                              {appointment.therapy_name} - {appointment.price_name}
+                            </p>
+                            <div className="flex items-center gap-3 text-sm text-slate-500">
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                {formatTime(appointment.time || appointment.booking_time)}
+                              </span>
+                              {appointment.is_home_visit && (
+                                <span className="flex items-center gap-1 text-blue-600">
+                                  <Home className="h-4 w-4" />
+                                  Home Visit
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-lg font-bold text-[#9F87C4]">
+                              £{appointment.price_amount?.toFixed(2) || appointment.price?.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    <Button
+                      onClick={() => {
+                        setShowDayModal(false);
+                        setNewBookingData({ ...newBookingData, booking_date: selectedDate });
+                        setShowNewBookingModal(true);
+                      }}
+                      variant="outline"
+                      className="w-full mt-2"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Another Booking
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>,
+        document.getElementById('modal-root') || document.body
       )}
 
       {/* New Booking Modal */}

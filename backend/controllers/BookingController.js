@@ -968,25 +968,40 @@ class BookingController {
       const bookings = await this.collections.bookings
         .find({
           booking_date: { $gte: startDate, $lte: endDate },
-          status: { $in: ['confirmed', 'completed'] }
+          status: { $in: ['confirmed', 'completed', 'pending_payment', 'pending_confirmation'] }
         }, { projection: { _id: 0 } })
         .sort({ booking_date: 1, start_minutes: 1 })
         .toArray();
 
-      // Group by date
+      // Group by date with full booking data
       const calendar = {};
       for (const booking of bookings) {
         if (!calendar[booking.booking_date]) {
-          calendar[booking.booking_date] = [];
+          calendar[booking.booking_date] = {
+            count: 0,
+            bookings: []
+          };
         }
-        calendar[booking.booking_date].push({
+        calendar[booking.booking_date].count++;
+        calendar[booking.booking_date].bookings.push({
           id: booking.id,
           time: booking.booking_time,
+          booking_time: booking.booking_time,
           client_name: booking.client_name,
+          first_name: booking.first_name,
+          last_name: booking.last_name,
+          client_email: booking.client_email,
+          client_phone: booking.client_phone,
+          client_address: booking.client_address,
           therapy_name: booking.therapy_name,
+          price_name: booking.price_name,
+          price_amount: booking.price_amount,
           duration_minutes: booking.duration_minutes,
           status: booking.status,
-          is_home_visit: booking.is_home_visit
+          is_home_visit: booking.is_home_visit,
+          is_remote_booking: booking.is_remote_booking,
+          notes: booking.notes,
+          booking_date: booking.booking_date
         });
       }
 
