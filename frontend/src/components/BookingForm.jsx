@@ -19,6 +19,16 @@ import {
   CreditCard
 } from 'lucide-react';
 
+// Format a Date as YYYY-MM-DD using its local calendar day, not UTC.
+// (date.toISOString() converts to UTC first, which shifts the date back
+// a day for any timezone ahead of UTC, e.g. UK during BST.)
+const toLocalDateString = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function BookingForm({ onClose }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -139,7 +149,7 @@ export default function BookingForm({ onClose }) {
     
     try {
       setAvailableSlots([]);
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      const dateStr = toLocalDateString(selectedDate);
       const response = await publicApi.getAvailability(dateStr, selectedPrice.id);
       setAvailableSlots(response.data.available_slots || []);
     } catch (err) {
@@ -154,7 +164,7 @@ export default function BookingForm({ onClose }) {
     if (!bookingSettings) return true;
     
     // Format date to match availableDates format (YYYY-MM-DD)
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = toLocalDateString(date);
     
     // If we have availableDates loaded, use them
     if (availableDates.length > 0) {
@@ -186,8 +196,8 @@ export default function BookingForm({ onClose }) {
       setSubmitting(true);
       setError(null);
       
-      const dateStr = selectedDate.toISOString().split('T')[0];
-      
+      const dateStr = toLocalDateString(selectedDate);
+
       const response = await publicApi.createBooking({
         price_id: selectedPrice.id,
         booking_date: dateStr,

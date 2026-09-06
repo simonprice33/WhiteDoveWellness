@@ -145,3 +145,4 @@ frontend/node_modules/.cache/default-development/9.pack
 credentials.json
 *.key
 .credentials
+mongodb-database-tools-windows-x86_64-100.18.0/
