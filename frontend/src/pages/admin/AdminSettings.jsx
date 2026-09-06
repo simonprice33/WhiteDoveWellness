@@ -916,50 +916,22 @@ export default function AdminSettings() {
             </div>
           </div>
 
-          {/* Location Settings */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Location Options</label>
-            <div className="flex flex-wrap gap-4">
-              {[
-                { value: 'fixed', label: 'Fixed Location Only' },
-                { value: 'mobile', label: 'Home Visits Only' },
-                { value: 'both', label: 'Both Options' }
-              ].map((option) => (
-                <label key={option.value} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="location_type"
-                    value={option.value}
-                    checked={(settings?.booking_settings?.location_type || 'both') === option.value}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      booking_settings: { ...settings?.booking_settings, location_type: e.target.value }
-                    })}
-                    className="w-4 h-4 text-[#9F87C4]"
-                  />
-                  <span className="text-sm">{option.label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
           {/* Fixed Location Address */}
-          {(settings?.booking_settings?.location_type === 'fixed' || settings?.booking_settings?.location_type === 'both') && (
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Clinic/Fixed Location Address
-              </label>
-              <Textarea
-                value={settings?.booking_settings?.fixed_location_address || ''}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  booking_settings: { ...settings?.booking_settings, fixed_location_address: e.target.value }
-                })}
-                placeholder="Enter your clinic address..."
-                rows={2}
-              />
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Clinic/Fixed Location Address
+            </label>
+            <Textarea
+              value={settings?.booking_settings?.fixed_location_address || ''}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, fixed_location_address: e.target.value }
+              })}
+              placeholder="Enter your clinic address (used for fixed location days)..."
+              rows={2}
+            />
+            <p className="text-xs text-slate-500 mt-1">This address is used for days where you work from a fixed location</p>
+          </div>
 
           {/* Email Notifications */}
           <div className="flex items-center gap-3">
@@ -1037,12 +1009,13 @@ export default function AdminSettings() {
 
           {/* Working Hours */}
           <div>
-            <h3 className="text-sm font-medium text-slate-700 mb-3">Working Hours</h3>
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Working Hours & Location</h3>
+            <p className="text-xs text-slate-500 mb-4">Set your working hours and whether you're at a fixed location or working remotely on each day</p>
             <div className="space-y-3">
               {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
-                const daySettings = settings?.booking_settings?.working_hours?.[day] || { enabled: false, start: '09:00', end: '17:00' };
+                const daySettings = settings?.booking_settings?.working_hours?.[day] || { enabled: false, start: '09:00', end: '17:00', location_type: 'both' };
                 return (
-                  <div key={day} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg">
+                  <div key={day} className="flex flex-wrap items-center gap-3 p-3 bg-slate-50 rounded-lg">
                     <div className="w-28">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -1064,39 +1037,59 @@ export default function AdminSettings() {
                       </label>
                     </div>
                     {daySettings.enabled && (
-                      <div className="flex items-center gap-2 flex-1">
-                        <Input
-                          type="time"
-                          value={daySettings.start}
+                      <>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="time"
+                            value={daySettings.start}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              booking_settings: {
+                                ...settings?.booking_settings,
+                                working_hours: {
+                                  ...settings?.booking_settings?.working_hours,
+                                  [day]: { ...daySettings, start: e.target.value }
+                                }
+                              }
+                            })}
+                            className="w-28"
+                          />
+                          <span className="text-slate-500">to</span>
+                          <Input
+                            type="time"
+                            value={daySettings.end}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              booking_settings: {
+                                ...settings?.booking_settings,
+                                working_hours: {
+                                  ...settings?.booking_settings?.working_hours,
+                                  [day]: { ...daySettings, end: e.target.value }
+                                }
+                              }
+                            })}
+                            className="w-28"
+                          />
+                        </div>
+                        <select
+                          value={daySettings.location_type || 'both'}
                           onChange={(e) => setSettings({
                             ...settings,
                             booking_settings: {
                               ...settings?.booking_settings,
                               working_hours: {
                                 ...settings?.booking_settings?.working_hours,
-                                [day]: { ...daySettings, start: e.target.value }
+                                [day]: { ...daySettings, location_type: e.target.value }
                               }
                             }
                           })}
-                          className="w-32"
-                        />
-                        <span className="text-slate-500">to</span>
-                        <Input
-                          type="time"
-                          value={daySettings.end}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            booking_settings: {
-                              ...settings?.booking_settings,
-                              working_hours: {
-                                ...settings?.booking_settings?.working_hours,
-                                [day]: { ...daySettings, end: e.target.value }
-                              }
-                            }
-                          })}
-                          className="w-32"
-                        />
-                      </div>
+                          className="px-3 py-2 text-sm border rounded-md bg-white focus:ring-2 focus:ring-[#9F87C4] focus:border-[#9F87C4]"
+                        >
+                          <option value="fixed">Fixed Location</option>
+                          <option value="remote">Remote Only</option>
+                          <option value="both">Both</option>
+                        </select>
+                      </>
                     )}
                     {!daySettings.enabled && (
                       <span className="text-sm text-slate-400">Closed</span>
@@ -1104,6 +1097,92 @@ export default function AdminSettings() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Remote Day Message */}
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Remote Day Message</h3>
+            <p className="text-xs text-slate-500 mb-2">Message shown to customers when they select a remote-only day</p>
+            <Textarea
+              value={settings?.booking_settings?.remote_day_message || ''}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, remote_day_message: e.target.value }
+              })}
+              placeholder="Kelly is working remotely on this day. If you would like to book, please click next and enter your details to request an appointment."
+              rows={3}
+            />
+          </div>
+
+          {/* Calendar Colors */}
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Calendar Day Colors</h3>
+            <p className="text-xs text-slate-500 mb-3">Customize how different day types appear on the booking calendar</p>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Fixed Location Days</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={settings?.booking_settings?.calendar_colors?.fixed || '#9F87C4'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      booking_settings: {
+                        ...settings?.booking_settings,
+                        calendar_colors: {
+                          ...settings?.booking_settings?.calendar_colors,
+                          fixed: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                  <span className="text-xs text-slate-500">{settings?.booking_settings?.calendar_colors?.fixed || '#9F87C4'}</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Remote Days</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={settings?.booking_settings?.calendar_colors?.remote || '#6BA8A0'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      booking_settings: {
+                        ...settings?.booking_settings,
+                        calendar_colors: {
+                          ...settings?.booking_settings?.calendar_colors,
+                          remote: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                  <span className="text-xs text-slate-500">{settings?.booking_settings?.calendar_colors?.remote || '#6BA8A0'}</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Both Options Days</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={settings?.booking_settings?.calendar_colors?.both || '#8B9DC3'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      booking_settings: {
+                        ...settings?.booking_settings,
+                        calendar_colors: {
+                          ...settings?.booking_settings?.calendar_colors,
+                          both: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                  <span className="text-xs text-slate-500">{settings?.booking_settings?.calendar_colors?.both || '#8B9DC3'}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

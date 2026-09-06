@@ -22,6 +22,7 @@ function createAdminRoutes(dependencies) {
   const UploadController = require('../controllers/UploadController');
   const BookingController = require('../controllers/BookingController');
   const GoogleCalendarController = require('../controllers/GoogleCalendarController');
+  const BlockedTimesController = require('../controllers/BlockedTimesController');
 
   // Initialize controllers
   const authController = new AuthController(collections, authMiddleware);
@@ -36,6 +37,7 @@ function createAdminRoutes(dependencies) {
   const uploadController = new UploadController();
   const bookingController = new BookingController(collections);
   const googleCalendarController = new GoogleCalendarController(collections);
+  const blockedTimesController = new BlockedTimesController(collections);
 
   // Auth routes (no auth required)
   router.post('/auth/login', authController.login);
@@ -111,10 +113,20 @@ function createAdminRoutes(dependencies) {
   // Bookings (admin)
   router.get('/bookings', bookingController.list);
   router.get('/bookings/calendar', bookingController.getCalendar);
+  router.get('/bookings/upcoming', bookingController.getUpcoming);
+  router.post('/bookings/create', bookingController.adminCreate);
   router.get('/bookings/:id', bookingController.get);
   router.put('/bookings/:id', bookingController.update);
   router.put('/bookings/:id/status', bookingController.updateStatus);
   router.delete('/bookings/:id', bookingController.delete);
+
+  // Blocked Times (admin)
+  router.get('/blocked-times', blockedTimesController.list);
+  router.get('/blocked-times/for-date/:date', blockedTimesController.getForDate);
+  router.get('/blocked-times/:id', blockedTimesController.get);
+  router.post('/blocked-times', blockedTimesController.create);
+  router.put('/blocked-times/:id', blockedTimesController.update);
+  router.delete('/blocked-times/:id', blockedTimesController.delete);
 
   // Google Calendar (admin)
   router.get('/google-calendar/status', googleCalendarController.getStatus);

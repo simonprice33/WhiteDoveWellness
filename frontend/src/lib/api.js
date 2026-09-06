@@ -175,9 +175,21 @@ export const adminApi = {
   },
   getBooking: (id) => api.get(`/admin/bookings/${id}`),
   getBookingsCalendar: (month, year) => api.get(`/admin/bookings/calendar?month=${month}&year=${year}`),
+  getUpcomingBookings: (days = 7) => api.get(`/admin/bookings/upcoming?days=${days}`),
+  createBooking: (data) => api.post('/admin/bookings/create', data),
   updateBooking: (id, data) => api.put(`/admin/bookings/${id}`, data),
   updateBookingStatus: (id, status) => api.put(`/admin/bookings/${id}/status`, { status }),
   deleteBooking: (id) => api.delete(`/admin/bookings/${id}`),
+
+  // Blocked Times
+  getBlockedTimes: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/admin/blocked-times${queryString ? `?${queryString}` : ''}`);
+  },
+  getBlockedTimesForDate: (date) => api.get(`/admin/blocked-times/for-date/${date}`),
+  createBlockedTime: (data) => api.post('/admin/blocked-times', data),
+  updateBlockedTime: (id, data) => api.put(`/admin/blocked-times/${id}`, data),
+  deleteBlockedTime: (id) => api.delete(`/admin/blocked-times/${id}`),
 
   // Google Calendar
   getGoogleCalendarStatus: () => api.get('/admin/google-calendar/status'),

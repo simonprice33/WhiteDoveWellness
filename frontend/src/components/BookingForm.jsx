@@ -45,6 +45,9 @@ export default function BookingForm({ onClose }) {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [availableDates, setAvailableDates] = useState([]);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
+  const [isRemoteDay, setIsRemoteDay] = useState(false);
+  const [remoteDayMessage, setRemoteDayMessage] = useState('');
+  const [dayLocationType, setDayLocationType] = useState(null);
   
   // Selections
   const [selectedTherapy, setSelectedTherapy] = useState(null);
@@ -55,7 +58,8 @@ export default function BookingForm({ onClose }) {
   
   // Client details
   const [clientDetails, setClientDetails] = useState({
-    name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
     address: '',
@@ -149,9 +153,23 @@ export default function BookingForm({ onClose }) {
     
     try {
       setAvailableSlots([]);
+      setIsRemoteDay(false);
+      setRemoteDayMessage('');
+      setDayLocationType(null);
+      
       const dateStr = toLocalDateString(selectedDate);
       const response = await publicApi.getAvailability(dateStr, selectedPrice.id);
-      setAvailableSlots(response.data.available_slots || []);
+      
+      // Check if this is a remote-only day
+      if (response.data.is_remote_day) {
+        setIsRemoteDay(true);
+        setRemoteDayMessage(response.data.remote_day_message || 'This is a remote working day. Please continue to request an appointment.');
+        setDayLocationType('remote');
+        setAvailableSlots([]);
+      } else {
+        setAvailableSlots(response.data.available_slots || []);
+        setDayLocationType(response.data.location_type || 'both');
+      }
     } catch (err) {
       console.error('Failed to load availability:', err);
       if (err.response?.data?.message) {
@@ -201,8 +219,9 @@ export default function BookingForm({ onClose }) {
       const response = await publicApi.createBooking({
         price_id: selectedPrice.id,
         booking_date: dateStr,
-        booking_time: selectedTime,
-        client_name: clientDetails.name,
+        booking_time: isRemoteDay ? null : selectedTime,
+        first_name: clientDetails.first_name,
+        last_name: clientDetails.last_name,
         client_email: clientDetails.email,
         client_phone: clientDetails.phone,
         client_address: isHomeVisit ? clientDetails.address : '',
@@ -211,7 +230,7 @@ export default function BookingForm({ onClose }) {
       });
       
       setBooking(response.data.booking);
-      setStep(5); // Move to payment step
+      setStep(5); // Move to payment/confirmation step
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create booking');
     } finally {
@@ -397,10 +416,15 @@ export default function BookingForm({ onClose }) {
                 className="space-y-4"
               >
                 <h3 className="text-lg font-medium text-slate-800">
-                  Available Times for {selectedDate && formatDate(selectedDate)}
+                  {isRemoteDay ? 'Remote Day' : `Available Times for ${selectedDate && formatDate(selectedDate)}`}
                 </h3>
                 
-                {availableSlots.length === 0 ? (
+                {isRemoteDay ? (
+                  <div className="text-center py-8 bg-teal-50 rounded-xl border border-teal-200">
+                    <MapPin className="mx-auto h-12 w-12 text-teal-500 mb-3" />
+                    <p className="text-slate-700 px-4">{remoteDayMessage}</p>
+                  </div>
+                ) : availableSlots.length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
                     <Clock className="mx-auto h-12 w-12 text-slate-300 mb-3" />
                     <p>No available slots for this date.</p>
@@ -438,8 +462,8 @@ export default function BookingForm({ onClose }) {
               >
                 <h3 className="text-lg font-medium text-slate-800">Your Details</h3>
                 
-                {/* Location Type */}
-                {bookingSettings?.location_type !== 'fixed' && (
+                {/* Location Type - Only show if not a remote day and location allows both */}
+                {!isRemoteDay && dayLocationType !== 'fixed' && dayLocationType !== 'remote' && (
                   <div className="flex gap-4 p-4 bg-slate-50 rounded-xl">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
@@ -469,15 +493,28 @@ export default function BookingForm({ onClose }) {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                      <User size={16} className="inline mr-1" /> Full Name *
+                      <User size={16} className="inline mr-1" /> First Name *
                     </label>
                     <input
                       type="text"
-                      value={clientDetails.name}
-                      onChange={(e) => setClientDetails({ ...clientDetails, name: e.target.value })}
+                      value={clientDetails.first_name}
+                      onChange={(e) => setClientDetails({ ...clientDetails, first_name: e.target.value })}
                       className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#9F87C4] focus:border-transparent"
                       required
-                      data-testid="client-name-input"
+                      data-testid="client-first-name-input"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      <User size={16} className="inline mr-1" /> Last Name
+                    </label>
+                    <input
+                      type="text"
+                      value={clientDetails.last_name}
+                      onChange={(e) => setClientDetails({ ...clientDetails, last_name: e.target.value })}
+                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#9F87C4] focus:border-transparent"
+                      data-testid="client-last-name-input"
                     />
                   </div>
                   
@@ -646,7 +683,7 @@ export default function BookingForm({ onClose }) {
                 disabled={
                   (step === 1 && !selectedPrice) ||
                   (step === 2 && !selectedDate) ||
-                  (step === 3 && !selectedTime)
+                  (step === 3 && !isRemoteDay && !selectedTime)
                 }
                 className="bg-[#9F87C4] hover:bg-[#8A74B0]"
                 data-testid="booking-next-btn"
@@ -659,7 +696,7 @@ export default function BookingForm({ onClose }) {
                 onClick={handleSubmit}
                 disabled={
                   submitting ||
-                  !clientDetails.name ||
+                  !clientDetails.first_name ||
                   !clientDetails.email ||
                   !clientDetails.phone ||
                   (isHomeVisit && !clientDetails.address)
@@ -674,7 +711,7 @@ export default function BookingForm({ onClose }) {
                   </>
                 ) : (
                   <>
-                    Continue
+                    {bookingSettings?.payment_button_text || 'Continue'}
                     <ChevronRight className="ml-1 h-4 w-4" />
                   </>
                 )}
