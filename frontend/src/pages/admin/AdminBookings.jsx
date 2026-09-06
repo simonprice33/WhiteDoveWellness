@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { adminApi } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -720,53 +721,81 @@ export default function AdminBookings() {
       )}
 
       {/* New Booking Modal */}
-      {showNewBookingModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-[101]">
-            <div className="p-6 border-b flex items-center justify-between">
-              <h2 className="text-xl font-serif text-slate-800">New Booking</h2>
-              <button 
-                onClick={() => { setShowNewBookingModal(false); resetNewBookingForm(); }}
-                className="p-2 hover:bg-slate-100 rounded-full"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            
-            <div className="p-6 space-y-6">
-              {/* Client Selection */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm font-medium text-slate-700">Client</label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowNewClientForm(!showNewClientForm)}
-                  >
-                    {showNewClientForm ? (
-                      <>
-                        <Search className="h-4 w-4 mr-1" />
-                        Search Existing
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4 mr-1" />
-                        New Client
-                      </>
-                    )}
-                  </Button>
-                </div>
-                
-                {showNewClientForm ? (
-                  <div className="grid grid-cols-2 gap-3 p-4 bg-slate-50 rounded-lg">
-                    <Input
-                      placeholder="First Name *"
-                      value={newClient.first_name}
-                      onChange={(e) => setNewClient({ ...newClient, first_name: e.target.value })}
-                    />
-                    <Input
-                      placeholder="Last Name"
+      {showNewBookingModal && createPortal(
+        <>
+          <div 
+            className="fixed bg-black/60" 
+            style={{ 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 99998
+            }}
+            onClick={() => { setShowNewBookingModal(false); resetNewBookingForm(); }} 
+          />
+          <div 
+            className="fixed flex items-center justify-center p-4"
+            style={{ 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 99999,
+              pointerEvents: 'none'
+            }}
+          >
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{ pointerEvents: 'auto' }}>
+              <div className="p-6 border-b flex items-center justify-between">
+                <h2 className="text-xl font-serif text-slate-800">New Booking</h2>
+                <button 
+                  onClick={() => { setShowNewBookingModal(false); resetNewBookingForm(); }}
+                  className="p-2 hover:bg-slate-100 rounded-full"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* Client Selection */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-sm font-medium text-slate-700">Client</label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowNewClientForm(!showNewClientForm)}
+                    >
+                      {showNewClientForm ? (
+                        <>
+                          <Search className="h-4 w-4 mr-1" />
+                          Search Existing
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-4 w-4 mr-1" />
+                          New Client
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  
+                  {showNewClientForm ? (
+                    <div className="grid grid-cols-2 gap-3 p-4 bg-slate-50 rounded-lg">
+                      <Input
+                        placeholder="First Name *"
+                        value={newClient.first_name}
+                        onChange={(e) => setNewClient({ ...newClient, first_name: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Last Name"
                       value={newClient.last_name}
                       onChange={(e) => setNewClient({ ...newClient, last_name: e.target.value })}
                     />
@@ -935,37 +964,68 @@ export default function AdminBookings() {
             </div>
           </div>
         </div>
+        </>,
+        document.getElementById('modal-root') || document.body
       )}
 
       {/* Block Time Modal */}
-      {showBlockTimeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-[101]">
-            <div className="p-6 border-b flex items-center justify-between">
-              <h2 className="text-xl font-serif text-slate-800">Block Out Times</h2>
-              <button 
-                onClick={() => setShowBlockTimeModal(false)}
-                className="p-2 hover:bg-slate-100 rounded-full"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            
-            <div className="p-6 space-y-6">
-              {/* Add New Block */}
-              <div className="p-4 bg-slate-50 rounded-lg space-y-4">
-                <h3 className="font-medium text-slate-800">Add New Block</h3>
-                
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id="is_recurring"
-                    checked={newBlockedTime.is_recurring}
-                    onChange={(e) => setNewBlockedTime({ ...newBlockedTime, is_recurring: e.target.checked, date: '', day_of_week: '' })}
-                    className="w-4 h-4 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
-                  />
-                  <label htmlFor="is_recurring" className="text-sm text-slate-700">Recurring (repeats every week)</label>
-                </div>
+      {showBlockTimeModal && createPortal(
+        <>
+          <div 
+            className="fixed bg-black/60" 
+            style={{ 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: 99998,
+              isolation: 'isolate'
+            }}
+            onClick={() => setShowBlockTimeModal(false)} 
+          />
+          <div 
+            className="fixed flex items-center justify-center p-4"
+            style={{ 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: 99999,
+              pointerEvents: 'none'
+            }}
+          >
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{ pointerEvents: 'auto' }}>
+              <div className="p-6 border-b flex items-center justify-between">
+                <h2 className="text-xl font-serif text-slate-800">Block Out Times</h2>
+                <button 
+                  onClick={() => setShowBlockTimeModal(false)}
+                  className="p-2 hover:bg-slate-100 rounded-full"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* Add New Block */}
+                <div className="p-4 bg-slate-50 rounded-lg space-y-4">
+                  <h3 className="font-medium text-slate-800">Add New Block</h3>
+                  
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="is_recurring"
+                      checked={newBlockedTime.is_recurring}
+                      onChange={(e) => setNewBlockedTime({ ...newBlockedTime, is_recurring: e.target.checked, date: '', day_of_week: '' })}
+                      className="w-4 h-4 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+                    />
+                    <label htmlFor="is_recurring" className="text-sm text-slate-700">Recurring (repeats every week)</label>
+                  </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   {newBlockedTime.is_recurring ? (
@@ -1092,6 +1152,8 @@ export default function AdminBookings() {
             </div>
           </div>
         </div>
+        </>,
+        document.getElementById('modal-root') || document.body
       )}
     </div>
   );

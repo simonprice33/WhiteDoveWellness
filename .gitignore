@@ -146,3 +146,4 @@ credentials.json
 *.key
 .credentials
 mongodb-database-tools-windows-x86_64-100.18.0/
+frontend/node_modules/.cache/default-development/11.pack
