@@ -23,6 +23,7 @@ function createAdminRoutes(dependencies) {
   const BookingController = require('../controllers/BookingController');
   const GoogleCalendarController = require('../controllers/GoogleCalendarController');
   const BlockedTimesController = require('../controllers/BlockedTimesController');
+  const PaymentController = require('../controllers/PaymentController');
 
   // Initialize controllers
   const authController = new AuthController(collections, authMiddleware);
@@ -38,6 +39,7 @@ function createAdminRoutes(dependencies) {
   const bookingController = new BookingController(collections);
   const googleCalendarController = new GoogleCalendarController(collections);
   const blockedTimesController = new BlockedTimesController(collections);
+  const paymentController = new PaymentController(collections);
 
   // Auth routes (no auth required)
   router.post('/auth/login', authController.login);
@@ -135,6 +137,12 @@ function createAdminRoutes(dependencies) {
   router.get('/google-calendar/auth-url', googleCalendarController.getAuthUrl);
   router.post('/google-calendar/disconnect', googleCalendarController.disconnect);
   router.post('/google-calendar/test', googleCalendarController.testConnection);
+
+  // SumUp Payments (admin)
+  router.get('/payments/sumup/config', paymentController.getConfig);
+  router.post('/payments/sumup/config', paymentController.saveConfig);
+  router.post('/payments/sumup/test', paymentController.testConnection);
+  router.post('/payments/sumup/disconnect', paymentController.disconnect);
 
   return router;
 }

@@ -89,8 +89,11 @@ export const publicApi = {
   getAvailableDates: (priceId, month, year) => api.get(`/bookings/available-dates?price_id=${priceId}&month=${month}&year=${year}`),
   getAvailability: (date, priceId) => api.get(`/bookings/availability?date=${date}&price_id=${priceId}`),
   createBooking: (data) => api.post('/bookings/create', data),
-  confirmBooking: (id, data) => api.post(`/bookings/${id}/confirm`, data),
-  cancelBooking: (id) => api.post(`/bookings/${id}/cancel`)
+  cancelBooking: (id) => api.post(`/bookings/${id}/cancel`),
+
+  // Payments
+  createCheckout: (bookingId) => api.post('/payments/checkout', { booking_id: bookingId }),
+  getPaymentStatus: (bookingId) => api.get(`/payments/status/${bookingId}`)
 };
 
 // Admin API
@@ -197,7 +200,13 @@ export const adminApi = {
   saveGoogleCalendarConfig: (config) => api.post('/admin/google-calendar/config', config),
   getGoogleCalendarAuthUrl: () => api.get('/admin/google-calendar/auth-url'),
   disconnectGoogleCalendar: () => api.post('/admin/google-calendar/disconnect'),
-  testGoogleCalendar: () => api.post('/admin/google-calendar/test')
+  testGoogleCalendar: () => api.post('/admin/google-calendar/test'),
+
+  // SumUp Payments
+  getSumUpConfig: () => api.get('/admin/payments/sumup/config'),
+  saveSumUpConfig: (config) => api.post('/admin/payments/sumup/config', config),
+  testSumUp: () => api.post('/admin/payments/sumup/test'),
+  disconnectSumUp: () => api.post('/admin/payments/sumup/disconnect')
 };
 
 export default api;

@@ -19,6 +19,8 @@ import AdminAffiliations from './pages/admin/AdminAffiliations';
 import AdminPolicies from './pages/admin/AdminPolicies';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminHelp from './pages/admin/AdminHelp';
+import BookingReturn from './pages/BookingReturn';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -50,6 +52,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/policy/:slug" element={<PolicyPage />} />
+          <Route path="/booking/return" element={<BookingReturn />} />
           
           {/* Admin Login */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -73,6 +76,7 @@ function App() {
             <Route path="policies" element={<AdminPolicies />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="help" element={<AdminHelp />} />
           </Route>
           
           {/* Catch all - redirect to home */}

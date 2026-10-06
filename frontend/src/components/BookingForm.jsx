@@ -238,10 +238,19 @@ export default function BookingForm({ onClose }) {
     }
   };
 
-  const handlePayment = () => {
-    // TODO: Integrate with SumUp
-    // For now, show a placeholder
-    alert('SumUp payment integration coming soon! The booking has been created with pending payment status.');
+  const [paying, setPaying] = useState(false);
+  const onlinePaymentActive = !!(bookingSettings?.require_online_payment && bookingSettings?.online_payments_configured);
+
+  const handlePayment = async () => {
+    try {
+      setPaying(true);
+      setError(null);
+      const response = await publicApi.createCheckout(booking.id);
+      window.location.assign(response.data.checkout_url);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not start the payment. Please try again.');
+      setPaying(false);
+    }
   };
 
   const formatTime = (time) => {
@@ -593,10 +602,10 @@ export default function BookingForm({ onClose }) {
                     <Check className="h-8 w-8 text-green-600" />
                   </div>
                   <h3 className="text-xl font-medium text-slate-800">
-                    {bookingSettings?.require_online_payment ? 'Booking Created!' : 'Booking Request Submitted!'}
+                    {onlinePaymentActive ? 'Booking Created!' : 'Booking Request Submitted!'}
                   </h3>
                   <p className="text-slate-500 mt-1">
-                    {bookingSettings?.require_online_payment 
+                    {onlinePaymentActive 
                       ? 'Please complete payment to confirm your booking.'
                       : bookingSettings?.confirmation_message || 'Your booking request has been submitted. We will confirm your appointment shortly.'}
                   </p>
@@ -618,7 +627,7 @@ export default function BookingForm({ onClose }) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-600">Time:</span>
-                    <span className="font-medium">{formatTime(booking.booking_time)}</span>
+                    <span className="font-medium">{booking.booking_time ? formatTime(booking.booking_time) : 'To be confirmed'}</span>
                   </div>
                   <div className="border-t pt-3 flex justify-between text-lg">
                     <span className="font-medium">Total:</span>
@@ -626,18 +635,22 @@ export default function BookingForm({ onClose }) {
                   </div>
                 </div>
                 
-                {bookingSettings?.require_online_payment ? (
+                {onlinePaymentActive ? (
                   <>
+                    {error && (
+                      <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3 text-center" data-testid="payment-error">{error}</p>
+                    )}
                     <Button
                       onClick={handlePayment}
+                      disabled={paying}
                       className="w-full bg-[#9F87C4] hover:bg-[#8A74B0] text-white py-6 text-lg"
                       data-testid="pay-now-btn"
                     >
-                      <CreditCard className="mr-2" />
-                      Pay Now with SumUp
+                      {paying ? <Loader2 className="mr-2 animate-spin" /> : <CreditCard className="mr-2" />}
+                      {paying ? 'Opening secure checkout...' : `Pay £${booking.price_amount.toFixed(2)} with SumUp`}
                     </Button>
                     <p className="text-center text-sm text-slate-500">
-                      Your booking will be confirmed once payment is complete.
+                      You will be taken to SumUp's secure payment page. Your booking is confirmed once payment is complete.
                       <br />
                       Booking reference: <span className="font-mono">{booking.id.slice(0, 8)}</span>
                     </p>

@@ -234,6 +234,11 @@ class BookingController {
   getBookingSettings = async (req, res) => {
     try {
       const bookingSettings = await this.getAvailabilitySettings();
+      const siteSettings = await this.collections.siteSettings.findOne(
+        { id: 'site_settings' },
+        { projection: { 'sumup_config.api_key': 1, 'sumup_config.merchant_code': 1 } }
+      );
+      const onlinePaymentsConfigured = !!(siteSettings?.sumup_config?.api_key && siteSettings?.sumup_config?.merchant_code);
 
       res.json({
         success: true,
@@ -243,6 +248,7 @@ class BookingController {
           working_hours: bookingSettings.working_hours,
           fixed_location_address: bookingSettings.fixed_location_address,
           require_online_payment: bookingSettings.require_online_payment || false,
+          online_payments_configured: onlinePaymentsConfigured,
           payment_button_text: bookingSettings.payment_button_text || 'Complete Booking Request',
           confirmation_message: bookingSettings.confirmation_message || 'Your booking request has been submitted. We will confirm your appointment shortly.',
           remote_day_message: bookingSettings.remote_day_message || 'Working remotely on this day. Please continue to request an appointment.',
@@ -465,6 +471,12 @@ class BookingController {
       const dayOfWeek = days[requestedDate.getDay()];
       const daySettings = bookingSettings.working_hours[dayOfWeek];
       const isRemoteDay = daySettings?.location_type === 'remote';
+      const sumupSettings = await this.collections.siteSettings.findOne(
+        { id: 'site_settings' },
+        { projection: { 'sumup_config.api_key': 1, 'sumup_config.merchant_code': 1 } }
+      );
+      const onlinePaymentActive = !!(bookingSettings.require_online_payment
+        && sumupSettings?.sumup_config?.api_key && sumupSettings?.sumup_config?.merchant_code);
 
       // For non-remote days, booking_time is required
       if (!isRemoteDay && !booking_time) {
@@ -589,10 +601,10 @@ class BookingController {
         is_home_visit: !!is_home_visit,
         is_remote_booking: isRemoteDay,
         notes: notes || '',
-        status: isRemoteDay ? 'pending_confirmation' : 'pending_payment',
+        status: (isRemoteDay || !onlinePaymentActive) ? 'pending_confirmation' : 'pending_payment',
         payment_status: 'pending',
         payment_id: null,
-        payment_provider: 'sumup',
+        payment_provider: onlinePaymentActive ? 'sumup' : null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
@@ -871,7 +883,7 @@ class BookingController {
       const { id } = req.params;
       const { status } = req.body;
 
-      const validStatuses = ['pending_payment', 'confirmed', 'completed', 'cancelled', 'no_show'];
+      const validStatuses = ['pending_confirmation', 'pending_payment', 'confirmed', 'completed', 'cancelled', 'no_show'];
 
       if (!validStatuses.includes(status)) {
         return res.status(400).json({

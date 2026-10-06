@@ -16,7 +16,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  Calendar
+  Calendar,
+  HelpCircle
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 
@@ -31,6 +32,7 @@ const navItems = [
   { label: 'Policies', icon: FileText, href: '/admin/policies' },
   { label: 'Admin Users', icon: UserCircle, href: '/admin/users' },
   { label: 'Settings', icon: Settings, href: '/admin/settings' },
+  { label: 'Help', icon: HelpCircle, href: '/admin/help' },
 ];
 
 export default function AdminLayout() {

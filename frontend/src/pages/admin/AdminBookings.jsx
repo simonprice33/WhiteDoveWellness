@@ -328,6 +328,7 @@ export default function AdminBookings() {
 
   const getStatusBadge = (status) => {
     const styles = {
+      pending_confirmation: 'bg-blue-100 text-blue-800',
       pending_payment: 'bg-yellow-100 text-yellow-800',
       confirmed: 'bg-green-100 text-green-800',
       completed: 'bg-blue-100 text-blue-800',
@@ -336,6 +337,7 @@ export default function AdminBookings() {
     };
     
     const labels = {
+      pending_confirmation: 'Awaiting Confirmation',
       pending_payment: 'Pending Payment',
       confirmed: 'Confirmed',
       completed: 'Completed',
@@ -471,7 +473,7 @@ export default function AdminBookings() {
       {/* Filters (List View) */}
       {view === 'list' && (
         <div className="flex gap-2 flex-wrap">
-          {['', 'pending_payment', 'confirmed', 'completed', 'cancelled'].map((status) => (
+          {['', 'pending_confirmation', 'pending_payment', 'confirmed', 'completed', 'cancelled'].map((status) => (
             <Button
               key={status || 'all'}
               variant={statusFilter === status ? 'default' : 'outline'}

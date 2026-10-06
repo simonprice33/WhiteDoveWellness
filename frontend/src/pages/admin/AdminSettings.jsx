@@ -5,6 +5,7 @@ import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User, Calendar as CalendarIcon, Link, Unlink, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { SumUpPaymentsSection } from './settings/SumUpPaymentsSection';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState(null);
@@ -1186,6 +1187,9 @@ export default function AdminSettings() {
             </div>
           </div>
         </div>
+
+        {/* SumUp Payments */}
+        <SumUpPaymentsSection />
 
         {/* Google Calendar Sync */}
         <div className="bg-white rounded-xl shadow-sm border p-6 space-y-6" data-testid="google-calendar-section">

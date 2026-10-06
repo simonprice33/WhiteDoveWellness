@@ -1,4 +1,34 @@
-# How to Connect SumUp Bookings with Google Calendar
+# SumUp & Google Calendar Setup for White Dove Wellness
+
+> These instructions are also available in the admin panel under **Help** (`/admin/help`).
+
+## Part A: SumUp Online Payments (card payments for bookings)
+
+Payments are taken on SumUp's secure Hosted Checkout page. A booking is only marked
+**Confirmed** after the website verifies the payment with SumUp's API.
+
+### 1. Create a SumUp API key
+1. Log in at sumup.com → Settings → **For developers** → **API keys** (or me.sumup.com/developers).
+2. Click **Create API key**, name it "White Dove Website".
+3. Copy the **secret key** (`sup_sk_...`) immediately — SumUp only shows it once. Do not use the public key.
+4. Note your **Merchant code** (e.g. `MABC1234`) shown on the same page.
+
+### 2. Enter in the admin panel
+1. Admin → **Settings** → **SumUp Online Payments**.
+2. Paste the secret API key and merchant code (currency: GBP). Click **Save SumUp Configuration**.
+3. Click **Test connection** → status shows **Connected**.
+4. In **Booking Settings**, tick **Require online payment (SumUp) to confirm booking** and click **Save Settings**.
+
+### 3. How it works
+- Customer books → sees **Pay £xx with SumUp** → pays on SumUp's page → returns to `/booking/return`.
+- Website checks the checkout with SumUp; on `PAID` the booking becomes **Confirmed** / **paid**.
+- SumUp also notifies the server directly (`/api/payments/sumup/webhook`) so bookings confirm even if the customer closes the browser.
+- Failed/abandoned payments stay **Pending Payment**; the customer can retry from the return page.
+- If online payment is required but SumUp is not configured, bookings fall back to **Awaiting Confirmation** requests.
+
+---
+
+## Part B: How to Connect SumUp Bookings with Google Calendar
 
 Since SumUp Bookings does not have a public API for direct integration, you can use **Google Calendar as the central hub** for two-way synchronization with your White Dove Wellness website.
 
