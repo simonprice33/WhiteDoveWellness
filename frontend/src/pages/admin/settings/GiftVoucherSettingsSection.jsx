@@ -36,26 +36,10 @@ export const GiftVoucherSettingsSection = ({ value, onChange }) => {
           <label className="block text-sm font-medium text-slate-700 mb-1">Intro text</label>
           <Textarea value={gv.subtitle || ''} onChange={(e) => update({ subtitle: e.target.value })} rows={2} />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Suggested amounts (£, comma separated)</label>
-            <Input
-              value={(gv.amounts || []).join(', ')}
-              onChange={(e) => update({ amounts: e.target.value.split(',').map((s) => Number(s.trim())).filter((n) => n > 0) })}
-              placeholder="25, 30, 40, 50, 100"
-              data-testid="gift-voucher-amounts"
-            />
-            <p className="text-xs text-slate-500 mt-1">Match these to the amounts set in your SumUp gift card settings — SumUp can't pre-select an amount from a link</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Button text</label>
-            <Input value={gv.button_text || ''} onChange={(e) => update({ button_text: e.target.value })} />
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Button text</label>
+          <Input value={gv.button_text || ''} onChange={(e) => update({ button_text: e.target.value })} />
         </div>
-        <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-          <input type="checkbox" checked={gv.allow_custom_amount !== false} onChange={(e) => update({ allow_custom_amount: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-[#9F87C4]" />
-          Show "choose your own amount" option
-        </label>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">How it works (one step per line)</label>
           <Textarea

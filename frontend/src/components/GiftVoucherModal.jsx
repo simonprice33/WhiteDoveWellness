@@ -1,9 +1,7 @@
 import { motion } from 'framer-motion';
 import { Gift, X, ExternalLink, ShieldCheck, Mail, Clock } from 'lucide-react';
 
-export default function GiftVoucherModal({ settings, amount, onClose }) {
-  const amountLabel = amount === 'custom' ? 'an amount of your choice' : amount ? `£${amount}` : 'your chosen amount';
-
+export default function GiftVoucherModal({ settings, onClose }) {
   const openSumUp = () => {
     window.open(settings.sumup_link, '_blank', 'noopener,noreferrer');
     onClose();
@@ -24,28 +22,15 @@ export default function GiftVoucherModal({ settings, amount, onClose }) {
           <div className="w-12 h-12 rounded-2xl bg-[#9F87C4] flex items-center justify-center mb-4">
             <Gift size={22} />
           </div>
-          <h3 className="font-serif text-2xl">Your gift voucher</h3>
-          <p className="text-white/70 text-sm mt-1">You've chosen {amountLabel}.</p>
+          <h3 className="font-serif text-2xl">Buy a gift voucher</h3>
+          <p className="text-white/70 text-sm mt-1">Secure checkout with our payment partner SumUp.</p>
         </div>
 
         <div className="p-6 space-y-5">
           <p className="text-slate-600 text-sm leading-relaxed">
-            Gift vouchers are purchased through our payment partner SumUp. You'll be taken to our
-            secure SumUp gift card page in a new tab.
+            You'll be taken to our SumUp gift card page in a new tab, where you can choose the amount,
+            add a personal message and pay by card.
           </p>
-
-          <div className="rounded-2xl bg-[#F5F3FA] border border-[#E4DCF2] p-4 flex items-start gap-3" data-testid="voucher-amount-instruction">
-            <span className="shrink-0 w-9 h-9 rounded-full bg-[#9F87C4] text-white flex items-center justify-center font-semibold text-sm">1</span>
-            <p className="text-sm text-slate-700 leading-relaxed">
-              {amount === 'custom' ? (
-                <>Under <strong>Gift Card amount</strong>, choose <strong>Custom</strong> and enter the amount you'd like to give.</>
-              ) : amount ? (
-                <>Under <strong>Gift Card amount</strong>, select <strong className="text-[#7B6BA8]">£{amount}</strong>. The page opens with its first amount highlighted, so do double-check before paying.</>
-              ) : (
-                <>Under <strong>Gift Card amount</strong>, pick the value you'd like to give.</>
-              )}
-            </p>
-          </div>
 
           <ul className="space-y-3 text-sm text-slate-600">
             <li className="flex items-center gap-3"><ShieldCheck size={18} className="text-[#9F87C4] shrink-0" /> Secure card payment handled by SumUp</li>

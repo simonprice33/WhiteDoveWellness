@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { publicApi } from '../lib/api';
-import { Gift, Mail, Sparkles, ArrowRight, Check } from 'lucide-react';
+import { Gift, Mail, Sparkles, ArrowRight } from 'lucide-react';
 import GiftVoucherModal from './GiftVoucherModal';
 
 const stepIcons = [Gift, Mail, Sparkles];
 
 export default function GiftVouchers() {
   const [settings, setSettings] = useState(null);
-  const [selectedAmount, setSelectedAmount] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -17,15 +16,12 @@ export default function GiftVouchers() {
         const gv = res.data.settings?.gift_voucher_settings;
         if (gv?.enabled && gv.sumup_link) {
           setSettings(gv);
-          setSelectedAmount(gv.amounts?.[0] ?? null);
         }
       })
       .catch(() => {});
   }, []);
 
   if (!settings) return null;
-
-  const amounts = (settings.amounts || []).filter((a) => Number(a) > 0);
 
   return (
     <section id="vouchers" className="py-20 md:py-32 bg-[#2E2A3B] relative overflow-hidden" data-testid="gift-vouchers-section">
@@ -75,49 +71,17 @@ export default function GiftVouchers() {
             transition={{ delay: 0.1 }}
             className="lg:col-span-6"
           >
-            <div className="bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)]">
-              <p className="text-sm uppercase tracking-widest text-white/50 mb-5">Choose an amount</p>
-              <div className="grid grid-cols-3 gap-3">
-                {amounts.map((amount) => {
-                  const active = selectedAmount === amount;
-                  return (
-                    <button
-                      key={amount}
-                      type="button"
-                      onClick={() => setSelectedAmount(amount)}
-                      className={`relative rounded-2xl py-6 font-serif text-3xl transition-all duration-200 border ${
-                        active
-                          ? 'bg-[#9F87C4] border-[#9F87C4] text-white shadow-lg shadow-[#9F87C4]/30 -translate-y-0.5'
-                          : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-white/25'
-                      }`}
-                      data-testid={`voucher-amount-${amount}`}
-                    >
-                      £{amount}
-                      {active && <Check size={16} className="absolute top-2 right-2" />}
-                    </button>
-                  );
-                })}
-                {settings.allow_custom_amount && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedAmount('custom')}
-                    className={`relative rounded-2xl py-6 text-base font-medium transition-all duration-200 border ${
-                      selectedAmount === 'custom'
-                        ? 'bg-[#9F87C4] border-[#9F87C4] text-white shadow-lg shadow-[#9F87C4]/30 -translate-y-0.5'
-                        : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/25'
-                    }`}
-                    data-testid="voucher-amount-custom"
-                  >
-                    Custom
-                    {selectedAmount === 'custom' && <Check size={16} className="absolute top-2 right-2" />}
-                  </button>
-                )}
+            <div className="bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] text-center">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-[#9F87C4]/20 border border-[#9F87C4]/30 flex items-center justify-center mb-6">
+                <Gift size={28} className="text-[#C9B8E8]" />
               </div>
-
+              <p className="text-white/70 mb-8 leading-relaxed">
+                Choose any amount and add a personal message on our secure SumUp gift card page.
+              </p>
               <button
                 type="button"
                 onClick={() => setShowModal(true)}
-                className="group mt-8 w-full bg-white text-[#2E2A3B] rounded-full py-4 font-medium text-lg flex items-center justify-center gap-3 hover:bg-[#F5F3FA] transition-colors"
+                className="group w-full bg-white text-[#2E2A3B] rounded-full py-4 font-medium text-lg flex items-center justify-center gap-3 hover:bg-[#F5F3FA] transition-colors"
                 data-testid="buy-voucher-btn"
               >
                 <Gift size={20} className="text-[#9F87C4]" />
@@ -133,7 +97,7 @@ export default function GiftVouchers() {
       </div>
 
       {showModal && (
-        <GiftVoucherModal settings={settings} amount={selectedAmount} onClose={() => setShowModal(false)} />
+        <GiftVoucherModal settings={settings} onClose={() => setShowModal(false)} />
       )}
     </section>
   );
