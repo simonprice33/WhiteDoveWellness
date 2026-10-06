@@ -169,29 +169,36 @@ Reflexology business website for White Dove Wellness - Holistic Therapies. Singl
 - Booking system with availability management
 
 ### P1 (Important) - PENDING
-- [ ] **SumUp Payment Integration** - Requires API keys from user
-- [ ] Email notifications for booking confirmations
+- [x] **SumUp Payment Integration** (June 2026) - Built; needs client's real API key + merchant code entered in Admin → Settings
+- [ ] Email notifications for booking confirmations (EMAIL_PROVIDER currently "none" — logs only)
+- [ ] Google Calendar: create calendar event when a booking is confirmed (read-side sync + OAuth UI exist; write-on-confirm not yet wired)
 - [ ] User verification of all image uploads (logo, hero, about me)
 - [ ] User verification of consultation form
 
 ### P2 (Nice to Have)
-- [ ] Google Calendar sync
-- [ ] SMS notifications (Twilio)
+- [x] Google Calendar OAuth config UI (DB-stored credentials)
+- [x] Admin Help page (/admin/help) with SumUp + Google Calendar setup guides (June 2026)
+- [ ] SMS/Email reminders 24h before appointment (Twilio)
 - [ ] Client appointment history in client management
 - [ ] Analytics dashboard
 - [ ] Newsletter subscription
 - [ ] Gift voucher system
+- [ ] Refactor AdminBookings.jsx / AdminSettings.jsx into smaller components
 
-## SumUp Integration (Ready for Keys)
+## SumUp Integration (Implemented June 2026)
 
-When you have your SumUp API credentials, provide:
-- `SUMUP_API_KEY` - Your SumUp secret API key
-- `SUMUP_MERCHANT_CODE` - Your merchant code
+Credentials are stored in MongoDB (`site_settings.sumup_config`: api_key, merchant_code, currency) and managed from Admin → Settings → "SumUp Online Payments" (save / test connection / disconnect). No env vars needed.
 
-The integration uses **Hosted Checkout** which redirects customers to SumUp's payment page. After payment:
-1. Customer is redirected back to your site
-2. SumUp webhook confirms payment status
-3. Booking automatically moves from `pending_payment` to `confirmed`
+- Backend: `services/SumUpService.js`, `controllers/PaymentController.js`
+- Admin: `GET/POST /api/admin/payments/sumup/config`, `POST .../test`, `POST .../disconnect`
+- Public: `POST /api/payments/checkout {booking_id}` → `checkout_url`; `GET /api/payments/status/:bookingId`; `POST /api/payments/sumup/webhook` (SumUp return_url)
+- Flow: booking (pending_payment) → "Pay £xx with SumUp" → SumUp Hosted Checkout → redirect `/booking/return?booking_id=` (polls status) → server verifies checkout with SumUp → `confirmed`/`paid`. Idempotent; booking is never confirmed from the browser alone.
+- Fallback: if `require_online_payment` is on but SumUp isn't configured, bookings are created as `pending_confirmation` requests. Insecure legacy `POST /api/bookings/:id/confirm` removed.
+- Booking statuses: pending_confirmation, pending_payment, confirmed, completed, cancelled, no_show.
+- Test coverage: `/app/test_reports/iteration_3.json` (26/26 backend + frontend flows pass), `/app/backend/tests/test_sumup_payments.py`.
+
+## Tooling
+- ESLint 9 flat config added at `/app/frontend/eslint.config.js` (fixes "linter engine error").
 
 ## Default Admin Credentials
 - **URL**: `/admin/login`

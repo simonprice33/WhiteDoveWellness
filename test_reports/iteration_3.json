@@ -1,0 +1,26 @@
+{
+  "summary": "Comprehensive e2e testing of SumUp payment integration + public payment flow for White Dove Wellness. Backend: 26/26 pytest cases pass (SumUp admin config CRUD, masked key, idempotent save, test-connection rejects fake key, bookings/settings online_payments_configured flag, public /payments/checkout + status + webhook, require_online_payment=true creates pending_payment bookings and SumUp 502 friendly error, PUT admin booking status accepts pending_confirmation, legacy /bookings/:id/confirm removed, disconnect clears config). Frontend: admin /admin/settings SumUp section fully functional (status pill, disabled Save until both fields filled, masked merchant/key display, Test Connection shows rejection toast, Disconnect returns to Not configured, Setup guide link to /admin/help#sumup), /admin/help page renders with sumup + google-calendar sections, nav-help in sidebar, /admin/bookings Pending Confirmation filter present, public booking modal completes 5 steps and shows 'Booking Request Submitted!' with complete-booking-btn (no pay-now-btn) when SumUp not configured, /booking/return without booking_id shows payment-not-complete 'Booking not found'. Left the app in NOT CONFIGURED state (SumUp disconnected, require_online_payment=false).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_sumup_payments.py",
+    "/app/test_reports/pytest/sumup.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "PaymentController.js PUBLIC_BOOKING_FIELDS omits payment_provider; /payments/status consumers that need to render the provider name would have to inspect checkout_status only. Consider including payment_provider in the public projection for clarity on the return page.",
+    "BookingController.create silently assumes bookingSettings.working_hours[dayOfWeek] exists. If a day is disabled, no explicit 400 is returned when a booking_time is submitted for a non-enabled day (relies on availability pre-check). Minor defensive gap.",
+    "SettingsController.update whitelists top-level fields but booking_settings is deep-merged by the client (frontend must send the full object). Document the shape, or implement server-side deep merge, to avoid data loss on partial updates.",
+    "SumUpService.saveConfig stores the raw API key in Mongo in plaintext. Consider at-rest encryption or a secret manager for production."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_sumup_payments.py",
+    "/app/test_reports/iteration_3.json"
+  ],
+  "success_rate": {"backend": "100% (26/26)", "frontend": "100%"},
+  "test_credentials": "admin / admin123 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Backend test suite creates and deletes test bookings/clients within pytest. A few TEST_* public bookings on future Thursdays may remain (pending_confirmation) because no public delete endpoint exists; they can be cleaned via admin UI if desired. One UI-driven booking (29 Oct 2026, 12:30 PM Reflexology, email test_pub_<ts>@example.com) was created via Playwright to verify step 5 UI; also pending_confirmation.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend tests in /app/backend/tests/test_sumup_payments.py cover full SumUp lifecycle. The suite leaves SumUp DISCONNECTED and require_online_payment=false. Monday/Wednesday/Friday working_hours.enabled are currently false (set during prior iteration tests); only Tuesday (remote) and Thursday (both) are enabled - use Thursdays for new fixed-location booking tests. Admin modal overlay intercepts clicks on background cards; use data-testid selectors with force=True when writing Playwright scripts."
+}
