@@ -37,7 +37,7 @@ const DEFAULT_GIFT_VOUCHER_SETTINGS = {
   enabled: true,
   title: 'Give the Gift of Relaxation',
   subtitle: 'Treat someone special to a moment of calm with a White Dove Wellness gift voucher.',
-  amounts: [30, 50, 75],
+  amounts: [25, 30, 40, 50, 100],
   allow_custom_amount: true,
   sumup_link: 'https://giftcards.sumup.com/order/MA1423Z9',
   button_text: 'Buy a Gift Voucher',

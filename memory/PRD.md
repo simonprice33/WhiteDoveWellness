@@ -191,6 +191,7 @@ SumUp's gift card page (`https://giftcards.sumup.com/order/MA1423Z9`) sends `X-F
 - Public `#vouchers` section (`components/GiftVouchers.jsx`) with amount cards + `GiftVoucherModal.jsx` that opens the SumUp link in a new tab. Header "Vouchers" nav link shows only when enabled.
 - Content is DB-driven via `site_settings.gift_voucher_settings` (enabled, title, subtitle, amounts, allow_custom_amount, sumup_link, button_text, how_it_works[], small_print) — edited in Admin → Settings → "Gift Vouchers Section".
 - Admin register at `/admin/vouchers` (`VoucherController.js`, collection `vouchers`, unique `code`): record vouchers (code, amount/balance, buyer, recipient, purchased_at, expires_at default +12 months, notes), search, status filters, full or partial redemption (`PUT /api/admin/vouchers/:id/redeem {amount_used, redeemed_by, redemption_notes}`), cancel/reactivate, delete. Status `expired` is derived from `expires_at`.
+- Limitation: SumUp's gift card page ignores URL parameters (confirmed in its JS bundle — amount always defaults to its first preset), so the chosen amount cannot be pre-filled. Mitigation: default amounts mirror the SumUp presets (25/30/40/50/100 + Custom) and the modal tells the customer which amount to select on SumUp.
 - Security fix: public `GET /api/settings` now strips `sumup_config`, `google_calendar_config`, `google_calendar` (previously leaked OAuth tokens).
 - Tests: `/app/test_reports/iteration_4.json` (15/15 backend + all UI flows pass).
 

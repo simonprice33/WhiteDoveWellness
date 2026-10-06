@@ -42,9 +42,10 @@ export const GiftVoucherSettingsSection = ({ value, onChange }) => {
             <Input
               value={(gv.amounts || []).join(', ')}
               onChange={(e) => update({ amounts: e.target.value.split(',').map((s) => Number(s.trim())).filter((n) => n > 0) })}
-              placeholder="30, 50, 75"
+              placeholder="25, 30, 40, 50, 100"
               data-testid="gift-voucher-amounts"
             />
+            <p className="text-xs text-slate-500 mt-1">Match these to the amounts set in your SumUp gift card settings — SumUp can't pre-select an amount from a link</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Button text</label>

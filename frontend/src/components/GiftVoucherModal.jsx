@@ -31,9 +31,21 @@ export default function GiftVoucherModal({ settings, amount, onClose }) {
         <div className="p-6 space-y-5">
           <p className="text-slate-600 text-sm leading-relaxed">
             Gift vouchers are purchased through our payment partner SumUp. You'll be taken to our
-            secure SumUp gift card page in a new tab, where you can
-            {amount === 'custom' ? ' enter your own amount' : ' select the amount'} and add a personal message.
+            secure SumUp gift card page in a new tab.
           </p>
+
+          <div className="rounded-2xl bg-[#F5F3FA] border border-[#E4DCF2] p-4 flex items-start gap-3" data-testid="voucher-amount-instruction">
+            <span className="shrink-0 w-9 h-9 rounded-full bg-[#9F87C4] text-white flex items-center justify-center font-semibold text-sm">1</span>
+            <p className="text-sm text-slate-700 leading-relaxed">
+              {amount === 'custom' ? (
+                <>Under <strong>Gift Card amount</strong>, choose <strong>Custom</strong> and enter the amount you'd like to give.</>
+              ) : amount ? (
+                <>Under <strong>Gift Card amount</strong>, select <strong className="text-[#7B6BA8]">£{amount}</strong>. The page opens with its first amount highlighted, so do double-check before paying.</>
+              ) : (
+                <>Under <strong>Gift Card amount</strong>, pick the value you'd like to give.</>
+              )}
+            </p>
+          </div>
 
           <ul className="space-y-3 text-sm text-slate-600">
             <li className="flex items-center gap-3"><ShieldCheck size={18} className="text-[#9F87C4] shrink-0" /> Secure card payment handled by SumUp</li>

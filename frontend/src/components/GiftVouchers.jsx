@@ -17,7 +17,7 @@ export default function GiftVouchers() {
         const gv = res.data.settings?.gift_voucher_settings;
         if (gv?.enabled && gv.sumup_link) {
           setSettings(gv);
-          setSelectedAmount(gv.amounts?.[1] ?? gv.amounts?.[0] ?? null);
+          setSelectedAmount(gv.amounts?.[0] ?? null);
         }
       })
       .catch(() => {});
@@ -77,7 +77,7 @@ export default function GiftVouchers() {
           >
             <div className="bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)]">
               <p className="text-sm uppercase tracking-widest text-white/50 mb-5">Choose an amount</p>
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-3 gap-3">
                 {amounts.map((amount) => {
                   const active = selectedAmount === amount;
                   return (
@@ -97,21 +97,22 @@ export default function GiftVouchers() {
                     </button>
                   );
                 })}
+                {settings.allow_custom_amount && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAmount('custom')}
+                    className={`relative rounded-2xl py-6 text-base font-medium transition-all duration-200 border ${
+                      selectedAmount === 'custom'
+                        ? 'bg-[#9F87C4] border-[#9F87C4] text-white shadow-lg shadow-[#9F87C4]/30 -translate-y-0.5'
+                        : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/25'
+                    }`}
+                    data-testid="voucher-amount-custom"
+                  >
+                    Custom
+                    {selectedAmount === 'custom' && <Check size={16} className="absolute top-2 right-2" />}
+                  </button>
+                )}
               </div>
-              {settings.allow_custom_amount && (
-                <button
-                  type="button"
-                  onClick={() => setSelectedAmount('custom')}
-                  className={`w-full rounded-2xl py-3 text-sm transition-colors border ${
-                    selectedAmount === 'custom'
-                      ? 'bg-white/15 border-white/30 text-white'
-                      : 'bg-transparent border-white/10 text-white/60 hover:text-white hover:border-white/25'
-                  }`}
-                  data-testid="voucher-amount-custom"
-                >
-                  Or choose your own amount
-                </button>
-              )}
 
               <button
                 type="button"
