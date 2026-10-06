@@ -130,7 +130,8 @@ export default function Prices({ onBookClick, bookingEnabled }) {
           viewport={{ once: true }}
           className="text-center text-slate-500 text-sm mt-8"
         >
-          All prices include consultation. Gift vouchers available.
+          All prices include consultation.{' '}
+          <a href="#vouchers" className="text-[#9F87C4] hover:underline" data-testid="prices-voucher-link">Gift vouchers available.</a>
         </motion.p>
 
         {/* Book Now CTA */}

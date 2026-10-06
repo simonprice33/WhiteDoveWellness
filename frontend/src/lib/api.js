@@ -206,7 +206,17 @@ export const adminApi = {
   getSumUpConfig: () => api.get('/admin/payments/sumup/config'),
   saveSumUpConfig: (config) => api.post('/admin/payments/sumup/config', config),
   testSumUp: () => api.post('/admin/payments/sumup/test'),
-  disconnectSumUp: () => api.post('/admin/payments/sumup/disconnect')
+  disconnectSumUp: () => api.post('/admin/payments/sumup/disconnect'),
+
+  // Gift Vouchers
+  getVouchers: (params = {}) => {
+    const queryString = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString();
+    return api.get(`/admin/vouchers${queryString ? `?${queryString}` : ''}`);
+  },
+  createVoucher: (data) => api.post('/admin/vouchers', data),
+  updateVoucher: (id, data) => api.put(`/admin/vouchers/${id}`, data),
+  redeemVoucher: (id, data) => api.put(`/admin/vouchers/${id}/redeem`, data),
+  deleteVoucher: (id) => api.delete(`/admin/vouchers/${id}`)
 };
 
 export default api;

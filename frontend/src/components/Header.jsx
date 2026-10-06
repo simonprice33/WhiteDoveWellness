@@ -3,10 +3,11 @@ import { Menu, X, Calendar } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { publicApi, getImageUrl } from '../lib/api';
 
-const navLinks = [
+const baseNavLinks = [
   { label: 'Home', href: '#home' },
   { label: 'Therapies', href: '#therapies' },
   { label: 'Prices', href: '#prices' },
+  { label: 'Vouchers', href: '#vouchers', requires: 'vouchers' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -14,6 +15,8 @@ export default function Header({ onBookClick, bookingEnabled }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState('/images/logo.png');
+  const [vouchersEnabled, setVouchersEnabled] = useState(false);
+  const navLinks = baseNavLinks.filter((link) => link.requires !== 'vouchers' || vouchersEnabled);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +29,8 @@ export default function Header({ onBookClick, bookingEnabled }) {
       if (res.data.settings?.images?.logo_url) {
         setLogoUrl(res.data.settings.images.logo_url);
       }
+      const gv = res.data.settings?.gift_voucher_settings;
+      setVouchersEnabled(!!(gv?.enabled && gv?.sumup_link));
     }).catch(() => {});
     
     return () => window.removeEventListener('scroll', handleScroll);

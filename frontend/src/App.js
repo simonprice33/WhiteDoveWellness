@@ -20,6 +20,7 @@ import AdminPolicies from './pages/admin/AdminPolicies';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminHelp from './pages/admin/AdminHelp';
+import AdminVouchers from './pages/admin/AdminVouchers';
 import BookingReturn from './pages/BookingReturn';
 
 // Protected Route Component
@@ -72,6 +73,7 @@ function App() {
             <Route path="bookings" element={<AdminBookings />} />
             <Route path="contacts" element={<AdminContacts />} />
             <Route path="clients" element={<AdminClients />} />
+            <Route path="vouchers" element={<AdminVouchers />} />
             <Route path="affiliations" element={<AdminAffiliations />} />
             <Route path="policies" element={<AdminPolicies />} />
             <Route path="users" element={<AdminUsers />} />

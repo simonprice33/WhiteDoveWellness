@@ -6,6 +6,7 @@ import { Textarea } from '../../components/ui/textarea';
 import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User, Calendar as CalendarIcon, Link, Unlink, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { SumUpPaymentsSection } from './settings/SumUpPaymentsSection';
+import { GiftVoucherSettingsSection } from './settings/GiftVoucherSettingsSection';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState(null);
@@ -1187,6 +1188,12 @@ export default function AdminSettings() {
             </div>
           </div>
         </div>
+
+        {/* Gift Vouchers */}
+        <GiftVoucherSettingsSection
+          value={settings?.gift_voucher_settings}
+          onChange={(gift_voucher_settings) => setSettings({ ...settings, gift_voucher_settings })}
+        />
 
         {/* SumUp Payments */}
         <SumUpPaymentsSection />

@@ -3,8 +3,13 @@ const react = require('eslint-plugin-react');
 const globals = require('globals');
 
 module.exports = [
-  { ignores: ['build/**', 'node_modules/**', 'craco.config.js', 'tailwind.config.js', 'postcss.config.js'] },
+  { ignores: ['build/**', 'node_modules/**'] },
   js.configs.recommended,
+  {
+    files: ['*.js', 'plugins/**/*.js'],
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'commonjs', globals: { ...globals.node } },
+    rules: { 'no-unused-vars': 'warn', 'no-extra-boolean-cast': 'off', 'no-empty': 'warn' },
+  },
   {
     files: ['src/**/*.{js,jsx}'],
     plugins: { react },

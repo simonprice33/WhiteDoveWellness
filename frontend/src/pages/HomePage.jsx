@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import Therapies from '../components/Therapies';
 import Prices from '../components/Prices';
+import GiftVouchers from '../components/GiftVouchers';
 import AboutMe from '../components/AboutMe';
 import Contact from '../components/Contact';
 import Affiliations from '../components/Affiliations';
@@ -28,6 +29,7 @@ export default function HomePage() {
         <Hero onBookClick={() => setShowBooking(true)} bookingEnabled={bookingEnabled} />
         <Therapies />
         <Prices onBookClick={() => setShowBooking(true)} bookingEnabled={bookingEnabled} />
+        <GiftVouchers />
         <AboutMe />
         <Contact />
         <Affiliations />

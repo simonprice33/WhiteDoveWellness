@@ -33,6 +33,22 @@ const DEFAULT_TREATMENT_OBJECTIVES = [
   'Pain management', 'Improved circulation', 'Better sleep', 'Anxiety relief'
 ];
 
+const DEFAULT_GIFT_VOUCHER_SETTINGS = {
+  enabled: true,
+  title: 'Give the Gift of Relaxation',
+  subtitle: 'Treat someone special to a moment of calm with a White Dove Wellness gift voucher.',
+  amounts: [30, 50, 75],
+  allow_custom_amount: true,
+  sumup_link: 'https://giftcards.sumup.com/order/MA1423Z9',
+  button_text: 'Buy a Gift Voucher',
+  how_it_works: [
+    'Choose an amount and pay securely through SumUp.',
+    'The voucher is emailed instantly - to you or straight to the recipient.',
+    'Bring the voucher code to the appointment to redeem it against any treatment.'
+  ],
+  small_print: 'Vouchers are valid for 12 months from purchase and can be used towards any treatment.'
+};
+
 class SettingsController {
   constructor(collections) {
     this.collections = collections;
@@ -233,13 +249,20 @@ class SettingsController {
       settings.booking_settings.confirmation_message = 'Your booking request has been submitted. We will confirm your appointment shortly.';
     }
 
+    settings.gift_voucher_settings = { ...DEFAULT_GIFT_VOUCHER_SETTINGS, ...(settings.gift_voucher_settings || {}) };
+
+    // Never expose payment credentials via the settings endpoint
+    delete settings.sumup_config;
+    delete settings.google_calendar_config;
+    delete settings.google_calendar;
+
     return settings;
   }
 
   // PUT /api/admin/settings (admin)
   update = async (req, res) => {
     try {
-      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options', 'booking_settings'];
+      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options', 'booking_settings', 'gift_voucher_settings'];
 
       const updateData = {
         id: 'site_settings',
@@ -267,7 +290,7 @@ class SettingsController {
 
       res.json({
         success: true,
-        settings
+        settings: this.ensureDefaults(settings)
       });
     } catch (error) {
       console.error('Update settings error:', error);

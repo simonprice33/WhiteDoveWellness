@@ -17,7 +17,8 @@ import {
   X,
   ChevronRight,
   Calendar,
-  HelpCircle
+  HelpCircle,
+  Gift
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 
@@ -28,6 +29,7 @@ const navItems = [
   { label: 'Bookings', icon: Calendar, href: '/admin/bookings' },
   { label: 'Contacts', icon: MessageSquare, href: '/admin/contacts' },
   { label: 'Clients', icon: Users, href: '/admin/clients' },
+  { label: 'Gift Vouchers', icon: Gift, href: '/admin/vouchers' },
   { label: 'Affiliations', icon: Award, href: '/admin/affiliations' },
   { label: 'Policies', icon: FileText, href: '/admin/policies' },
   { label: 'Admin Users', icon: UserCircle, href: '/admin/users' },

@@ -24,6 +24,7 @@ function createAdminRoutes(dependencies) {
   const GoogleCalendarController = require('../controllers/GoogleCalendarController');
   const BlockedTimesController = require('../controllers/BlockedTimesController');
   const PaymentController = require('../controllers/PaymentController');
+  const VoucherController = require('../controllers/VoucherController');
 
   // Initialize controllers
   const authController = new AuthController(collections, authMiddleware);
@@ -40,6 +41,7 @@ function createAdminRoutes(dependencies) {
   const googleCalendarController = new GoogleCalendarController(collections);
   const blockedTimesController = new BlockedTimesController(collections);
   const paymentController = new PaymentController(collections);
+  const voucherController = new VoucherController(collections);
 
   // Auth routes (no auth required)
   router.post('/auth/login', authController.login);
@@ -143,6 +145,13 @@ function createAdminRoutes(dependencies) {
   router.post('/payments/sumup/config', paymentController.saveConfig);
   router.post('/payments/sumup/test', paymentController.testConnection);
   router.post('/payments/sumup/disconnect', paymentController.disconnect);
+
+  // Gift Vouchers (admin)
+  router.get('/vouchers', voucherController.list);
+  router.post('/vouchers', voucherController.create);
+  router.put('/vouchers/:id/redeem', voucherController.redeem);
+  router.put('/vouchers/:id', voucherController.update);
+  router.delete('/vouchers/:id', voucherController.delete);
 
   return router;
 }
