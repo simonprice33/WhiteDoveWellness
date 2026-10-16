@@ -465,6 +465,20 @@ class BookingController {
         });
       }
 
+      // Required policy acceptance (cancellation policy + terms, when published)
+      const requiredPolicies = await this.collections.policies
+        .find({ slug: { $in: ['cancellation-policy', 'terms-of-service'] }, is_active: true }, { projection: { _id: 0, slug: 1, title: 1 } })
+        .toArray();
+      const acceptedSlugs = Array.isArray(req.body.accepted_policies) ? req.body.accepted_policies : [];
+      const missingPolicy = requiredPolicies.find((p) => !acceptedSlugs.includes(p.slug));
+      if (missingPolicy) {
+        return res.status(400).json({
+          success: false,
+          message: `Please confirm you have read and agree to the ${missingPolicy.title}`
+        });
+      }
+      const policyAcceptances = requiredPolicies.map((p) => ({ slug: p.slug, title: p.title, accepted_at: new Date().toISOString() }));
+
       // Check if this is a remote day (no booking_time required for remote days)
       const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
       const requestedDate = new Date(booking_date);
@@ -605,6 +619,7 @@ class BookingController {
         payment_status: 'pending',
         payment_id: null,
         payment_provider: onlinePaymentActive ? 'sumup' : null,
+        policy_acceptances: policyAcceptances,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };

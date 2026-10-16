@@ -4,6 +4,7 @@ import { publicApi } from '../lib/api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ArrowLeft } from 'lucide-react';
+import { renderPolicyContent } from '../components/PolicyAcceptance';
 
 export default function PolicyPage() {
   const { slug } = useParams();
@@ -27,27 +28,6 @@ export default function PolicyPage() {
   };
 
   // Simple markdown-to-HTML converter
-  const renderContent = (content) => {
-    if (!content) return '';
-    
-    return content
-      .split('\n')
-      .map((line, i) => {
-        if (line.startsWith('# ')) {
-          return <h1 key={i} className="font-serif text-3xl text-slate-800 mb-4">{line.slice(2)}</h1>;
-        }
-        if (line.startsWith('## ')) {
-          return <h2 key={i} className="font-serif text-2xl text-slate-800 mt-6 mb-3">{line.slice(3)}</h2>;
-        }
-        if (line.startsWith('### ')) {
-          return <h3 key={i} className="font-serif text-xl text-slate-800 mt-4 mb-2">{line.slice(4)}</h3>;
-        }
-        if (line.trim() === '') {
-          return <br key={i} />;
-        }
-        return <p key={i} className="text-slate-600 mb-2">{line}</p>;
-      });
-  };
 
   return (
     <div className="min-h-screen bg-[#FAFAF9]" data-testid="policy-page">
@@ -71,7 +51,7 @@ export default function PolicyPage() {
           ) : (
             <div className="bg-white rounded-2xl p-8 md:p-12 shadow-sm">
               <article className="prose prose-slate max-w-none">
-                {renderContent(policy?.content)}
+                {renderPolicyContent(policy?.content)}
               </article>
               
               <p className="text-sm text-slate-400 mt-8 pt-4 border-t">

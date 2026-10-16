@@ -208,6 +208,12 @@ Credentials are stored in MongoDB (`site_settings.sumup_config`: api_key, mercha
 - Booking statuses: pending_confirmation, pending_payment, confirmed, completed, cancelled, no_show.
 - Test coverage: `/app/test_reports/iteration_3.json` (26/26 backend + frontend flows pass), `/app/backend/tests/test_sumup_payments.py`.
 
+## Policy Acceptance on Booking (Implemented June 2026)
+- Booking form step 4 shows a required checkbox per published policy (`cancellation-policy`, `terms-of-service`); policy title opens the full text in an in-modal popup (`components/PolicyAcceptance.jsx`, `PolicyPopup`). Submit disabled until all ticked.
+- Backend `POST /api/bookings/create` requires `accepted_policies: [slug]` for each active required policy (400 otherwise) and stores `policy_acceptances: [{slug,title,accepted_at}]`. Admin-created bookings are exempt.
+- Admin booking details show "Policies Accepted" with timestamps. `renderPolicyContent` (bold/italics/bullets/hr) shared with `/policy/:slug` page.
+- Note: Node backend does NOT hot-reload — `sudo supervisorctl restart backend` after backend edits.
+
 ## Tooling
 - ESLint 9 flat config added at `/app/frontend/eslint.config.js` (fixes "linter engine error").
 

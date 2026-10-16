@@ -23,7 +23,8 @@ import {
   Ban,
   Trash2,
   UserPlus,
-  Search
+  Search,
+  CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -698,6 +699,21 @@ export default function AdminBookings() {
                 <div className="border-t pt-4">
                   <h3 className="font-medium text-slate-800 mb-2">Notes</h3>
                   <p className="text-slate-600 text-sm">{selectedBooking.notes}</p>
+                </div>
+              )}
+
+              {/* Policy acceptance */}
+              {selectedBooking.policy_acceptances?.length > 0 && (
+                <div className="border-t pt-4" data-testid="booking-policy-acceptances">
+                  <h3 className="font-medium text-slate-800 mb-2">Policies Accepted</h3>
+                  <ul className="space-y-1">
+                    {selectedBooking.policy_acceptances.map((p) => (
+                      <li key={p.slug} className="text-sm text-slate-600 flex items-center gap-2">
+                        <CheckCircle size={14} className="text-green-500" />
+                        {p.title} <span className="text-slate-400">· {new Date(p.accepted_at).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
               

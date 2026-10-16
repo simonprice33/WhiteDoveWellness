@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { publicApi } from '../lib/api';
+import PolicyAcceptance, { PolicyPopup } from './PolicyAcceptance';
 import { Button } from '../components/ui/button';
 import { Calendar } from '../components/ui/calendar';
 import { 
@@ -56,6 +57,13 @@ export default function BookingForm({ onClose }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [isHomeVisit, setIsHomeVisit] = useState(false);
   
+  // Policy acceptance
+  const [acceptedPolicies, setAcceptedPolicies] = useState({});
+  const [requiredPolicies, setRequiredPolicies] = useState([]);
+  const [viewingPolicy, setViewingPolicy] = useState(null);
+  const handlePoliciesLoaded = useCallback((slugs) => setRequiredPolicies(slugs), []);
+  const allPoliciesAccepted = requiredPolicies.every((slug) => acceptedPolicies[slug]);
+
   // Client details
   const [clientDetails, setClientDetails] = useState({
     first_name: '',
@@ -226,7 +234,8 @@ export default function BookingForm({ onClose }) {
         client_phone: clientDetails.phone,
         client_address: isHomeVisit ? clientDetails.address : '',
         is_home_visit: isHomeVisit,
-        notes: clientDetails.notes
+        notes: clientDetails.notes,
+        accepted_policies: requiredPolicies.filter((slug) => acceptedPolicies[slug])
       });
       
       setBooking(response.data.booking);
@@ -287,8 +296,9 @@ export default function BookingForm({ onClose }) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col relative"
       >
+        {viewingPolicy && <PolicyPopup policy={viewingPolicy} onClose={() => setViewingPolicy(null)} />}
         {/* Header */}
         <div className="bg-gradient-to-r from-[#9F87C4] to-[#7B6BA8] p-6 text-white">
           <div className="flex items-center justify-between">
@@ -584,6 +594,13 @@ export default function BookingForm({ onClose }) {
                       data-testid="client-notes-input"
                     />
                   </div>
+
+                  <PolicyAcceptance
+                    accepted={acceptedPolicies}
+                    onChange={setAcceptedPolicies}
+                    onPoliciesLoaded={handlePoliciesLoaded}
+                    onViewPolicy={setViewingPolicy}
+                  />
                 </div>
               </motion.div>
             )}
@@ -712,7 +729,8 @@ export default function BookingForm({ onClose }) {
                   !clientDetails.first_name ||
                   !clientDetails.email ||
                   !clientDetails.phone ||
-                  (isHomeVisit && !clientDetails.address)
+                  (isHomeVisit && !clientDetails.address) ||
+                  !allPoliciesAccepted
                 }
                 className="bg-[#9F87C4] hover:bg-[#8A74B0]"
                 data-testid="booking-submit-btn"
