@@ -148,3 +148,6 @@ credentials.json
 mongodb-database-tools-windows-x86_64-100.18.0/
 frontend/node_modules/.cache/default-development/11.pack
 frontend/node_modules/.cache/default-development/12.pack
+
+# node-windows service wrapper (generated on the server)
+backend/daemon/
