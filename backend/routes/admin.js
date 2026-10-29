@@ -20,6 +20,11 @@ function createAdminRoutes(dependencies) {
   const SettingsController = require('../controllers/SettingsController');
   const ClientController = require('../controllers/ClientController');
   const UploadController = require('../controllers/UploadController');
+  const BookingController = require('../controllers/BookingController');
+  const GoogleCalendarController = require('../controllers/GoogleCalendarController');
+  const BlockedTimesController = require('../controllers/BlockedTimesController');
+  const PaymentController = require('../controllers/PaymentController');
+  const VoucherController = require('../controllers/VoucherController');
 
   // Initialize controllers
   const authController = new AuthController(collections, authMiddleware);
@@ -32,6 +37,11 @@ function createAdminRoutes(dependencies) {
   const settingsController = new SettingsController(collections);
   const clientController = new ClientController(collections);
   const uploadController = new UploadController();
+  const bookingController = new BookingController(collections);
+  const googleCalendarController = new GoogleCalendarController(collections);
+  const blockedTimesController = new BlockedTimesController(collections);
+  const paymentController = new PaymentController(collections);
+  const voucherController = new VoucherController(collections);
 
   // Auth routes (no auth required)
   router.post('/auth/login', authController.login);
@@ -103,6 +113,45 @@ function createAdminRoutes(dependencies) {
   router.post('/clients/:id/consultations', clientController.createConsultation);
   router.put('/clients/:id/consultations/:consultationId', clientController.updateConsultation);
   router.delete('/clients/:id/consultations/:consultationId', clientController.deleteConsultation);
+
+  // Bookings (admin)
+  router.get('/bookings', bookingController.list);
+  router.get('/bookings/calendar', bookingController.getCalendar);
+  router.get('/bookings/upcoming', bookingController.getUpcoming);
+  router.post('/bookings/create', bookingController.adminCreate);
+  router.get('/bookings/:id', bookingController.get);
+  router.put('/bookings/:id', bookingController.update);
+  router.put('/bookings/:id/status', bookingController.updateStatus);
+  router.delete('/bookings/:id', bookingController.delete);
+
+  // Blocked Times (admin)
+  router.get('/blocked-times', blockedTimesController.list);
+  router.get('/blocked-times/for-date/:date', blockedTimesController.getForDate);
+  router.get('/blocked-times/:id', blockedTimesController.get);
+  router.post('/blocked-times', blockedTimesController.create);
+  router.put('/blocked-times/:id', blockedTimesController.update);
+  router.delete('/blocked-times/:id', blockedTimesController.delete);
+
+  // Google Calendar (admin)
+  router.get('/google-calendar/status', googleCalendarController.getStatus);
+  router.get('/google-calendar/config', googleCalendarController.getConfig);
+  router.post('/google-calendar/config', googleCalendarController.saveConfig);
+  router.get('/google-calendar/auth-url', googleCalendarController.getAuthUrl);
+  router.post('/google-calendar/disconnect', googleCalendarController.disconnect);
+  router.post('/google-calendar/test', googleCalendarController.testConnection);
+
+  // SumUp Payments (admin)
+  router.get('/payments/sumup/config', paymentController.getConfig);
+  router.post('/payments/sumup/config', paymentController.saveConfig);
+  router.post('/payments/sumup/test', paymentController.testConnection);
+  router.post('/payments/sumup/disconnect', paymentController.disconnect);
+
+  // Gift Vouchers (admin)
+  router.get('/vouchers', voucherController.list);
+  router.post('/vouchers', voucherController.create);
+  router.put('/vouchers/:id/redeem', voucherController.redeem);
+  router.put('/vouchers/:id', voucherController.update);
+  router.delete('/vouchers/:id', voucherController.delete);
 
   return router;
 }

@@ -82,7 +82,18 @@ export const publicApi = {
   getPolicies: () => api.get('/policies?active_only=true'),
   getPolicy: (slug) => api.get(`/policies/slug/${slug}`),
   getSettings: () => api.get('/settings'),
-  submitContact: (data) => api.post('/contact', data)
+  submitContact: (data) => api.post('/contact', data),
+  
+  // Bookings
+  getBookingSettings: () => api.get('/bookings/settings'),
+  getAvailableDates: (priceId, month, year) => api.get(`/bookings/available-dates?price_id=${priceId}&month=${month}&year=${year}`),
+  getAvailability: (date, priceId) => api.get(`/bookings/availability?date=${date}&price_id=${priceId}`),
+  createBooking: (data) => api.post('/bookings/create', data),
+  cancelBooking: (id) => api.post(`/bookings/${id}/cancel`),
+
+  // Payments
+  createCheckout: (bookingId) => api.post('/payments/checkout', { booking_id: bookingId }),
+  getPaymentStatus: (bookingId) => api.get(`/payments/status/${bookingId}`)
 };
 
 // Admin API
@@ -158,7 +169,54 @@ export const adminApi = {
   uploadImage: (formData) => api.post('/admin/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
-  deleteImage: (filename) => api.delete(`/admin/upload/${filename}`)
+  deleteImage: (filename) => api.delete(`/admin/upload/${filename}`),
+  
+  // Bookings
+  getBookings: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/admin/bookings${queryString ? `?${queryString}` : ''}`);
+  },
+  getBooking: (id) => api.get(`/admin/bookings/${id}`),
+  getBookingsCalendar: (month, year) => api.get(`/admin/bookings/calendar?month=${month}&year=${year}`),
+  getUpcomingBookings: (days = 7) => api.get(`/admin/bookings/upcoming?days=${days}`),
+  createBooking: (data) => api.post('/admin/bookings/create', data),
+  updateBooking: (id, data) => api.put(`/admin/bookings/${id}`, data),
+  updateBookingStatus: (id, status) => api.put(`/admin/bookings/${id}/status`, { status }),
+  deleteBooking: (id) => api.delete(`/admin/bookings/${id}`),
+
+  // Blocked Times
+  getBlockedTimes: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/admin/blocked-times${queryString ? `?${queryString}` : ''}`);
+  },
+  getBlockedTimesForDate: (date) => api.get(`/admin/blocked-times/for-date/${date}`),
+  createBlockedTime: (data) => api.post('/admin/blocked-times', data),
+  updateBlockedTime: (id, data) => api.put(`/admin/blocked-times/${id}`, data),
+  deleteBlockedTime: (id) => api.delete(`/admin/blocked-times/${id}`),
+
+  // Google Calendar
+  getGoogleCalendarStatus: () => api.get('/admin/google-calendar/status'),
+  getGoogleCalendarConfig: () => api.get('/admin/google-calendar/config'),
+  saveGoogleCalendarConfig: (config) => api.post('/admin/google-calendar/config', config),
+  getGoogleCalendarAuthUrl: () => api.get('/admin/google-calendar/auth-url'),
+  disconnectGoogleCalendar: () => api.post('/admin/google-calendar/disconnect'),
+  testGoogleCalendar: () => api.post('/admin/google-calendar/test'),
+
+  // SumUp Payments
+  getSumUpConfig: () => api.get('/admin/payments/sumup/config'),
+  saveSumUpConfig: (config) => api.post('/admin/payments/sumup/config', config),
+  testSumUp: () => api.post('/admin/payments/sumup/test'),
+  disconnectSumUp: () => api.post('/admin/payments/sumup/disconnect'),
+
+  // Gift Vouchers
+  getVouchers: (params = {}) => {
+    const queryString = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString();
+    return api.get(`/admin/vouchers${queryString ? `?${queryString}` : ''}`);
+  },
+  createVoucher: (data) => api.post('/admin/vouchers', data),
+  updateVoucher: (id, data) => api.put(`/admin/vouchers/${id}`, data),
+  redeemVoucher: (id, data) => api.put(`/admin/vouchers/${id}/redeem`, data),
+  deleteVoucher: (id) => api.delete(`/admin/vouchers/${id}`)
 };
 
 export default api;

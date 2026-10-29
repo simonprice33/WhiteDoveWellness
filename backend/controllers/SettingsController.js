@@ -33,6 +33,22 @@ const DEFAULT_TREATMENT_OBJECTIVES = [
   'Pain management', 'Improved circulation', 'Better sleep', 'Anxiety relief'
 ];
 
+const DEFAULT_GIFT_VOUCHER_SETTINGS = {
+  enabled: true,
+  title: 'Give the Gift of Relaxation',
+  subtitle: 'Treat someone special to a moment of calm with a White Dove Wellness gift voucher.',
+  amounts: [25, 30, 40, 50, 100],
+  allow_custom_amount: true,
+  sumup_link: 'https://giftcards.sumup.com/order/MA1423Z9',
+  button_text: 'Buy a Gift Voucher',
+  how_it_works: [
+    'Choose an amount and pay securely through SumUp.',
+    'The voucher is emailed instantly - to you or straight to the recipient.',
+    'Bring the voucher code to the appointment to redeem it against any treatment.'
+  ],
+  small_print: 'Vouchers are valid for 12 months from purchase and can be used towards any treatment.'
+};
+
 class SettingsController {
   constructor(collections) {
     this.collections = collections;
@@ -106,6 +122,31 @@ class SettingsController {
         contra_indications: DEFAULT_CONTRA_INDICATIONS,
         lifestyle_questions: DEFAULT_LIFESTYLE_QUESTIONS,
         treatment_objectives: DEFAULT_TREATMENT_OBJECTIVES
+      },
+      booking_settings: {
+        enabled: false,
+        gap_between_appointments: 30,
+        advance_booking_days: 30,
+        working_hours: {
+          monday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          tuesday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          wednesday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          thursday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          friday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          saturday: { enabled: false, start: '09:00', end: '17:00', location_type: 'both' },
+          sunday: { enabled: false, start: '09:00', end: '17:00', location_type: 'both' }
+        },
+        fixed_location_address: '',
+        email_notifications_enabled: false,
+        require_online_payment: false,
+        payment_button_text: 'Complete Booking Request',
+        confirmation_message: 'Your booking request has been submitted. We will confirm your appointment shortly.',
+        remote_day_message: 'Kelly is working remotely on this day. If you would like to book, please click next and enter your details to request an appointment.',
+        calendar_colors: {
+          fixed: '#9F87C4',
+          remote: '#6BA8A0',
+          both: '#8B9DC3'
+        }
       }
     };
   }
@@ -149,13 +190,79 @@ class SettingsController {
       };
     }
 
+    // Ensure booking_settings exists with defaults
+    if (!settings.booking_settings) {
+      settings.booking_settings = {
+        enabled: false,
+        gap_between_appointments: 30,
+        advance_booking_days: 30,
+        working_hours: {
+          monday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          tuesday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          wednesday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          thursday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          friday: { enabled: true, start: '09:00', end: '17:00', location_type: 'both' },
+          saturday: { enabled: false, start: '09:00', end: '17:00', location_type: 'both' },
+          sunday: { enabled: false, start: '09:00', end: '17:00', location_type: 'both' }
+        },
+        fixed_location_address: '',
+        email_notifications_enabled: false,
+        require_online_payment: false,
+        payment_button_text: 'Complete Booking Request',
+        confirmation_message: 'Your booking request has been submitted. We will confirm your appointment shortly.',
+        remote_day_message: 'Kelly is working remotely on this day. If you would like to book, please click next and enter your details to request an appointment.',
+        calendar_colors: {
+          fixed: '#9F87C4',
+          remote: '#6BA8A0',
+          both: '#8B9DC3'
+        }
+      };
+    }
+
+    // Ensure new booking settings fields exist
+    if (settings.booking_settings) {
+      if (!settings.booking_settings.remote_day_message) {
+        settings.booking_settings.remote_day_message = 'Kelly is working remotely on this day. If you would like to book, please click next and enter your details to request an appointment.';
+      }
+      if (!settings.booking_settings.calendar_colors) {
+        settings.booking_settings.calendar_colors = {
+          fixed: '#9F87C4',
+          remote: '#6BA8A0',
+          both: '#8B9DC3'
+        };
+      }
+      // Migrate working hours to include location_type per day
+      if (settings.booking_settings.working_hours) {
+        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        for (const day of days) {
+          if (settings.booking_settings.working_hours[day] && !settings.booking_settings.working_hours[day].location_type) {
+            settings.booking_settings.working_hours[day].location_type = settings.booking_settings.location_type || 'both';
+          }
+        }
+      }
+    }
+
+    // Ensure payment settings exist in booking_settings
+    if (settings.booking_settings && settings.booking_settings.require_online_payment === undefined) {
+      settings.booking_settings.require_online_payment = false;
+      settings.booking_settings.payment_button_text = 'Complete Booking Request';
+      settings.booking_settings.confirmation_message = 'Your booking request has been submitted. We will confirm your appointment shortly.';
+    }
+
+    settings.gift_voucher_settings = { ...DEFAULT_GIFT_VOUCHER_SETTINGS, ...(settings.gift_voucher_settings || {}) };
+
+    // Never expose payment credentials via the settings endpoint
+    delete settings.sumup_config;
+    delete settings.google_calendar_config;
+    delete settings.google_calendar;
+
     return settings;
   }
 
   // PUT /api/admin/settings (admin)
   update = async (req, res) => {
     try {
-      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options'];
+      const updateFields = ['business_name', 'tagline', 'email', 'phone', 'address', 'social_links', 'images', 'hero_content', 'about_me', 'consultation_options', 'booking_settings', 'gift_voucher_settings'];
 
       const updateData = {
         id: 'site_settings',
@@ -183,7 +290,7 @@ class SettingsController {
 
       res.json({
         success: true,
-        settings
+        settings: this.ensureDefaults(settings)
       });
     } catch (error) {
       console.error('Update settings error:', error);

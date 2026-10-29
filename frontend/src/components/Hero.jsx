@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { publicApi, getImageUrl } from '../lib/api';
 
-export default function Hero() {
+export default function Hero({ onBookClick, bookingEnabled }) {
   const [settings, setSettings] = useState(null);
   
   const defaultImages = {
@@ -41,10 +41,15 @@ export default function Hero() {
     button_text: settings?.hero_content?.button_text || defaultHeroContent.button_text
   };
 
-  const scrollToContact = () => {
-    const element = document.querySelector('#contact');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const handleCTAClick = () => {
+    if (bookingEnabled && onBookClick) {
+      onBookClick();
+    } else {
+      // Scroll to contact if booking is disabled
+      const element = document.querySelector('#contact');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -120,7 +125,7 @@ export default function Hero() {
           className="text-center mb-16"
         >
           <button
-            onClick={scrollToContact}
+            onClick={handleCTAClick}
             className="bg-[#9F87C4] text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-[#8A6EB5] transition-all hover:shadow-lg hover:-translate-y-1"
             data-testid="hero-cta-btn"
           >

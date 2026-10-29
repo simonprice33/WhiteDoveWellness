@@ -15,7 +15,10 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Calendar,
+  HelpCircle,
+  Gift
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 
@@ -23,12 +26,15 @@ const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
   { label: 'Therapies', icon: Sparkles, href: '/admin/therapies' },
   { label: 'Prices', icon: PoundSterling, href: '/admin/prices' },
+  { label: 'Bookings', icon: Calendar, href: '/admin/bookings' },
   { label: 'Contacts', icon: MessageSquare, href: '/admin/contacts' },
   { label: 'Clients', icon: Users, href: '/admin/clients' },
+  { label: 'Gift Vouchers', icon: Gift, href: '/admin/vouchers' },
   { label: 'Affiliations', icon: Award, href: '/admin/affiliations' },
   { label: 'Policies', icon: FileText, href: '/admin/policies' },
   { label: 'Admin Users', icon: UserCircle, href: '/admin/users' },
   { label: 'Settings', icon: Settings, href: '/admin/settings' },
+  { label: 'Help', icon: HelpCircle, href: '/admin/help' },
 ];
 
 export default function AdminLayout() {

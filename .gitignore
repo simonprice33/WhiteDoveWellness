@@ -139,6 +139,15 @@ frontend/node_modules/.cache/default-development/10.pack
 # Environment files
 *.env
 *.env.*
+frontend/node_modules/.cache/default-development/9.pack
+.env
+.env.*
+credentials.json
+*.key
+.credentials
+mongodb-database-tools-windows-x86_64-100.18.0/
+frontend/node_modules/.cache/default-development/11.pack
+frontend/node_modules/.cache/default-development/12.pack
 
 # node-windows service wrapper (generated on the server)
 backend/daemon/

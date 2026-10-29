@@ -14,10 +14,14 @@ import AdminTherapies from './pages/admin/AdminTherapies';
 import AdminPrices from './pages/admin/AdminPrices';
 import AdminContacts from './pages/admin/AdminContacts';
 import AdminClients from './pages/admin/AdminClients';
+import AdminBookings from './pages/admin/AdminBookings';
 import AdminAffiliations from './pages/admin/AdminAffiliations';
 import AdminPolicies from './pages/admin/AdminPolicies';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminHelp from './pages/admin/AdminHelp';
+import AdminVouchers from './pages/admin/AdminVouchers';
+import BookingReturn from './pages/BookingReturn';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -49,6 +53,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/policy/:slug" element={<PolicyPage />} />
+          <Route path="/booking/return" element={<BookingReturn />} />
           
           {/* Admin Login */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -65,12 +70,15 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="therapies" element={<AdminTherapies />} />
             <Route path="prices" element={<AdminPrices />} />
+            <Route path="bookings" element={<AdminBookings />} />
             <Route path="contacts" element={<AdminContacts />} />
             <Route path="clients" element={<AdminClients />} />
+            <Route path="vouchers" element={<AdminVouchers />} />
             <Route path="affiliations" element={<AdminAffiliations />} />
             <Route path="policies" element={<AdminPolicies />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="help" element={<AdminHelp />} />
           </Route>
           
           {/* Catch all - redirect to home */}

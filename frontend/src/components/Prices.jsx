@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { publicApi } from '../lib/api';
-import { Clock, PoundSterling } from 'lucide-react';
+import { Clock, PoundSterling, Calendar } from 'lucide-react';
 
-export default function Prices() {
+export default function Prices({ onBookClick, bookingEnabled }) {
   const [therapies, setTherapies] = useState([]);
   const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -130,8 +130,28 @@ export default function Prices() {
           viewport={{ once: true }}
           className="text-center text-slate-500 text-sm mt-8"
         >
-          All prices include consultation. Gift vouchers available.
+          All prices include consultation.{' '}
+          <a href="#vouchers" className="text-[#9F87C4] hover:underline" data-testid="prices-voucher-link">Gift vouchers available.</a>
         </motion.p>
+
+        {/* Book Now CTA */}
+        {bookingEnabled && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <button
+              onClick={onBookClick}
+              className="bg-[#9F87C4] text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-[#8A6EB5] transition-all hover:shadow-lg inline-flex items-center gap-2"
+              data-testid="prices-book-btn"
+            >
+              <Calendar size={20} />
+              Book Your Treatment
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
   );

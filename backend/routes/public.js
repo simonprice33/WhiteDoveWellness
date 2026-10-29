@@ -16,6 +16,9 @@ function createPublicRoutes(dependencies) {
   const AffiliationController = require('../controllers/AffiliationController');
   const PolicyController = require('../controllers/PolicyController');
   const SettingsController = require('../controllers/SettingsController');
+  const BookingController = require('../controllers/BookingController');
+  const GoogleCalendarController = require('../controllers/GoogleCalendarController');
+  const PaymentController = require('../controllers/PaymentController');
 
   // Initialize controllers
   const therapyController = new TherapyController(collections);
@@ -24,6 +27,9 @@ function createPublicRoutes(dependencies) {
   const affiliationController = new AffiliationController(collections);
   const policyController = new PolicyController(collections);
   const settingsController = new SettingsController(collections);
+  const bookingController = new BookingController(collections);
+  const googleCalendarController = new GoogleCalendarController(collections);
+  const paymentController = new PaymentController(collections);
 
   // Health check
   router.get('/health', (req, res) => {
@@ -56,6 +62,21 @@ function createPublicRoutes(dependencies) {
 
   // Settings (public)
   router.get('/settings', settingsController.get);
+
+  // Bookings (public)
+  router.get('/bookings/settings', bookingController.getBookingSettings);
+  router.get('/bookings/available-dates', bookingController.getAvailableDates);
+  router.get('/bookings/availability', bookingController.getAvailability);
+  router.post('/bookings/create', bookingController.create);
+  router.post('/bookings/:id/cancel', bookingController.cancelBooking);
+
+  // Payments (public) - booking confirmation only happens after server-side SumUp verification
+  router.post('/payments/checkout', paymentController.createCheckout);
+  router.get('/payments/status/:bookingId', paymentController.getStatus);
+  router.post('/payments/sumup/webhook', paymentController.webhook);
+
+  // Google OAuth Callback (public - redirect from Google)
+  router.get('/oauth/google/callback', googleCalendarController.handleCallback);
 
   return router;
 }

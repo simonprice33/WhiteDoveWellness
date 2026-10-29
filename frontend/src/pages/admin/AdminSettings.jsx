@@ -3,8 +3,10 @@ import { adminApi, getImageUrl } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User } from 'lucide-react';
+import { Save, Plus, Trash2, Image, Type, Upload, X, ClipboardList, User, Calendar as CalendarIcon, Link, Unlink, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { SumUpPaymentsSection } from './settings/SumUpPaymentsSection';
+import { GiftVoucherSettingsSection } from './settings/GiftVoucherSettingsSection';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState(null);
@@ -12,12 +14,101 @@ export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState({});
   
+  // Google Calendar state
+  const [calendarStatus, setCalendarStatus] = useState(null);
+  const [calendarConfig, setCalendarConfig] = useState({
+    client_id: '',
+    client_secret: '',
+    redirect_uri: '',
+    calendar_id: 'primary'
+  });
+  const [savingCalendar, setSavingCalendar] = useState(false);
+  const [connectingCalendar, setConnectingCalendar] = useState(false);
+  
   const logoInputRef = useRef(null);
   const aboutPhotoInputRef = useRef(null);
   const contactInputRef = useRef(null);
   const heroInputRefs = useRef({});
 
-  useEffect(() => { loadSettings(); }, []);
+  useEffect(() => { loadSettings(); loadCalendarStatus(); }, []);
+
+  // Check URL params for calendar connection result
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('calendar_connected') === 'true') {
+      toast.success('Google Calendar connected successfully!');
+      loadCalendarStatus();
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.get('calendar_error')) {
+      toast.error(`Calendar error: ${params.get('calendar_error')}`);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  const loadCalendarStatus = async () => {
+    try {
+      const [statusRes, configRes] = await Promise.all([
+        adminApi.getGoogleCalendarStatus(),
+        adminApi.getGoogleCalendarConfig()
+      ]);
+      setCalendarStatus(statusRes.data);
+      if (configRes.data.config) {
+        setCalendarConfig({
+          client_id: configRes.data.config.client_id || '',
+          client_secret: configRes.data.config.client_secret_set ? '••••••••' : '',
+          redirect_uri: configRes.data.config.redirect_uri || '',
+          calendar_id: configRes.data.config.calendar_id || 'primary'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load calendar status:', error);
+    }
+  };
+
+  const saveCalendarConfig = async () => {
+    setSavingCalendar(true);
+    try {
+      await adminApi.saveGoogleCalendarConfig(calendarConfig);
+      toast.success('Calendar configuration saved');
+      loadCalendarStatus();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to save');
+    } finally {
+      setSavingCalendar(false);
+    }
+  };
+
+  const connectCalendar = async () => {
+    setConnectingCalendar(true);
+    try {
+      const response = await adminApi.getGoogleCalendarAuthUrl();
+      window.location.href = response.data.auth_url;
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to start connection');
+      setConnectingCalendar(false);
+    }
+  };
+
+  const disconnectCalendar = async () => {
+    if (!confirm('Are you sure you want to disconnect Google Calendar?')) return;
+    try {
+      await adminApi.disconnectGoogleCalendar();
+      toast.success('Calendar disconnected');
+      loadCalendarStatus();
+    } catch (error) {
+      toast.error('Failed to disconnect');
+    }
+  };
+
+  const testCalendarConnection = async () => {
+    try {
+      const response = await adminApi.testGoogleCalendar();
+      toast.success(`Connection OK! ${response.data.busy_slots_today} busy slots found today.`);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Connection test failed');
+    }
+  };
 
   const loadSettings = async () => {
     try {
@@ -760,6 +851,494 @@ export default function AdminSettings() {
                 <p className="text-sm text-slate-400 text-center py-2">No questions. Click "Add Question" to create.</p>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Booking Settings */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 space-y-6" data-testid="booking-settings-section">
+          <div className="flex items-center gap-3 border-b pb-4">
+            <div className="p-2 bg-[#F5F3FA] rounded-lg">
+              <CalendarIcon size={20} className="text-[#9F87C4]" />
+            </div>
+            <h2 className="font-serif text-xl text-slate-800">Online Booking Settings</h2>
+          </div>
+
+          {/* Enable Booking */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="booking_enabled"
+              checked={settings?.booking_settings?.enabled || false}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, enabled: e.target.checked }
+              })}
+              className="w-5 h-5 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+            />
+            <label htmlFor="booking_enabled" className="text-sm font-medium text-slate-700 cursor-pointer">
+              Enable online booking
+            </label>
+          </div>
+
+          {/* Gap Between Appointments */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Gap Between Appointments (minutes)
+              </label>
+              <Input
+                type="number"
+                min="0"
+                max="120"
+                value={settings?.booking_settings?.gap_between_appointments || 30}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  booking_settings: { ...settings?.booking_settings, gap_between_appointments: parseInt(e.target.value) || 0 }
+                })}
+                data-testid="gap-input"
+              />
+              <p className="text-xs text-slate-500 mt-1">Travel time between appointments</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Advance Booking Window (days)
+              </label>
+              <Input
+                type="number"
+                min="1"
+                max="365"
+                value={settings?.booking_settings?.advance_booking_days || 30}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  booking_settings: { ...settings?.booking_settings, advance_booking_days: parseInt(e.target.value) || 30 }
+                })}
+                data-testid="advance-days-input"
+              />
+              <p className="text-xs text-slate-500 mt-1">How far ahead clients can book</p>
+            </div>
+          </div>
+
+          {/* Fixed Location Address */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Clinic/Fixed Location Address
+            </label>
+            <Textarea
+              value={settings?.booking_settings?.fixed_location_address || ''}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, fixed_location_address: e.target.value }
+              })}
+              placeholder="Enter your clinic address (used for fixed location days)..."
+              rows={2}
+            />
+            <p className="text-xs text-slate-500 mt-1">This address is used for days where you work from a fixed location</p>
+          </div>
+
+          {/* Email Notifications */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="email_notifications"
+              checked={settings?.booking_settings?.email_notifications_enabled || false}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, email_notifications_enabled: e.target.checked }
+              })}
+              className="w-5 h-5 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+              disabled={true}
+            />
+            <label htmlFor="email_notifications" className="text-sm font-medium text-slate-700 cursor-pointer">
+              Send email confirmations (requires email setup)
+            </label>
+          </div>
+
+          {/* Payment Settings */}
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Payment Settings</h3>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="require_online_payment"
+                  checked={settings?.booking_settings?.require_online_payment || false}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    booking_settings: { ...settings?.booking_settings, require_online_payment: e.target.checked }
+                  })}
+                  className="w-5 h-5 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+                />
+                <label htmlFor="require_online_payment" className="text-sm font-medium text-slate-700 cursor-pointer">
+                  Require online payment (SumUp) to confirm booking
+                </label>
+              </div>
+              
+              {!settings?.booking_settings?.require_online_payment && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Complete Booking Button Text
+                    </label>
+                    <Input
+                      value={settings?.booking_settings?.payment_button_text || 'Complete Booking Request'}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        booking_settings: { ...settings?.booking_settings, payment_button_text: e.target.value }
+                      })}
+                      placeholder="Complete Booking Request"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Confirmation Message
+                    </label>
+                    <Textarea
+                      value={settings?.booking_settings?.confirmation_message || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        booking_settings: { ...settings?.booking_settings, confirmation_message: e.target.value }
+                      })}
+                      placeholder="Your booking request has been submitted. We will confirm your appointment shortly."
+                      rows={2}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Working Hours */}
+          <div>
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Working Hours & Location</h3>
+            <p className="text-xs text-slate-500 mb-4">Set your working hours and whether you're at a fixed location or working remotely on each day</p>
+            <div className="space-y-3">
+              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
+                const daySettings = settings?.booking_settings?.working_hours?.[day] || { enabled: false, start: '09:00', end: '17:00', location_type: 'both' };
+                return (
+                  <div key={day} className="flex flex-wrap items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                    <div className="w-28">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={daySettings.enabled}
+                          onChange={(e) => setSettings({
+                            ...settings,
+                            booking_settings: {
+                              ...settings?.booking_settings,
+                              working_hours: {
+                                ...settings?.booking_settings?.working_hours,
+                                [day]: { ...daySettings, enabled: e.target.checked }
+                              }
+                            }
+                          })}
+                          className="w-4 h-4 rounded border-slate-300 text-[#9F87C4] focus:ring-[#9F87C4]"
+                        />
+                        <span className="text-sm font-medium capitalize">{day}</span>
+                      </label>
+                    </div>
+                    {daySettings.enabled && (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="time"
+                            value={daySettings.start}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              booking_settings: {
+                                ...settings?.booking_settings,
+                                working_hours: {
+                                  ...settings?.booking_settings?.working_hours,
+                                  [day]: { ...daySettings, start: e.target.value }
+                                }
+                              }
+                            })}
+                            className="w-28"
+                          />
+                          <span className="text-slate-500">to</span>
+                          <Input
+                            type="time"
+                            value={daySettings.end}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              booking_settings: {
+                                ...settings?.booking_settings,
+                                working_hours: {
+                                  ...settings?.booking_settings?.working_hours,
+                                  [day]: { ...daySettings, end: e.target.value }
+                                }
+                              }
+                            })}
+                            className="w-28"
+                          />
+                        </div>
+                        <select
+                          value={daySettings.location_type || 'both'}
+                          onChange={(e) => setSettings({
+                            ...settings,
+                            booking_settings: {
+                              ...settings?.booking_settings,
+                              working_hours: {
+                                ...settings?.booking_settings?.working_hours,
+                                [day]: { ...daySettings, location_type: e.target.value }
+                              }
+                            }
+                          })}
+                          className="px-3 py-2 text-sm border rounded-md bg-white focus:ring-2 focus:ring-[#9F87C4] focus:border-[#9F87C4]"
+                        >
+                          <option value="fixed">Fixed Location</option>
+                          <option value="remote">Remote Only</option>
+                          <option value="both">Both</option>
+                        </select>
+                      </>
+                    )}
+                    {!daySettings.enabled && (
+                      <span className="text-sm text-slate-400">Closed</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Remote Day Message */}
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Remote Day Message</h3>
+            <p className="text-xs text-slate-500 mb-2">Message shown to customers when they select a remote-only day</p>
+            <Textarea
+              value={settings?.booking_settings?.remote_day_message || ''}
+              onChange={(e) => setSettings({
+                ...settings,
+                booking_settings: { ...settings?.booking_settings, remote_day_message: e.target.value }
+              })}
+              placeholder="Kelly is working remotely on this day. If you would like to book, please click next and enter your details to request an appointment."
+              rows={3}
+            />
+          </div>
+
+          {/* Calendar Colors */}
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-medium text-slate-700 mb-3">Calendar Day Colors</h3>
+            <p className="text-xs text-slate-500 mb-3">Customize how different day types appear on the booking calendar</p>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Fixed Location Days</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={settings?.booking_settings?.calendar_colors?.fixed || '#9F87C4'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      booking_settings: {
+                        ...settings?.booking_settings,
+                        calendar_colors: {
+                          ...settings?.booking_settings?.calendar_colors,
+                          fixed: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                  <span className="text-xs text-slate-500">{settings?.booking_settings?.calendar_colors?.fixed || '#9F87C4'}</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Remote Days</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={settings?.booking_settings?.calendar_colors?.remote || '#6BA8A0'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      booking_settings: {
+                        ...settings?.booking_settings,
+                        calendar_colors: {
+                          ...settings?.booking_settings?.calendar_colors,
+                          remote: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                  <span className="text-xs text-slate-500">{settings?.booking_settings?.calendar_colors?.remote || '#6BA8A0'}</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Both Options Days</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={settings?.booking_settings?.calendar_colors?.both || '#8B9DC3'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      booking_settings: {
+                        ...settings?.booking_settings,
+                        calendar_colors: {
+                          ...settings?.booking_settings?.calendar_colors,
+                          both: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                  <span className="text-xs text-slate-500">{settings?.booking_settings?.calendar_colors?.both || '#8B9DC3'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Gift Vouchers */}
+        <GiftVoucherSettingsSection
+          value={settings?.gift_voucher_settings}
+          onChange={(gift_voucher_settings) => setSettings({ ...settings, gift_voucher_settings })}
+        />
+
+        {/* SumUp Payments */}
+        <SumUpPaymentsSection />
+
+        {/* Google Calendar Sync */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 space-y-6" data-testid="google-calendar-section">
+          <div className="flex items-center gap-3 border-b pb-4">
+            <div className="p-2 bg-[#F5F3FA] rounded-lg">
+              <Link size={20} className="text-[#9F87C4]" />
+            </div>
+            <div>
+              <h2 className="font-serif text-xl text-slate-800">Google Calendar Sync</h2>
+              <p className="text-sm text-slate-500">Connect your Google Calendar for two-way booking sync</p>
+            </div>
+          </div>
+
+          {/* Connection Status */}
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-slate-50">
+            {calendarStatus?.connected ? (
+              <>
+                <CheckCircle className="text-green-500" size={24} />
+                <div className="flex-1">
+                  <p className="font-medium text-green-700">Connected</p>
+                  <p className="text-sm text-slate-600">{calendarStatus.email}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={testCalendarConnection}
+                  className="mr-2"
+                >
+                  <RefreshCw size={16} className="mr-1" />
+                  Test
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={disconnectCalendar}
+                >
+                  <Unlink size={16} className="mr-1" />
+                  Disconnect
+                </Button>
+              </>
+            ) : calendarStatus?.configured ? (
+              <>
+                <AlertCircle className="text-amber-500" size={24} />
+                <div className="flex-1">
+                  <p className="font-medium text-amber-700">Configured but not connected</p>
+                  <p className="text-sm text-slate-600">Click "Connect" to authorize access</p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={connectCalendar}
+                  disabled={connectingCalendar}
+                  className="bg-[#9F87C4] hover:bg-[#8A6EB5]"
+                >
+                  <Link size={16} className="mr-1" />
+                  {connectingCalendar ? 'Connecting...' : 'Connect Google Calendar'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <AlertCircle className="text-slate-400" size={24} />
+                <div className="flex-1">
+                  <p className="font-medium text-slate-600">Not configured</p>
+                  <p className="text-sm text-slate-500">Add your Google OAuth credentials below</p>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* OAuth Configuration */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-slate-700">OAuth Configuration</h3>
+            <p className="text-xs text-slate-500">
+              Get credentials from{' '}
+              <a 
+                href="https://console.cloud.google.com/apis/credentials" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[#9F87C4] hover:underline"
+              >
+                Google Cloud Console
+              </a>
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Client ID
+                </label>
+                <Input
+                  value={calendarConfig.client_id}
+                  onChange={(e) => setCalendarConfig({ ...calendarConfig, client_id: e.target.value })}
+                  placeholder="xxxxx.apps.googleusercontent.com"
+                  data-testid="calendar-client-id"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Client Secret
+                </label>
+                <Input
+                  type="password"
+                  value={calendarConfig.client_secret}
+                  onChange={(e) => setCalendarConfig({ ...calendarConfig, client_secret: e.target.value })}
+                  placeholder="Enter client secret"
+                  data-testid="calendar-client-secret"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Redirect URI (optional)
+                </label>
+                <Input
+                  value={calendarConfig.redirect_uri}
+                  onChange={(e) => setCalendarConfig({ ...calendarConfig, redirect_uri: e.target.value })}
+                  placeholder="Auto-detected if empty"
+                />
+                <p className="text-xs text-slate-500 mt-1">Leave empty to auto-detect</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Calendar ID
+                </label>
+                <Input
+                  value={calendarConfig.calendar_id}
+                  onChange={(e) => setCalendarConfig({ ...calendarConfig, calendar_id: e.target.value })}
+                  placeholder="primary"
+                />
+                <p className="text-xs text-slate-500 mt-1">Use "primary" for main calendar</p>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={saveCalendarConfig}
+              disabled={savingCalendar || !calendarConfig.client_id}
+              variant="outline"
+            >
+              <Save size={16} className="mr-2" />
+              {savingCalendar ? 'Saving...' : 'Save Calendar Configuration'}
+            </Button>
           </div>
         </div>
 

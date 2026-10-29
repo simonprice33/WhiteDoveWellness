@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Calendar } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { publicApi, getImageUrl } from '../lib/api';
 
-const navLinks = [
+const baseNavLinks = [
   { label: 'Home', href: '#home' },
   { label: 'Therapies', href: '#therapies' },
   { label: 'Prices', href: '#prices' },
+  { label: 'Vouchers', href: '#vouchers', requires: 'vouchers' },
   { label: 'Contact', href: '#contact' },
 ];
 
-export default function Header() {
+export default function Header({ onBookClick, bookingEnabled }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState('/images/logo.png');
+  const [vouchersEnabled, setVouchersEnabled] = useState(false);
+  const navLinks = baseNavLinks.filter((link) => link.requires !== 'vouchers' || vouchersEnabled);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +29,8 @@ export default function Header() {
       if (res.data.settings?.images?.logo_url) {
         setLogoUrl(res.data.settings.images.logo_url);
       }
+      const gv = res.data.settings?.gift_voucher_settings;
+      setVouchersEnabled(!!(gv?.enabled && gv?.sumup_link));
     }).catch(() => {});
     
     return () => window.removeEventListener('scroll', handleScroll);
@@ -82,6 +87,16 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
+            {bookingEnabled && (
+              <button
+                onClick={onBookClick}
+                className="bg-[#9F87C4] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#8A6EB5] transition-all flex items-center gap-2"
+                data-testid="header-book-btn"
+              >
+                <Calendar size={16} />
+                Book Now
+              </button>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -110,6 +125,19 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
+            {bookingEnabled && (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onBookClick?.();
+                }}
+                className="w-full bg-[#9F87C4] text-white px-5 py-3 rounded-full text-sm font-medium hover:bg-[#8A6EB5] transition-all flex items-center justify-center gap-2 mt-4"
+                data-testid="mobile-book-btn"
+              >
+                <Calendar size={16} />
+                Book Now
+              </button>
+            )}
           </nav>
         </div>
       )}

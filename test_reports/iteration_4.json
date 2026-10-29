@@ -1,0 +1,32 @@
+{
+  "summary": "Full backend+frontend testing of Gift Vouchers feature (home-page section, modal→SumUp new-tab, admin register with CRUD/redeem/reactivate, admin settings editor, public settings leak check). 15/15 pytest API tests passed. All UI flows verified end-to-end. Settings restored to defaults and all test vouchers cleaned up.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_vouchers_and_settings.py",
+    "/app/test_reports/pytest/vouchers_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "VoucherController.update: when caller sends balance explicitly, no validation that balance <= amount or >= 0 (non-critical, admin-only).",
+    "VoucherController.redeem accepts amount_used as string; empty string path OK. No upper-bound rounding sanity for very small floats (acceptable).",
+    "SettingsController.ensureDefaults correctly strips sumup_config/google_calendar_config/google_calendar before returning; PUT response also goes through ensureDefaults so secrets never leak back on save."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_vouchers_and_settings.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin / admin123 (confirmed working at /api/admin/auth/login and /admin/login)",
+  "seed_data_creation": "Created WDW-QA1 / WDW-QAEXP / WDW-QADEL / WDW-UI1 during tests; all deleted via cleanup fixture or UI delete flow. Verified empty-state after.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend test file /app/backend/tests/test_vouchers_and_settings.py covers public settings leak, voucher CRUD, redeem (partial/full/over/already), reactivation, expiry detection, duplicate code (case-insensitive) and delete→404. Admin Vouchers UI has stable data-testids: nav-gift-vouchers, admin-vouchers, add-voucher-btn, voucher-dialog, voucher-code-input, voucher-amount-input, voucher-recipient-input, voucher-save-btn, voucher-row-{CODE}, voucher-status-{CODE}, redeem-voucher-{CODE}, redeem-dialog, redeem-amount-input, redeem-confirm-btn, edit-voucher-{CODE}, delete-voucher-{CODE} (uses window.confirm), reactivate-voucher-{CODE}, voucher-search, voucher-filter-{all|active|redeemed|expired|cancelled}, voucher-summary, summary-active, summary-outstanding, vouchers-empty. Settings page has gift-voucher-settings-section + gift-voucher-{enabled,link,title,amounts} saved via save-settings-btn. Public home has gift-vouchers-section, voucher-amount-{N or custom}, buy-voucher-btn, gift-voucher-modal (opens in new tab via continue-to-sumup-btn), close-voucher-modal-btn, nav-link-vouchers (hidden when disabled), prices-voucher-link.",
+  "rca of the issue": "No issues found - feature is production-ready."
+}
